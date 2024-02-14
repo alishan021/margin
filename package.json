@@ -1,0 +1,25 @@
+{
+  "name": "margin-tools",
+  "version": "1.0.0",
+  "description": "Ecommerce that selling different kinds of tools",
+  "main": "index.js",
+  "scripts": {
+    "test": "test",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alishan021/margin.git"
+  },
+  "keywords": [
+    "ecommerce",
+    "margin",
+    "nodejs"
+  ],
+  "author": "alishan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alishan021/margin/issues"
+  },
+  "homepage": "https://github.com/alishan021/margin#readme"
+}
