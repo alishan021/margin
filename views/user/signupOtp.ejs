@@ -1,0 +1,42 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+    <link rel="stylesheet" href="/user/custom-css/otp.css">
+</head>
+<body>
+
+    <div class="page-wrapper">
+        <div class="otp-div">
+            <h2>OTP Validation</h2>
+            <form action="/signup/otp" method="post" id="otp-form" >
+                <div class="form-child msg-box">
+                    <p></p>
+                </div>
+                <div class=" form-child">
+                    <p>An otp is sent your email. confirm your account by typing it here.</p>
+                </div>
+                <div class="input-field form-child">
+                    <!-- <label for="username">Enter your otp : </label> -->
+                    <input type="text" placeholder="example : 738473" name="username" otp >
+                </div>
+                <div class="form-child back-link">
+                    <a href="/signup">Go back</a>
+                </div><div class="form-child back-link">
+                    <a href="/signup/otp">Resend OTP</a>
+                </div>
+                <div class="button-div form-child input-field">
+                    <button class="btn-submit ">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <script src="/user/custom-js/otp.js" defer ></script>
+    
+</body>
+</html>
