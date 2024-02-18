@@ -10,21 +10,24 @@
 <body>
 
     <div class="page-wrapper">
-        <div class="signup-div">
-            <h2>Login</h2>
-            <form action="#" method="post" id="signup-form" >
+        <div class="login-div">
+            <h2 class="heading">Login</h2>
+            <form action="/login" method="post" id="login-form" >
                 <div class="input-field msg-box">
-                    <p>hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+                    <p class="msg-para"></p>
                 </div>
-                <div class="input-field">
+                <div class="input-field form-child">
                     <label for="username">Email : </label>
-                    <input type="text" placeholder="Margin@gmail.com" name="username" >
+                    <input type="text" placeholder="Margin@gmail.com" name="username" email >
                 </div>
-                <div class="input-field">
+                <div class="input-field form-child">
                     <label for="username">Password : </label>
-                    <input type="text" placeholder="sjidllem" name="password" >
+                    <input type="password" placeholder="sjidllem" name="password" password >
                 </div>
-                <div class="input-field">
+                <div class="signup-link form-child">
+                    <a href="/signup">Don't have an account? Signup</a>
+                </div>
+                <div class="input-field form-child button-div">
                     <button id="submit-button">Submit</button>
                 </div>
             </form>

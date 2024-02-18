@@ -21,6 +21,23 @@
 
 
 
+
+.msg-box
+{
+    width: 90%;
+    padding: 10px;
+    margin: 10px;
+    background-color: lightblue;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* border-radius: 10px; */
+    color: red;
+    font-weight: bold;
+}
+
+
+
 .otp-div
 {
     background-color: rgb(17, 120, 168);
@@ -147,4 +164,12 @@ a
 h2
 {
     margin: 0 0 10px 0;
+}
+
+
+
+.heading
+{
+    margin: 10px;
+    color: white;
 }

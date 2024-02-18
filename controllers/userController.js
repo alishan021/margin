@@ -151,3 +151,39 @@ exports.signupOtpPost = async (req, res) => {
 exports.loginGet = ( req, res ) => {
     res.render('login.ejs');
 }
+
+
+
+exports.loginPost = async ( req, res ) => {
+    const { email, password } = req.body;
+
+const isEmailValid = (email) => {
+    const emailRegex =  /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/g
+    return emailRegex.test(email)
+}
+
+    if( !email || !password ){
+        return res.status(400).json({ error: 'Email and password is required'});
+    }
+    if(!isEmailValid(email)){
+        return res.status(400).json({ error: 'Email format is wrong'});
+    }
+    
+    const isUser = await userModel.findOne({ email });
+    console.log( 'isUser obj : ' + isUser );
+    console.log(`password : ${password}, hashedpassword : ${isUser.password }, uersename : ${isUser.username }`);
+    const match = await bcrypt.compare( password , isUser.password)
+    .then(function(result) {
+        console.log(result);
+    });
+
+    if(!isUser){
+        return res.status(400).json({ error: 'user not found'});
+    }
+    if(match){
+        return res.json({ success: true, message: 'everything is alright'});
+    }else {
+        return res.json({ success: false, message: `some error, don't know why`});
+    }
+
+}
