@@ -7,6 +7,7 @@ exports.validateSignupBody = async (req, res, next ) => {
     console.log('enter in to validatesignupbody');
 
     const { username, email, password, passwordRe } = req.body;
+    req.session.user
     console.log(req.body);
 
     const isEmailValid = (email) => {
@@ -36,8 +37,6 @@ exports.validateSignupBody = async (req, res, next ) => {
       return res.status(400).json({ error: 'email is already registered'});
     }
 
-    // sendOtpToEmail();
     console.log('validateSingupbody is finished');
-
-    next();
+    res.json({ message: 'validation is alright'});
 }

@@ -13,7 +13,7 @@ form.addEventListener('submit', (event) => {
         return displayError({ message: 'otp must be number'});
     }
 
-    fetch('/signup/otp', {
+    fetch('/signup/otp/validate', {
         method: 'POST',
              headers: {
                  'Content-Type': 'application/json'
@@ -25,7 +25,7 @@ form.addEventListener('submit', (event) => {
         if(data.error){
             return displayError({ message: data.error })
         }
-            window.location.href = '/login';
+            window.location.href = '/post-user';
     })
 })
 
@@ -33,5 +33,6 @@ form.addEventListener('submit', (event) => {
 
 
 const displayError = (result) => {
+    msgBox.className.className = 'msg-box-error'
     msgBox.innerHTML = result.message;
 }

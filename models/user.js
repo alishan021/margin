@@ -80,9 +80,13 @@ var userSchema = new Schema({
         status: {
             type: Boolean
         }},
-        created_at: {
-            type: Date
-        },
+    created_at: {
+        type: Date
+    },
+    status: {
+        type: Boolean,
+        default: true
+    }
 }); 
 
 

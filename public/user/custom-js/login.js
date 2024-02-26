@@ -1,6 +1,11 @@
 
 const form = document.querySelector('form');
 const msgPara = document.querySelector('.msg-para');
+const forgotPass = document.querySelector('.forgot-link');
+
+// forgotPass.addEventListener('click', () => {
+//     window.location.href = '/login/forgot-password'
+// })
 
 form.addEventListener('submit', async (event) => {
    try{
@@ -55,6 +60,7 @@ const isEmailValid = (email) => {
 
 
 const displayError = (result) => {
+    msgPara.parentElement.className = 'msg-box-error'
     msgPara.innerHTML = result.message;
 }
 

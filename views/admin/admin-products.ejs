@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- <link rel="stylesheet" href="/admin/custom-css/admin-users.css"> -->
+    <link rel="stylesheet" href="/admin/custom-css/navbar.css">
+    <link rel="stylesheet" href="/admin/custom-css/sidebar.css">
+    <link rel="stylesheet" href="/admin/custom-css/admin-products.css">
+
+    <script src="/admin/custom-js/admin-products.js" defer></script>
+    
+</head>
+<body>
+
+    <div class="page-wrapper">
+
+        <!-- Navbar starts here -->
+        <%- include('./layouts/navbar.ejs') %>
+        <!-- Navbar ends here -->
+
+        <div class="page-body">
+
+            <%- include('./layouts/sidebar.ejs') %> 
+
+            <main>
+                <div class="add-product-box">
+                        <h2 class="header">Product List</h2>
+                        <div class="msg-box">
+                            <p class="msg-para"></p>
+                        </div>
+                </div>
+                <div class="user-list">
+                    <div class="table-div">
+                    <table class="content-table">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Size</th>
+                                <th>Colors</th>
+                                <th>Category</th>
+                                <th>Status</th>                           
+                                <th>Buttons</th>                           
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Users prinst as a loop -->
+                            <% products.forEach((product, index ) => {  %>
+                            <tr>
+                                <td><%= index + 1 %></td>
+                                <td><%= product.name %></td>
+                                <td><%= product.price %></td>
+                                <td><%= product.quantity %></td>
+                                <td><%= product.size %></td>
+                                <td><%= product.color %></td>
+                                <td><%= product.category %></td>
+                                <td class="user-status <%= product.status ? 'list' : 'unlist' %>" >
+                                    <span>
+                                        <% if(product.status){ %> Listed
+                                        <%} else { %> UnListed <% } %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn-list"    data-product-id="<%= product._id %>" >List</button>
+                                    <button class="btn-unlist"  data-product-id="<%= product._id %>">Unlist</button>
+                                    <button class="btn-delete"  data-product-id="<%= product._id %>">Delete</button>
+                                    <button class="btn-edit"  data-product-id="<%= product._id %>">Edit</button>
+                                </td>                               
+                            </tr>
+                            <% }) %>
+                            <!-- Users loop ends -->
+                           
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+            </main>
+
+        </div>
+    </div>
+
+    
+</body>
+</html>

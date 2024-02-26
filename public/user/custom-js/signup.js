@@ -69,6 +69,7 @@ const verifyUserDetails = (body) => {
 
 
 const displayError = (result) => {
+    msgPara.parentElement.className = 'msg-box-error';
     msgPara.innerHTML = result.message;
 }
 
@@ -112,26 +113,3 @@ const shareBody = async (body) => {
          displayError(err);
      }
  }
-
-
-
-// function shareBody(){
-//     fetch('/signup', { 
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify(body)
-//     })
-//     .then( res => res.json())
-//     .then((data) =>{
-//         console.log('hai');
-//         if(data.error){
-//             console.log(data);
-//             const result = { message: data.error }
-//             return displayError(result)
-//         }
-//         return { success: true };
-//     })
-//     .catch((err) => console.log('error : ' + err ))
-// }

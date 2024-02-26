@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit product</title>
+    <link rel="stylesheet" href="/admin/custom-css/navbar.css">
+    <link rel="stylesheet" href="/admin/custom-css/sidebar.css">
+    <link rel="stylesheet" href="/admin/custom-css/add-product.css">
+    <script src="/admin/custom-js/add-product.js" defer ></script>
+</head>
+<body>
+
+    <div class="page-wrapper">
+        <%- include('./layouts/navbar.ejs') %>
+        <div class="page-body">
+            <%- include('./layouts/sidebar.ejs') %> 
+
+    <div class="div-1">
+
+        <div class="div-2">
+            <h2 class="header">Product</h2>
+            <div class="msg-box">
+                <p class="msg-para"></p>
+            </div>
+            <form action="/admin/products/add" method="post" >
+                <div class="input-item form-child" >
+                    <label for="name"> Name : * </label>   
+                    <input type="text" id="name" name="name" >
+                </div>
+                <div class="form-child two-col-div" >
+                    <div class="input-item two-col " >
+                        <label for="price"> Price : * </label>    
+                        <input type="number" id="price" name="price" >
+                    </div>
+                    <div class="input-item two-col " >
+                        <label for="quantity"> Quantity : * </label>    
+                        <input type="number" id="quantity" name="quantity" >
+                    </div>
+                </div>
+                <div class="input-item form-child" >
+                    <label for="size"> Size :  </label>    
+                    <input type="text" id="size" name="size" >
+                </div>
+                <div class="input-item form-child" >
+                    <label for="color"> Color : </label>    
+                    <input type="text" id="color" name="color" >
+                </div>
+                <div class="input-item form-child" >
+                    <label for="description"> Description : </label>    
+                    <input type="text" id="description" name="description" >
+                </div>
+                <div class="input-item form-child" >
+                    <label for="details"> Details : </label>    
+                    <input type="text" id="details" name="details" >
+                </div>
+                <div class="input-item form-child" >
+                    <label for="category"> Category : </label>    
+                    <input type="text" id="category" name="category" >
+                </div>
+                <div class="input-item form-child" >
+                    <label for="image"> Image : </label>    
+                    <input type="file" id="image" name="image" multiple>
+                </div>
+                <div class="form-child">
+                    <button class="btn-submit">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+
+
+</body>
+</html>

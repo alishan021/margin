@@ -4,6 +4,7 @@ const config = require('dotenv').config({path: './.env'})
 const bodyPaser = require('body-parser');
 const morgan = require('morgan');
 const session = require('express-session');
+const cors = require('cors');
 
 const app = express();
 
@@ -25,7 +26,7 @@ app.use(session({
 
 
 app.use('/', require('./routes/userRoute.js') );
-// app.use('/admin', require('./routes/adminRoute.js'); );
+app.use('/admin', require('./routes/adminRoute.js'));
 
 
 module.exports = app;

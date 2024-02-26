@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- <link rel="stylesheet" href="/admin/custom-css/admin-users.css"> -->
+    <link rel="stylesheet" href="/admin/custom-css/navbar.css">
+    <link rel="stylesheet" href="/admin/custom-css/sidebar.css">
+    <link rel="stylesheet" href="/admin/custom-css/admin-category.css">
+
+    <script src="/admin/custom-js/admin-category.js" defer></script>
+    
+</head>
+<body>
+
+    <div class="page-wrapper">
+
+        <!-- Navbar starts here -->
+        <%- include('./layouts/navbar.ejs') %>
+        <!-- Navbar ends here -->
+
+        <div class="page-body">
+
+            <%- include('./layouts/sidebar.ejs') %> 
+
+            <main>
+                <div class="add-category-box">
+                    <div class="add-category-div2">
+                        <div class="msg-box">
+                            <p class="msg-para"></p>
+                        </div>
+                        <form action="/admin/category" method="post">
+                            <div class="input-item form-child">
+                                <label for="category">Category : </label>
+                                <input type="text" name="category" placeholder="chizel" category id="category" >
+                                <button class="btn-add-category">Add Category</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="user-list">
+                    <div class="table-div">
+                    <table class="content-table">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Category</th>
+                                <th>Products</th>
+                                <th>Status</th>
+                                <th>Buttons</th>
+                               
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Users prinst as a loop -->
+                            <% categorys.forEach((category, index ) => {  %>
+                            <tr>
+                                <td><%= index + 1 %></td>
+                                <td><%= category.categoryName %></td>
+                                <td>category products</td>
+                                <td class="user-status <%= category.isActive ? 'list' : 'unlist' %>" >
+                                    <span>
+                                        <% if(category.isActive){ %> Listed
+                                        <%} else { %> UnListed <% } %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn-list"    data-category-id="<%= category._id %>" >List</button>
+                                    <button class="btn-unlist"  data-category-id="<%= category._id %>">Unlist</button>
+                                    <button class="btn-delete"  data-category-id="<%= category._id %>">Delete</button>
+                                </td>                               
+                            </tr>
+                            <% }) %>
+                            <!-- Users loop ends -->
+                           
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+            </main>
+
+        </div>
+    </div>
+
+    
+</body>
+</html>
