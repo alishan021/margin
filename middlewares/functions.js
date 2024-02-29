@@ -1,4 +1,4 @@
-const userModel = require('../models/user')
+const userModel = require('../models/user');
 
 
 
@@ -40,3 +40,19 @@ exports.validateSignupBody = async (req, res, next ) => {
     console.log('validateSingupbody is finished');
     res.json({ message: 'validation is alright'});
 }
+
+
+
+
+const multer = require('multer');
+
+const storage = multer.diskStorage({
+  destination: ( req, file, cb ) => {
+    cb(null,'./uploads');
+  },
+  filename: ( req, file, cb ) => {
+    cb(null, file.fieldname + '-' + Date.now());
+  }
+})
+
+exports.upload = multer({ storage: storage });

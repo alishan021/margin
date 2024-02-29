@@ -1,5 +1,5 @@
 
-const middleware = require('../middlewares/validation');
+const middleware = require('../middlewares/functions');
 const otpModel = require('../models/db-otp');
 const userModel = require('../models/user')
 const bcrypt = require('bcrypt');

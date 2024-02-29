@@ -10,43 +10,43 @@ document.addEventListener('DOMContentLoaded', function() {
         // Create FormData object to easily gather form data
         const formData = new FormData(form);
 
-        // Convert FormData to JSON object
-        const data = {};
-        formData.forEach((value, key) => {
-            if (data[key]) {
-                if (!Array.isArray(data[key])) {
-                    data[key] = [data[key]]; // Convert to array if not already
-                }
-                data[key].push(value);
-            } else {
-                data[key] = value;
-            }
-        });
-        console.log('data : ' + data );
-
         // Send form data to server
         try {
             const response = await fetch('/admin/products/add', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
+                body: formData
             });
 
+            const responseData = await response.json();
             if (response.ok) {
-                const responseData = await response.json();
                 console.log(responseData); // Log server response
-                // Perform any additional actions on successful response
-            } else {
-                console.error('Error adding product');
-                // Handle error response
+                return displaySuccess({ message: responseData.message });
             }
+            console.error('Error adding product');
+            displayError({ error: responseData.error });
+        
         } catch (error) {
             console.error('Error adding product:', error);
-            // Handle fetch error
+            displayError({ error: error })
         }
     });
+
+
+
+const msgPara = document.querySelector('.msg-para'); 
+
+const displayError = (result) => {
+    msgPara.parentElement.className = 'msg-box-error';
+    msgPara.innerHTML = result.error;
+}
+
+const displaySuccess = (result) => {
+    msgPara.parentElement.className = 'msg-box-success';
+    msgPara.innerHTML = result.message;
+}
+
+
+
 
 
     //     // Add an event listener to handle the "Edit" button click

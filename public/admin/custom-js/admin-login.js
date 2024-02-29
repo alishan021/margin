@@ -2,7 +2,7 @@
 const form = document.querySelector('form');
 const msgPara = document.querySelector('.msg-para');
 
-form.addEventListener('click', async (event) => {
+form.addEventListener('submit', async (event) => {
     event.preventDefault();
     const email = document.querySelector('[email]').value;
     const password = document.querySelector('[password]').value;
@@ -15,10 +15,10 @@ form.addEventListener('click', async (event) => {
        if(sendBodyResult.success){
         window.location.href = '/admin/'
        }else{
-        return displayError({ success: false, message: 'sendBodyResult is not success'})
+        return displayError({ success: false, message: sendBodyResult.message })
        }
     }else{
-        return displayError({ success: false, message: 'validateBodyResult is not success'})
+        return displayError({ success: false, message: validateBodyResult.message })
     }
 
     
@@ -36,6 +36,7 @@ const isEmailValid = (email) => {
 
 
 const displayError = (result) => {
+    msgPara.parentElement.className = 'msg-box-error';
     msgPara.innerHTML = result.message;
 }
 
@@ -75,7 +76,7 @@ const sendBody = async (body) => {
     if(data.success){
         return { success: true, message: 'allright in data.success' }
     }
-    return { success: false, message:'something wrong happens' };
+    return { success: false, message: data.error };
 
    }
    catch(err){

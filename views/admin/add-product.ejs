@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/admin/custom-css/navbar.css">
     <link rel="stylesheet" href="/admin/custom-css/sidebar.css">
     <link rel="stylesheet" href="/admin/custom-css/add-product.css">
+    <link rel="stylesheet" href="/admin/custom-css/msg-box.css">
     <script src="/admin/custom-js/add-product.js" defer ></script>
 </head>
 <body>
@@ -23,7 +24,7 @@
             <div class="msg-box">
                 <p class="msg-para"></p>
             </div>
-            <form action="/admin/products/add" method="post" >
+            <form action="/admin/products/add" method="post" enctype="multipart/form-data" >
                 <div class="input-item form-child" >
                     <label for="name"> Name : * </label>   
                     <input type="text" id="name" name="name" >
@@ -54,13 +55,13 @@
                     <label for="details"> Details : </label>    
                     <input type="text" id="details" name="details" >
                 </div>
-                <div class="input-item form-child" >
+                <!-- <div class="input-item form-child" >
                     <label for="category"> Category : </label>    
                     <input type="text" id="category" name="category" >
-                </div>
+                </div> -->
                 <div class="input-item form-child" >
                     <label for="image"> Image : </label>    
-                    <input type="file" id="image" name="image" multiple>
+                    <input type="file" id="image" name="images" accept="image/*" multiple >
                 </div>
                 <div class="form-child">
                     <button class="btn-submit">Submit</button>

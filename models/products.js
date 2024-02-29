@@ -22,11 +22,10 @@ const productSchema = new mongoose.Schema({
     },
     size: {
         type: String, 
-        required: true
     },
-    imageurl: [{
-        type: String,
-    }],
+    images : {
+        type : [String],
+    },
     color: [{
         type: String, 
     }],
@@ -48,6 +47,7 @@ const productSchema = new mongoose.Schema({
     },
     modified_at: {
         type: Date, 
+        default: Date.now
     },
     deleted_at: {
         type: Date, 

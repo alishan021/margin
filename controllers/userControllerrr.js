@@ -1,14 +1,17 @@
 
 
-const middleware = require('../middlewares/validation');
+const middleware = require('../middlewares/functions');
 const otpModel = require('../models/db-otp');
 const userModel = require('../models/user')
+const productModel = require('../models/products')
 const bcrypt = require('bcrypt');
+// const productModel = require('../models/products');
 
 
 
 
 exports.userHomeGet = ( req, res) => {
+    console.log('userin : ' + req.session.userIn);
     res.render('index.ejs')
 }
 
@@ -186,6 +189,9 @@ exports.redirecToOtp = ( req, res) => {
 
 
 exports.loginGet = ( req, res ) => {
+    // if(req.session.isLogin){
+    //     return res.redirect('/');
+    // }
     res.render('login.ejs');
 }
 
@@ -217,6 +223,8 @@ exports.loginPost = async (req, res) => {
         const match = await bcrypt.compare(password, isUser.password);
         console.log('match : ' + match );
         if (match) {
+            req.session.userIn = true;
+            console.log('userIn : ' + req.session.userIn );
             return res.status(200).json({ success: true, message: 'Authentication successful' });
         } else {
             return res.status(400).json({ success: false, error: 'Incorrect password' });
@@ -225,6 +233,14 @@ exports.loginPost = async (req, res) => {
         console.error('Login error:', error);
         return res.status(500).json({ success: false, error: 'Internal server error' });
     }
+}
+
+
+
+
+exports.userLogout = ( req, res ) => {
+    delete req.session.userIn;
+    res.redirect(`/`);
 }
 
 
@@ -322,6 +338,35 @@ exports.newPasswordPost = async ( req, res ) =>{
         console.log('error : ' + err );
     }
 }
+
+
+
+
+exports.productGet = async ( req, res ) => {
+    try{
+        const product = await productModel.find({});
+        res.render('product.ejs', product );
+    }
+    catch(error){
+        console.log(`error inside productGet : ${error}`);
+    }
+}
+
+
+
+
+
+exports.productListGet = async ( req, res ) => {
+    try{
+        const products = await productModel.find({});
+        const totalDocs = await productModel.find({}).count();
+        res.render('product-list.ejs', { products, totalDocs });
+   }
+   catch(error){
+    console.log('error in productListGet: ' + error );
+    }
+}
+
 
 
 
