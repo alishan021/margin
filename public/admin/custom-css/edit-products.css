@@ -90,3 +90,41 @@ input
 {
     border: 1px solid black;
 }
+
+
+.image-preview-container-old, .image-preview-container-new {
+    display: flex;
+    flex-wrap: wrap;
+    border: 1px solid black;
+    margin: 5px 0;
+}
+
+.image-preview-div {
+    position: relative;
+    margin-right: 10px;
+    margin-bottom: 10px; /* Add some spacing between images */
+}
+
+.image-preview {
+    width: 100px;
+    height: 100px;
+    padding: 10px;
+}
+
+.delete-image-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background-color: rgba(255, 0, 0, 0.589);
+    color: white;
+    font-size: 8px;
+    border: none;
+    padding: 5px; /* Example styling */
+    border-radius: 5px;
+}
+
+
+
+.file-thumbnail{
+    padding: 10px;
+}

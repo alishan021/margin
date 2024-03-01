@@ -22,22 +22,6 @@
 
 
 
-.msg-box
-{
-    width: 90%;
-    padding: 10px;
-    margin: 10px;
-    background-color: lightblue;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* border-radius: 10px; */
-    color: red;
-    font-weight: bold;
-}
-
-
-
 .otp-div
 {
     background-color: rgb(17, 120, 168);
@@ -98,7 +82,7 @@ label
 {
     width: 100%;
     background-color: rgb(0, 175, 233);
-    padding: 10px 15px;
+    /* padding: 10px 15px; */
     border-radius: 10px;
     /* color: black; */
     background: none;
@@ -172,4 +156,15 @@ h2
 {
     margin: 10px;
     color: white;
+}
+
+
+
+.otp-timer-div
+{
+    width: 90%;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    margin-right: 20px;
 }

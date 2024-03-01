@@ -110,13 +110,13 @@ exports.sendOtp = async ( req, res , next ) => {
     }
 
 
-    transport.sendMail( mailOptions, async ( err, info ) => {
-        if(err) console.log('error : ' + err);
-        else{
+    // transport.sendMail( mailOptions, async ( err, info ) => {
+    //     if(err) console.log('error : ' + err);
+    //     else{
             
-            console.log('success : ' + info.response );
-        }
-    })
+    //         console.log('success : ' + info.response );
+    //     }
+    // })
 
     next();
 }
@@ -138,6 +138,14 @@ exports.signupOtpPost = async (req, res) => {
         const dbOtp = await otpModel.findOne({ otp }).exec();
 
         console.log(`otp : ${otp}, dbOtp :, ${dbOtp}, email : ${req.session.userEmail}`);
+
+        if(!otp){
+            return res.status(400).json({ success: false, error: 'OTP is required' });
+        }
+
+        if (!dbOtp || !dbOtp.otp ) {
+            return res.status(400).json({ success: false, error: 'OTP is wrong' });
+        }
 
         if (dbOtp.otp !== otp ) {
             return res.status(400).json({ success: false, error: 'OTP is not correct' });
@@ -282,8 +290,12 @@ exports.validateOtpPost = async (req, res) => {
 
         console.log(`otp : ${otp}, dbOtp :, ${dbOtp}, email : ${req.session.userEmail}`);
 
+        if (!dbOtp || !otp ) {
+            return res.status(400).json({ success: false, error: 'otp is not recieved, try resend otp' });
+        }
+
         if (dbOtp.otp !== otp ) {
-            return res.status(400).json({ success: false, error: 'OTP is not correct' });
+            return res.status(400).json({ success: false, error: 'OTP is Invalid' });
         }
 
         if (dbOtp.user !== req.session.userEmail ) {
@@ -291,7 +303,11 @@ exports.validateOtpPost = async (req, res) => {
         }
 
         // If OTP matches, return success response
-        return res.status(200).json({ success: true, message: 'OTP verification successful' });
+        if(otp === dbOtp.otp){
+            return res.status(200).json({ success: true, message: 'OTP verification successful' });
+        }
+
+        return res.json({ message: "something wrong or server side"})
     } catch (error) {
         console.error('Error retrieving OTP:', error);
         return res.status(500).json({ success: false, error: 'Internal server error' });

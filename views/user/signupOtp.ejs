@@ -15,7 +15,7 @@
             <h2 class="heading">OTP Validation</h2>
             <form action="/signup/otp" method="post" id="otp-form" >
                 <div class="form-child msg-box">
-                    <p></p>
+                    <p class="msg-para"></p>
                 </div>
                 <div class=" form-child">
                     <p>An otp is sent your email. confirm your account by typing it here.</p>
@@ -24,6 +24,7 @@
                     <!-- <label for="username">Enter your otp : </label> -->
                     <input type="text" placeholder="example : 738473" name="username" otp >
                 </div>
+                <div class="otp-timer-div" ><span class="otp-timer"></span></div>
                 <div class="form-child back-link">
                     <a href="/signup">Go back</a>
                 </div><div class="form-child back-link">

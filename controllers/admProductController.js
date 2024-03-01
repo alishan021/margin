@@ -96,3 +96,52 @@ exports.productDelete = async ( req, res ) => {
     console.log('successfully deleted');
     return res.json({ message: 'deleted'});
 }
+
+
+
+
+
+exports.productsAdd = async ( req, res ) => {
+    try{
+         console.log('inside admin/products/add');
+         const { name, price,quantity, size, color, description, details } = req.body;
+         const colorsArray = color.split(',').map(c => c.trim());
+         console.log( name, price )
+ 
+         const images = [];
+         console.log(req.files);
+         if(!name || !price || !quantity ){
+             res.status(400).json({ error: 'name price and quantity are required'});
+         }
+         if (!req.files || req.files.length === 0) {
+             console.log('At least one image is required');
+             res.status(400).json({ error: 'atleast one image is required '});
+         }        
+ 
+         for(const file of req.files){
+             images.push(file.filename)
+         }
+         console.log('images[] : ' + images );
+         images.length
+ 
+         const product = {
+             name,
+             price,
+             quantity,
+             size,
+             images,
+             color: colorsArray,
+             description,
+             details
+         }
+         const result = await productModel.create(product);
+         console.log(result)
+         if(result){
+             return res.status(201).json({ success: true, message: 'product created successfully'});
+         }
+    }
+    catch(error){
+         console.log(`product port error : ${error}`);
+    }
+ 
+ } 

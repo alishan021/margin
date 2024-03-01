@@ -60,27 +60,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
-           // Add an event listener to handle the "Edit" button click
-           document.querySelectorAll('.btn-edit').forEach(button => {
-            button.addEventListener('click', function() {
-                console.log('you clicked edit button');
-                // Extract product information from the corresponding row
-                const row = this.closest('tr');
-                const name = row.querySelector('.name').textContent;
-                const price = row.querySelector('.price').textContent;
-                const quantity = row.querySelector('.quantity').textContent;
-                // Extract other fields as needed
-    
-                // Populate the form fields with the extracted information
-                document.getElementById('name').value = name;
-                document.getElementById('price').value = price;
-                document.getElementById('quantity').value = quantity;
-                // Populate other form fields as needed
-    
-                // Show the form and hide other elements
-                document.getElementById('product-form').style.display = 'block';
-                // Hide other elements as needed
-            });
+        // Add an event listener to handle the "Edit" button click
+        document.querySelectorAll('.btn-edit').forEach(button => {
+        button.addEventListener('click', function() {
+            console.log('you clicked edit button');
+            
+            const productId = this.getAttribute('data-product-id');
+            console.log(productId);
+            if(productId){
+                window.location.href = `/admin/products/edit/${productId}`
+            }
+
+        });
         });
     
     
