@@ -227,6 +227,9 @@ exports.loginPost = async (req, res) => {
         if (!isUser) {
             return res.status(400).json({ error: 'User not found' });
         }
+        if(!isUser.status){
+            return res.status(400).json({ error: 'user is blocked by admin'});
+        }
 
         const match = await bcrypt.compare(password, isUser.password);
         console.log('match : ' + match );
@@ -360,8 +363,9 @@ exports.newPasswordPost = async ( req, res ) =>{
 
 exports.productGet = async ( req, res ) => {
     try{
-        const product = await productModel.find({});
-        res.render('product.ejs', product );
+        const productId = req.params.productId;
+        const product = await productModel.findById( productId );
+        res.render('product.ejs', { product } );
     }
     catch(error){
         console.log(`error inside productGet : ${error}`);
@@ -374,8 +378,8 @@ exports.productGet = async ( req, res ) => {
 
 exports.productListGet = async ( req, res ) => {
     try{
-        const products = await productModel.find({});
-        const totalDocs = await productModel.find({}).count();
+        const products = await productModel.find({ status: { $ne: false } });
+        const totalDocs = await productModel.find({ status: { $ne: false } }).count();
         res.render('product-list.ejs', { products, totalDocs });
    }
    catch(error){

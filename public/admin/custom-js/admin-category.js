@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
             event.preventDefault();
             const category = document.querySelector('#category').value;
             if(!category || category == '' ){
-                return displayError({ success: false, message: 'category name is required'});
+                return displayError({ success: false, error: 'category name is required'});
             }
 
             const response = await fetch('/admin/category', {
@@ -19,18 +19,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ category })
             })
+            console.log(response)
             if(response.ok){
-                console.log(response)
                 location.reload();
-                displaySucess({ message: 'create category'})
+                displaySucess({ message: 'create category sucessfully'});
+            }else{
+                const errorResponse = await response.json();
+                throw new Error(errorResponse.error || 'Failed to create category');
             }
-            const body = await response.json();
-            console.log(body);
-            if(body.error){
-                return displayError({ success:false, message: body.error});
-            }
-       }catch(err){
-            console.log('error : ' + err );
+       }catch(error){
+            console.error('Error:', error);
+            displayError({ success: false, error: error.message });
        }
         
     })
@@ -44,8 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const conform = confirm('do you want to delete the category');
                 console.log('confi : ' + conform );
-                if(!confi){
-                    return conform;
+                if(!conform){
+                    return ;
                 }
                 const categoryId = button.getAttribute('data-category-id');
                 const response = await fetch(`/admin/category/${categoryId}`,{
@@ -59,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const body = await response.json();
             } catch (err) {
                 console.log('error : ' + err);
-                displayError({ message: err })
+                displayError({ error: err })
             }
         });
     });
@@ -84,13 +83,60 @@ document.addEventListener('DOMContentLoaded', () => {
                     location.reload();
                     displaySucess({ message: (action)? 'list user': 'unlist user'})
                 } else {
-                    return displayError({ message: 'some error 89'})
+                    return displayError({ error: 'some error 89'})
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                return displayError({ message: error });
+                return displayError({ error: error });
             });
+        });
+    });
+
+
+
+    const editBtn = document.querySelectorAll('.btn-edit');
+    editBtn.forEach(button => {
+        button.addEventListener('click', function() {
+            const categoryId = this.dataset.categoryId;
+
+            console.log(categoryId);
+            const updateButton = document.querySelector('.btn-update');
+
+            fetch(`/admin/category/${categoryId}`)
+            .then(response => response.json())
+            .then(data => {
+                if(data.error){
+                    return displayError({ error: data.error });
+                }
+                console.log(data);
+                const categoryInput = document.querySelector('#category');
+                categoryInput.setAttribute('value', data.categoryName );
+                updateButton.style.display = 'flex'
+                updateButton.innerHTML = 'Update';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                return displayError({ error: error });
+            });
+
+            updateButton.addEventListener('click', () => {
+                const updatedCategory = document.querySelector('#category').value;
+                fetch(`/admin/category/update/${categoryId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ categoryName: updatedCategory })
+                })
+                .then((response => response.json()))
+                .then(data => {
+                    if(data.error){
+                        displayError({ error: data.error })
+                    }
+                    return displaySucess({ message: 'product updated successfully' });
+                })
+            })
         });
     });
 
@@ -102,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
 const displayError = (result) => {
     const msgPara = document.querySelector('.msg-para');
     msgPara.parentElement.className = 'display-error';
-    msgPara.innerHTML = result.message;
+    msgPara.innerHTML = result.error;
 }
 
 

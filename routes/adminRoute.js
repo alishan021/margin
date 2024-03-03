@@ -63,6 +63,8 @@ router.get('/category', adminAuth.adminSessionNo, admCategoryController.category
 router.post('/category',  admCategoryController.createCategoryPost );
 router.patch('/category',  admCategoryController.categoryListEditPatch );
 router.delete('/category/:id',  admCategoryController.categoryDelete );
+router.get('/category/:categoryId', admCategoryController.categoryUpdateGet );
+router.put('/category/update/:categoryId', admCategoryController.categoryUpdatePut );
 
 
 
@@ -78,68 +80,9 @@ router.get('/logout', adminController.logout );
 
 router.post('/products/add', upload.array('images', 6 ), admProductController.productsAdd );
 
-router.get('/products/edit/:productId', async ( req, res ) => {
-    try{
-        console.log('inside /admin/products/edit/65e19ce446a158b1c9dfacbe');
-        const productId = req.params.productId;
-        console.log('id: ' + productId );
-        const product = await productModel.findOne({ _id: productId });
-        res.render('edit-product', { product });
-    }
-    catch(err){
-        console.log(err);
-    }
-})
+router.get('/products/edit/:productId', admProductController.productEditGet );
 
-router.post('/products/edit/:productId',  upload.array('images', 6 ), async ( req, res ) => {
-    const productId = req.params.productId;
-    console.log(productId);
-    const { name, price } = req.body;
-    console.log( name, price );
-    try{
-        const dbProduct = await productModel.findById(productId);
-        console.log(dbProduct);
-        console.log('inside admin/products/edit');
-        const { name, price,quantity, size, color, description, details } = req.body;
-        const colorsArray = color.split(',').map(c => c.trim());
-        console.log( name, price )
-
-        const images = [];
-        console.log(req.files);
-        if(!name || !price || !quantity ){
-            res.status(400).json({ error: 'name price and quantity are required'});
-        }    
-
-        if(req.files || req.files.length > 0)
-            for(const file of req.files){
-                images.push(file.filename)
-        }else{
-            images = dbProduct.images;
-        }
-        console.log('images[] : ' + images );
-        images.length
-
-        const product = {
-            name,
-            price,
-            quantity,
-            size,
-            images,
-            color: colorsArray,
-            description,
-            details
-        }
-        const result = await productModel.findByIdAndUpdate( productId, product );
-        console.log(result)
-        if(result){
-            return res.status(201).json({ success: true, message: 'product updated successfully'});
-        }
-   }
-   catch(error){
-        console.log(`product port error : ${error}`);
-   }
-
-})
+router.post('/products/edit/:productId',  upload.array('images', 6 ), admProductController.productEditPost );
 
 
 

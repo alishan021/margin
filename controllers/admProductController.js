@@ -122,7 +122,7 @@ exports.productsAdd = async ( req, res ) => {
              images.push(file.filename)
          }
          console.log('images[] : ' + images );
-         images.length
+        //  images.length
  
          const product = {
              name,
@@ -145,3 +145,75 @@ exports.productsAdd = async ( req, res ) => {
     }
  
  } 
+
+
+
+
+ exports.productEditGet = async ( req, res ) => {
+    try{
+        console.log('inside /admin/products/edit/65e19ce446a158b1c9dfacbe');
+        const productId = req.params.productId;
+        console.log('id: ' + productId );
+        const product = await productModel.findOne({ _id: productId });
+        res.render('edit-product', { product });
+    }
+    catch(err){
+        console.log(err);
+    }
+}
+
+
+
+
+
+exports.productEditPost = async ( req, res ) => {
+    try{
+        const productId = req.params.productId;
+        console.log(productId);
+        const dbProduct = await productModel.findById(productId);
+        console.log(dbProduct);
+        console.log('inside admin/products/edit');
+        const { name, price,quantity, size, color, description, details } = req.body;
+        const colorsArray = color.split(',').map(c => c.trim());
+        console.log( name, price )
+
+        let imagesArray = [];
+        console.log(req.files);
+        console.log(dbProduct.images)
+        if(!name || !price || !quantity ){
+            res.status(400).json({ error: 'name price and quantity are required'});
+        }    
+
+        if(req.files || req.files.length > 0)
+            for(const file of req.files){
+                console.log('inside req.files imageArray ');
+                imagesArray.push(file.filename)
+        }
+        if(req.files.length <= 0 ){
+            console.log('inside no imageArray ');
+            imagesArray = dbProduct.images;
+        }
+        console.log('images[] : ' + imagesArray );
+
+        const product = {
+            name,
+            price,
+            quantity,
+            size,
+            images: imagesArray,
+            color: colorsArray,
+            description,
+            details
+        }
+        const result = await productModel.findByIdAndUpdate( productId, product,  );
+        console.log('result : ')
+        console.log(result)
+        if(result){
+            return res.status(201).json({ success: true, message: 'product updated successfully'});
+        }
+   }
+   catch(error){
+        console.log(`product port error : ${error}`);
+   }
+
+}

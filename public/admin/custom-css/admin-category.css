@@ -96,6 +96,18 @@
 
 
 
+.content-table tbody td .btn-edit
+{
+    padding: 5px 10px;
+    background-color: rgba(128, 190, 240, 0.829);
+    border: none;
+    border-radius: 3px;
+    margin: 5px 10px;
+}
+
+
+
+
 /* .btn-list
 {
     color: green;
@@ -174,6 +186,18 @@
 {
     padding: 5px 10px;
     background-color: rgb(43, 125, 202);
+    border-radius: 5px;
+    border: none;
+    color: white;
+}
+
+
+
+.btn-update
+{
+    display: none;
+    padding: 5px 10px;
+    background-color: rgb(5, 5, 5);
     border-radius: 5px;
     border: none;
     color: white;

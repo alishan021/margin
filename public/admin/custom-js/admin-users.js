@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (response.ok) {
                     console.log(response);
                     console.log(`user-status: ${action} > user successful`);
+                    window.location.reload();
                 } else {
                     console.log(response);
                     console.error(`Error : ${action} > user-status.`);

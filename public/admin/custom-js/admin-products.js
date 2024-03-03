@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     // location.reload();
                     console.log('list unlist success');
                     setTimeout(() => location.reload() , 1000 );
-                    displaySucess({ message: (action)? 'list user': 'unlist user'})
+                    displaySucess({ message: (action)? 'list product': 'unlist product'})
                 } else {
                     return displayError({ message: 'some error 89'})
                 }

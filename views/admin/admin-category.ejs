@@ -34,6 +34,7 @@
                             <div class="input-item form-child">
                                 <label for="category">Category : </label>
                                 <input type="text" name="category" placeholder="chizel" category id="category" >
+                                <button class="btn-update"></button>
                                 <button class="btn-add-category">Add Category</button>
                             </div>
                         </form>
@@ -69,6 +70,7 @@
                                     <button class="btn-list"    data-category-id="<%= category._id %>" >List</button>
                                     <button class="btn-unlist"  data-category-id="<%= category._id %>">Unlist</button>
                                     <button class="btn-delete"  data-category-id="<%= category._id %>">Delete</button>
+                                    <button class="btn-edit"  data-category-id="<%= category._id %>">Edit</button>
                                 </td>                               
                             </tr>
                             <% }) %>

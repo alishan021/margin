@@ -20,7 +20,7 @@ exports.createCategoryPost = async ( req, res ) => {
      console.log('category  : ' + category);
      if(!category || category == '' ){
          console.log(`category can't be null`);
-         return res.json({ message: 'category name is required '});
+         return res.status(400).json({ error: 'category name is required '});
      }
      const checkCategory = await categoryModel.findOne({ categoryName: category })
      console.log(checkCategory)
@@ -64,9 +64,48 @@ exports.categoryListEditPatch =  async ( req, res ) => {
 
 
 exports.categoryDelete = async ( req, res ) => {
-    console.log('Inside delete category');
-    const categoryId = req.params.id;
-    const result = await productModel.findOneAndDelete({ _id: categoryId });
-    console.log('successfully deleted');
-    return res.json({ message: 'deleted'});
+    try{
+        console.log('Inside delete category');
+        const categoryId = req.params.id;
+        const result = await categoryModel.findOneAndDelete({ _id: categoryId });
+        console.log('successfully deleted');
+        return res.status(200).json({ message: 'deleted'});
+    }
+    catch(err){
+        console.log('error : ' + err );
+    }
+}
+
+
+
+
+exports.categoryUpdateGet = async ( req, res ) => {
+    try{
+        console.log('enterd category product');
+        const categoryId = req.params.categoryId;
+        const category = await categoryModel.findById(categoryId);
+        console.log(category);
+        if(!category){
+            return res.status(400).json({ error: 'no category found'});
+        }
+        return res.json({ categoryName: category.categoryName });
+    }
+    catch(err){
+        console.log(`error : ${err}`);
+    }
+}
+
+
+
+
+exports.categoryUpdatePut = async ( req, res ) => {
+    try{
+        const { categoryName } = req.body;
+        const categoryId = req.params.categoryId;
+        const result = await categoryModel.findByIdAndUpdate(categoryId, categoryName );
+        console.log(result);
+    }
+    catch(error){
+        console.log('error : ' + error );
+    }
 }

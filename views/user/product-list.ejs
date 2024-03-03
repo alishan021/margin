@@ -193,12 +193,12 @@
                                     <% products.forEach(product => { %>
                                         
 
-                                    <div class="col-6 col-md-4 col-lg-4">
-                                        <div class="product product-7 text-center">
-                                            <figure class="product-media">
+                                    <div class="col-6 col-md-4 col-lg-4 ">
+                                        <div class="product product-7 text-center ">
+                                            <figure class="product-media bg-white">
                                                 <span class="product-label label-new">New</span>
-                                                <a href="/product">
-                                                    <img src="/products/<%= product.images[0] %>" alt="Product image" class="product-image">
+                                                <a href="/product/<%= product._id %>">
+                                                    <img src="/products/<%= product.images[0] %>" alt="Product image" class="product-image px-5 py-5">
                                                 </a>
 
                                                 <div class="product-action-vertical">
@@ -218,7 +218,7 @@
                                                 </div><!-- End .product-cat -->
                                                 <h3 class="product-title"><a href="/product"><%= product.name %></a></h3><!-- End .product-title -->
                                                 <div class="product-price">
-                                                    $60.00
+                                                    $<%= product.price %>.00
                                                 </div><!-- End .product-price -->
                                                 <!-- <div class="ratings-container"> -->
                                                     <!-- <div class="ratings"> -->
@@ -549,18 +549,23 @@
 
 
     <!-- Plugins JS File -->
-    <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/jquery.hoverIntent.min.js"></script>
-    <script src="assets/js/jquery.waypoints.min.js"></script>
-    <script src="assets/js/superfish.min.js"></script>
-    <script src="assets/js/owl.carousel.min.js"></script>
-    <script src="assets/js/wNumb.js"></script>
-    <script src="assets/js/bootstrap-input-spinner.js"></script>
-    <script src="assets/js/jquery.magnific-popup.min.js"></script>
-    <script src="assets/js/nouislider.min.js"></script>
+    <script src="/user/assets/js/jquery.min.js"></script>
+    <script src="/user/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="/user/assets/js/jquery.hoverIntent.min.js"></script>
+    <script src="/user/assets/js/jquery.waypoints.min.js"></script>
+    <script src="/user/assets/js/superfish.min.js"></script>
+    <script src="/user/assets/js/owl.carousel.min.js"></script>
+    <script src="/user/assets/js/wNumb.js"></script>
+    <script src="/user/assets/js/bootstrap-input-spinner.js"></script>
+    <script src="/user/assets/js/jquery.magnific-popup.min.js"></script>
+    <script src="/user/assets/js/nouislider.min.js"></script>
     <!-- Main JS File -->
-    <script src="assets/js/main.js"></script>
+    <script src="/user/assets/js/main.js"></script>
+
+
+	<!-- custom js file -->
+	<script src="/user/custom-js/product-list.js" defer ></script>
+
 </body>
 
 

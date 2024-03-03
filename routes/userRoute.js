@@ -40,7 +40,7 @@ router.post('/login/new-password', userController.newPasswordPost );
 
 router.get('/product-list', userController.productListGet );
 
-router.get('/product', userController.productGet );
+router.get('/product/:productId', userController.productGet );
 
 router.get('/logout', userController.userLogout );
 
