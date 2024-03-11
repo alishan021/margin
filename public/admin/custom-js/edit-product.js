@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
             oldImages.style.display = 'none';
         }
 
-        // Display file names and thumbnails
+        // Display thumbnails
         for (let i = 0; i < files.length; i++) {
 
             const file = files[i];

@@ -1,6 +1,6 @@
 
 document.addEventListener('DOMContentLoaded', () => {
-
+    
     const form = document.querySelector('form');
 
     form.addEventListener('submit', async (event) => {
@@ -98,10 +98,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const editBtn = document.querySelectorAll('.btn-edit');
     editBtn.forEach(button => {
         button.addEventListener('click', function() {
+            const updateButton = document.querySelector('.btn-update');
             const categoryId = this.dataset.categoryId;
 
             console.log(categoryId);
-            const updateButton = document.querySelector('.btn-update');
 
             fetch(`/admin/category/${categoryId}`)
             .then(response => response.json())
@@ -122,19 +122,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
             updateButton.addEventListener('click', () => {
                 const updatedCategory = document.querySelector('#category').value;
+                console.log(updatedCategory);
                 fetch(`/admin/category/update/${categoryId}`, {
-                    method: 'POST',
+                    method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ categoryName: updatedCategory })
                 })
-                .then((response => response.json()))
+                .then(response => response.json())
                 .then(data => {
+                    console.log(data)
                     if(data.error){
-                        displayError({ error: data.error })
+                        return displayError(data)
                     }
-                    return displaySucess({ message: 'product updated successfully' });
+                    displaySucess({ message: 'product updated successfully' });
+                    setTimeout(() => window.location.reload(), 1000 );
                 })
             })
         });

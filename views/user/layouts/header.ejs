@@ -8,7 +8,7 @@
                 </button>
 
                 <a href="/" class="logo">
-                    <img src="user/assets/images/demos/demo-22/logo.png" alt="Molla Logo" width="130" height="30">
+                    <img src="/user/assets/images/demos/demo-22/logo.png" alt="Molla Logo" width="130" height="30">
                 </a>
             </div><!-- End .header-left -->
 
@@ -27,94 +27,21 @@
             </div>
 
             <div class="header-right">
-                <div class="dropdown compare-dropdown">
+                <!-- <div class="dropdown compare-dropdown">
                     <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static" title="Compare Products" aria-label="Compare Products">
                         <i class="icon-random"></i>
                     </a>
-
-                    <div class="dropdown-menu dropdown-menu-right">
-                        <ul class="compare-products">
-                            <li class="compare-product">
-                                <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                                <h4 class="compare-product-title"><a href="product.html">Blue Night Dress</a></h4>
-                            </li>
-                            <li class="compare-product">
-                                <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                                <h4 class="compare-product-title"><a href="product.html">White Long Skirt</a></h4>
-                            </li>
-                        </ul>
-
-                        <div class="compare-actions">
-                            <a href="#" class="action-link">Clear All</a>
-                            <a href="#" class="btn btn-outline-primary-2"><span>Compare</span><i class="icon-long-arrow-right"></i></a>
-                        </div>
-                    </div><!-- End .dropdown-menu -->
-                </div>
-                <a href="wishlist.html" class="wishlist-link">
+                </div> -->
+                <a href="/wishlist" class="wishlist-link">
                     <i class="icon-heart-o"></i>
                     <span class="wishlist-count">3</span>
                 </a>
 
                 <div class="dropdown cart-dropdown">
-                    <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+                    <a href="/cart" class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false" data-display="static">
                         <i class="icon-shopping-cart"></i>
                         <span class="cart-count">2</span>
                     </a>
-
-                    <div class="dropdown-menu dropdown-menu-right">
-                        <div class="dropdown-cart-products">
-                            <div class="product">
-                                <div class="product-cart-details">
-                                    <h4 class="product-title">
-                                        <a href="product.html">Beige knitted elastic runner shoes</a>
-                                    </h4>
-
-                                    <span class="cart-product-info">
-                                        <span class="cart-product-qty">1</span>
-                                        x $84.00
-                                    </span>
-                                </div><!-- End .product-cart-details -->
-
-                                <figure class="product-image-container">
-                                    <a href="product.html" class="product-image">
-                                        <img src="user/assets/images/products/cart/product-1.jpg" alt="product">
-                                    </a>
-                                </figure>
-                                <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                            </div><!-- End .product -->
-
-                            <div class="product">
-                                <div class="product-cart-details">
-                                    <h4 class="product-title">
-                                        <a href="product.html">Blue utility pinafore denim dress</a>
-                                    </h4>
-
-                                    <span class="cart-product-info">
-                                        <span class="cart-product-qty">1</span>
-                                        x $76.00
-                                    </span>
-                                </div><!-- End .product-cart-details -->
-
-                                <figure class="product-image-container">
-                                    <a href="product.html" class="product-image">
-                                        <img src="user/assets/images/products/cart/product-2.jpg" alt="product">
-                                    </a>
-                                </figure>
-                                <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                            </div><!-- End .product -->
-                        </div><!-- End .cart-product -->
-
-                        <div class="dropdown-cart-total">
-                            <span>Total</span>
-
-                            <span class="cart-total-price">$160.00</span>
-                        </div><!-- End .dropdown-cart-total -->
-
-                        <div class="dropdown-cart-action">
-                            <a href="/cart.ejs" class="btn btn-primary">View Cart</a>
-                            <a href="/checkout" class="btn btn-outline-primary-2"><span>Checkout</span><i class="icon-long-arrow-right"></i></a>
-                        </div><!-- End .dropdown-cart-total -->
-                    </div><!-- End .dropdown-menu -->
                 </div><!-- End .cart-dropdown -->
             </div><!-- End .header-right -->
         </div><!-- End .container -->
@@ -173,13 +100,22 @@
                    <!-- <span><a href="/signup">Register</a></span> -->
                     <!-- style.font-weigth = 500 -->
                 <!-- </div> -->
-                <div class="header-right ">
-                    <span><a href="/login">Login</a></span> <!-- style.font-weigth = 500 -->
-                 </div>
-                 <div class="header-right">
-                    <span><a href="/logout">Logout</a></span>
-                     <!-- style.font-weigth = 500 -->
-                 </div>
+                <% if(!userIn){ %>
+
+                    <div class="header-right ">
+                        <span><a href="/login">Login</a></span> <!-- style.font-weigth = 500 -->
+                    </div>
+                    <div class="header-right">
+                        <span><a href="/signup">Signup</a></span>
+                        <!-- style.font-weigth = 500 -->
+                    </div>
+                <% }else { %>
+                    <div class="header-right">
+                        <span><a href="/logout">Logout</a></span>
+                    </div>
+                    <div class="header-right">
+                        <span><a href="/dashboard">Account
+                <% } %>
                  <!-- End .header-right -->
                  
             </div><!-- End .container -->

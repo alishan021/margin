@@ -57,12 +57,16 @@
                     <textarea name="details" id="details" rows="10"></textarea> 
                     <!-- <input type="" id="details" name="details" > -->
                 </div>
-                <!-- <div class="input-item form-child" >
-                    <label for="category"> Category : </label>    
-                    <input type="text" id="category" name="category" >
-                </div> -->
+                <div class="input-item form-child" >
+                   <select name="category" id="category">
+                        <% categorys.forEach( category => { %>
+                            <option value="<%= category._id %>" label="<%= category.categoryName %>"  ></option>
+                        <% }); %>
+                   </select>
+                </div>
                 <div class="input-item form-child" >
                     <label for="image"> Image : </label>    
+                    <div class="image-preview-container-new" id="selected-files-preview"></div> 
                     <input type="file" id="image" name="images" accept="image/*" multiple >
                 </div>
                 <div class="form-child">

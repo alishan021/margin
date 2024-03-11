@@ -22,10 +22,10 @@ exports.createCategoryPost = async ( req, res ) => {
          console.log(`category can't be null`);
          return res.status(400).json({ error: 'category name is required '});
      }
-     const checkCategory = await categoryModel.findOne({ categoryName: category })
+     const checkCategory = await categoryModel.findOne({ categoryName: category.toLowerCase() })
      console.log(checkCategory)
      if(checkCategory){
-         return res.status(400).json({ error: 'category is already existed'});
+         return res.status(400).json({ error: 'category is already existed plus'});
      }
      const result = await categoryModel.create({ categoryName: category });
      console.log('result : ' + result );
@@ -100,10 +100,17 @@ exports.categoryUpdateGet = async ( req, res ) => {
 
 exports.categoryUpdatePut = async ( req, res ) => {
     try{
+        console.log('inside the categoryupdatePut');
         const { categoryName } = req.body;
+        console.log(categoryName);
         const categoryId = req.params.categoryId;
-        const result = await categoryModel.findByIdAndUpdate(categoryId, categoryName );
+        const check = await categoryModel.findOne({ categoryName: categoryName });
+        if(check){
+            res.status(400).json({ error: 'category is already exist'});
+        }
+        const result = await categoryModel.findByIdAndUpdate(categoryId, { categoryName: categoryName.toLowerCase() } );
         console.log(result);
+        return res.status(200).json({ message: 'user updated successfully'});
     }
     catch(error){
         console.log('error : ' + error );

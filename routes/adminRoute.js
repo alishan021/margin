@@ -20,23 +20,13 @@ const multer = require('multer')
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
-      console.log('inside multer diskStorage ');
       cb(null, './public/products');
     },
     filename: function(req, file, cb) {
       const fileName = Date.now() + file.originalname;
       cb(null, fileName );
-      console.log('filename : ' + fileName );
     },
-    onFileUploadStart: function (file) {
-        console.log(file.fieldname + ' is starting ...')
-    },
-    onFileUploadData: function (file, data) {
-        console.log(data.length + ' of ' + file.fieldname + ' arrived')
-    },
-    onFileUploadComplete: function (file) {
-        console.log(file.fieldname + ' uploaded to  ' + file.path)
-    }
+
 });
 
 const upload = multer({ storage: storage });
@@ -64,7 +54,7 @@ router.post('/category',  admCategoryController.createCategoryPost );
 router.patch('/category',  admCategoryController.categoryListEditPatch );
 router.delete('/category/:id',  admCategoryController.categoryDelete );
 router.get('/category/:categoryId', admCategoryController.categoryUpdateGet );
-router.put('/category/update/:categoryId', admCategoryController.categoryUpdatePut );
+router.patch('/category/update/:categoryId', admCategoryController.categoryUpdatePut );
 
 
 

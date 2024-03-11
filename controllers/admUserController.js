@@ -20,6 +20,7 @@ exports.userStatusPost = async ( req, res ) => {
         const { userId, status } = req.body;
         if(status === false ){
             const result = await userModel.findOneAndUpdate({ _id: userId }, { status: false });
+            delete req.session.userIn;
             return res.json({ message: result });
         }else {
             const result = await userModel.findOneAndUpdate({ _id: userId }, { status: true });

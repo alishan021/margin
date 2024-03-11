@@ -33,6 +33,46 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
+
+    const fileInput = document.getElementById('image');
+    const selectedFilesPreview = document.getElementById('selected-files-preview');
+
+    fileInput.addEventListener('change', function() {
+        selectedFilesPreview.innerHTML = ''; // Clear previous previews
+
+        const files = fileInput.files;
+        if (files.length === 0) {
+            return; // No files selected
+        }
+
+        // Display thumbnails
+        for (let i = 0; i < files.length; i++) {
+
+            const file = files[i];
+            console.log(file);
+            const filePreview = document.createElement('div');
+            filePreview.classList.add('file-preview');
+
+            // Display thumbnail
+            if (file.type.startsWith('image/')) {
+                const fileThumbnail = document.createElement('img');
+                fileThumbnail.src = URL.createObjectURL(file);
+                fileThumbnail.alt = 'File Thumbnail';
+                fileThumbnail.classList.add('file-thumbnail');
+                filePreview.appendChild(fileThumbnail);
+                fileThumbnail.style.maxWidth = '100px';
+                fileThumbnail.style.maxHeight = '100px'; 
+            }
+
+            selectedFilesPreview.appendChild(filePreview);
+        }
+    });
+
+
+
+
+
+
 const msgPara = document.querySelector('.msg-para'); 
 
 const displayError = (result) => {

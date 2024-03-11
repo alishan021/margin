@@ -36,7 +36,7 @@
                     </div>
                     <div class="input-item two-col " >
                         <label for="quantity"> Quantity : * </label>    
-                        <input type="number" id="quantity" name="quantity" <%= product.quantity %> >
+                        <input type="number" id="quantity" name="quantity" value="<%= product.quantity %>" >
                     </div>
                 </div>
                 <div class="input-item form-child" >
@@ -57,6 +57,20 @@
                     <textarea name="details" id="details" rows="10"><%= product.details %></textarea> 
                     <!-- <input type="" id="details" name="details" > -->
                 </div>
+                <div class="input-item form-child" >
+                    <label for="category"> Category : </label>    
+                    <select name="category" id="category">
+                         <% categorys.forEach( category => { %>
+                            <% if( category._id.toString() == product.category._id.toString() ){ %> 
+                                <option selected value="<%= product.category._id %>" label="<%= product.category.categoryName %>"  ></option>
+                            <% }else { %>
+                                <option value="<%= category._id %>" label="<%= category.categoryName %>"  ></option>
+                            <% } %>
+                         <% }); %>
+                    </select>
+                 </div>
+                 
+                
                 <!-- <div class="input-item form-child" >
                     <label for="category"> Category : </label>    
                     <input type="text" id="category" name="category" >

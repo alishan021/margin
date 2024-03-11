@@ -46,13 +46,19 @@ var userSchema = new Schema({
             type: String, 
     }}],
     cart: [{
-        product_id: {
-            type: Date
+        product: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'products'
+        },
+        count: {
+            type: Number,
+            default: 1
         },
         added_at: {
-            type: String
-        }}],
-        wishlist: [{
+            type: String,
+            default: Date.now
+    }}],    
+    wishlist: [{
             product_id: {
                 type: String
         },

@@ -10,12 +10,13 @@
 
 .div-1
 {
-    background-color: rgb(217, 230, 235);
+    /* background-color: rgb(217, 230, 235); */
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100vw;
-    height: 100vh;
+    min-height: 100vh;
+    height: 100%;
 }
 
 .div-2
@@ -27,11 +28,13 @@
     /* background-color: darkblue; */
     /* color: white; */
     padding: 20px;
-    border: 2px solid black;
+    /* border: 2px solid black; */
+    border: 2px solid orange;
     border-radius: 10px;
-    width: 600px;
+    /* width: 600px; */
+    width: 80%;
     min-width: 300px;
-    margin: 0 20px;
+    margin: 40px 20px;
 }
 
 .header
@@ -127,4 +130,9 @@ input
 
 .file-thumbnail{
     padding: 10px;
+}
+
+
+#category{
+    padding: 5px;
 }

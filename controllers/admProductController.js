@@ -40,15 +40,23 @@ exports.productListEditPatch =  async ( req, res ) => {
 
 
 exports.getProducts = async ( req, res ) => {
-    const products = await productModel.find({}).sort({ create_at: -1, modified_at: -1 });
-    res.render('admin-products', { products });
+    const products = await productModel.find({}).sort({ create_at: -1, modified_at: -1 }).populate('category');
+    const categories = await categoryModel.find({});
+    // console.log(products)
+    res.render('admin-products', { products, categories });
 }
 
 
 
 
-exports.addProductGet =  ( req, res ) => {
-    res.render('add-product.ejs');
+exports.addProductGet = async ( req, res ) => {
+    try{
+        const categorys = await categoryModel.find({});
+        // console.log(categorys);
+        res.render('add-product.ejs', { categorys });
+    }catch(err){
+        console.log(err);
+    }
 }
 
 
@@ -58,8 +66,8 @@ exports.addProductGet =  ( req, res ) => {
 exports.addProductPost =  async ( req, res ) => {
     try{
         const images = [];
-        const { name, price, quantity , size, color, description, details } = req.body;
-        console.log(name, price, quantity , size, color, description, details );
+        const { name, price, quantity , size, color, description, category, details } = req.body;
+        console.log(name, price, quantity , size, color, description, category, details );
         console.log('req.files : ' + req.files );
         const files = req.files.filename;
         console.log('after requiest files filename');
@@ -104,7 +112,7 @@ exports.productDelete = async ( req, res ) => {
 exports.productsAdd = async ( req, res ) => {
     try{
          console.log('inside admin/products/add');
-         const { name, price,quantity, size, color, description, details } = req.body;
+         const { name, price,quantity, size, color, description, category, details } = req.body;
          const colorsArray = color.split(',').map(c => c.trim());
          console.log( name, price )
  
@@ -132,7 +140,8 @@ exports.productsAdd = async ( req, res ) => {
              images,
              color: colorsArray,
              description,
-             details
+             details,
+             category
          }
          const result = await productModel.create(product);
          console.log(result)
@@ -153,9 +162,11 @@ exports.productsAdd = async ( req, res ) => {
     try{
         console.log('inside /admin/products/edit/65e19ce446a158b1c9dfacbe');
         const productId = req.params.productId;
-        console.log('id: ' + productId );
-        const product = await productModel.findOne({ _id: productId });
-        res.render('edit-product', { product });
+        const categorys = await categoryModel.find({});
+        // console.log(categorys);
+        // console.log('id: ' + productId );
+        const product = await productModel.findOne({ _id: productId }).populate('category');
+        res.render('edit-product', { product, categorys });
     }
     catch(err){
         console.log(err);
@@ -173,7 +184,7 @@ exports.productEditPost = async ( req, res ) => {
         const dbProduct = await productModel.findById(productId);
         console.log(dbProduct);
         console.log('inside admin/products/edit');
-        const { name, price,quantity, size, color, description, details } = req.body;
+        const { name, price,quantity, size, color, description, category, details } = req.body;
         const colorsArray = color.split(',').map(c => c.trim());
         console.log( name, price )
 
@@ -203,6 +214,7 @@ exports.productEditPost = async ( req, res ) => {
             images: imagesArray,
             color: colorsArray,
             description,
+            category,
             details
         }
         const result = await productModel.findByIdAndUpdate( productId, product,  );

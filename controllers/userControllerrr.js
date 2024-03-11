@@ -5,6 +5,7 @@ const otpModel = require('../models/db-otp');
 const userModel = require('../models/user')
 const productModel = require('../models/products')
 const bcrypt = require('bcrypt');
+const categoryModel = require('../models/category');
 // const productModel = require('../models/products');
 
 
@@ -12,13 +13,13 @@ const bcrypt = require('bcrypt');
 
 exports.userHomeGet = ( req, res) => {
     console.log('userin : ' + req.session.userIn);
-    res.render('index.ejs')
+    res.render('index.ejs', { userIn: req.session.userIn });
 }
 
 
 
 exports.userSignupGet = ( req, res ) => {
-    res.render('signup.ejs');
+    res.render('signup.ejs', { userIn: req.session.userIn });
 }
 
 
@@ -222,19 +223,20 @@ exports.loginPost = async (req, res) => {
     }
 
     try {
-        const isUser = await userModel.findOne({ email });
+        const userDetails = await userModel.findOne({ email });
 
-        if (!isUser) {
+        if (!userDetails) {
             return res.status(400).json({ error: 'User not found' });
         }
-        if(!isUser.status){
+        if(!userDetails.status){
             return res.status(400).json({ error: 'user is blocked by admin'});
         }
 
-        const match = await bcrypt.compare(password, isUser.password);
+        const match = await bcrypt.compare(password, userDetails.password);
         console.log('match : ' + match );
         if (match) {
             req.session.userIn = true;
+            req.session.user = userDetails;
             console.log('userIn : ' + req.session.userIn );
             return res.status(200).json({ success: true, message: 'Authentication successful' });
         } else {
@@ -251,6 +253,7 @@ exports.loginPost = async (req, res) => {
 
 exports.userLogout = ( req, res ) => {
     delete req.session.userIn;
+    delete req.session.user;
     res.redirect(`/`);
 }
 
@@ -365,7 +368,8 @@ exports.productGet = async ( req, res ) => {
     try{
         const productId = req.params.productId;
         const product = await productModel.findById( productId );
-        res.render('product.ejs', { product } );
+        const category = await categoryModel.findOne({ _id: product.category });
+        res.render('product.ejs', { product, category, userIn: req.session.userIn } );
     }
     catch(error){
         console.log(`error inside productGet : ${error}`);
@@ -380,7 +384,9 @@ exports.productListGet = async ( req, res ) => {
     try{
         const products = await productModel.find({ status: { $ne: false } });
         const totalDocs = await productModel.find({ status: { $ne: false } }).count();
-        res.render('product-list.ejs', { products, totalDocs });
+        // const categorys = await categoryModel.find({});
+        console.log(products);
+        res.render('product-list.ejs', { products, totalDocs, userIn: req.session.userIn });
    }
    catch(error){
     console.log('error in productListGet: ' + error );
@@ -392,5 +398,206 @@ exports.productListGet = async ( req, res ) => {
 
 
 exports.errorPageGet = ( req, res ) => {
-    res.render('404.ejs');
+    res.render('404.ejs', { userIn: req.session.userIn });
+}
+
+
+
+
+exports.dashboardGet = async ( req, res ) => {
+    const user = await userModel.findById(req.session.user._id);
+    res.render('dashboard.ejs', { userIn: req.session.userIn, user });
+}
+
+
+
+
+exports.cartGet = async ( req, res ) => {
+    const cartProducts = await userModel.findOne({ email: req.session.user.email }, { cart: 1 }).populate('cart.product');
+    // const cartProducts = await userModel.findOne({ email: req.session.user.email }).populate('cart.product');
+
+    if (!cartProducts) {
+        return res.status(404).send('User not found');
+    }
+
+    // console.log(cartProducts)
+    console.log(cartProducts)
+    res.render('cart.ejs', { userIn: req.session.userIn, user: req.session.user, cartProducts });
+}
+
+
+
+
+exports.wishlistGet =  ( req, res ) => {
+    res.render('wishlist.ejs', { userIn: req.session.userIn, user: req.session.user });
+}
+
+
+
+
+exports.checkoutGet = ( req, res ) => {
+    res.render('checkout.ejs', { userIn: req.session.userIn, user: req.session.user });
+}
+
+
+
+exports.DashboardUserDetailsPatch = async ( req, res ) => {
+    const { username, email, oldpassword, password, passwordre } = req.body;
+    const userSessionEmail = req.session.user.email; 
+    console.log(username, email )
+    if(!username || !email){
+        return res.status(400).json({ error: 'username and email is required'});
+    }
+    if(email !== userSessionEmail){
+        console.log(userSessionEmail);
+        return res.status(400).json({ error: `please signin through ${userSessionEmail}`})
+    }
+    if(password !== passwordre ){
+        return res.status(400).json({ error: 'password is not matching'});
+    }
+    if( password < 6 ){
+        return res.status(400).json({ error: 'password need atlease 6 charcters'});
+    }
+    try{
+        if(!oldpassword || oldpassword == ''){
+            const result = await userModel.updateOne({ email: userSessionEmail}, { $set: { username: username }});
+            console.log(result);
+            return res.status(200).json({ message: 'username updated successfully'});
+        }else {
+            const hashedPassword = await bcrypt.hash( password , parseInt(process.env.SALTROUNDS ));
+            const result = await userModel.findOneAndUpdate({ email: userSessionEmail }, { $set: { username, password: hashedPassword }}, { new: true } );
+            console.log(result);
+            req.session.user.username = username;
+            return res.status(200).json({ message: 'userDetails updated successfully'});
+        }
+    }
+    catch(err){
+        console.error(err);
+    }
+}
+
+
+
+// Add prdocuts to cart
+exports.cartPatch = async ( req, res ) => {
+    try{
+        console.log('cart');
+        const productId = req.params.productId;
+        console.log(productId);
+        const user = await userModel.findOne({ _id: req.session.user._id});
+        const isProduct = user.cart.find( doc => { return doc.product == productId  });
+        console.log('isProduct : ');
+        console.log(isProduct);
+        if(isProduct){
+            return res.status(400).json({ error: 'Product is already existed in the cart' });
+        }
+        if(!req.session.userIn){
+            console.log(req.session.userIn);
+            res.status(400).json({ error: 'user is not logged in'});
+        }
+        const product = await productModel.findById(productId);
+        if (!product) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+        if (!user || !user._id) {
+            return res.status(401).json({ error: 'User not authenticated' });
+        }
+        const result = await userModel.findByIdAndUpdate(user._id , { $push: { cart: { product: productId } }});
+        console.log(result);
+        res.status(200).json({ message: 'product successfully added to cart'})
+    }catch(err){
+        console.error(err);
+    }
+} 
+
+
+
+
+exports.cartCountPatch = async (req, res) => {
+    const productId = req.params.productId;
+    const nums = req.params.nums;
+    const userId = req.params.userId;
+
+    try {
+        const user = await userModel.findById(userId);
+        console.log(productId, nums, userId );
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found', redirect: '/login' });
+        }
+
+        // Find the index of the product in the cart array
+        const productIndex = user.cart.findIndex(item => item._id.toString() === productId);
+
+        console.log(user.cart[productIndex].count*1);
+        if(nums > 10 || nums <= 0 ){
+            return res.status(404).json({ error: 'maximum cart items 10' });
+        }
+        // If the product is not found in the cart, return an error
+        if (productIndex == -1) {
+            return res.status(404).json({ error: 'Product not found in the cart' });
+        }
+
+        user.cart[productIndex].count = parseInt(nums);
+
+        // Save the updated user document
+        await user.save();
+        // const product = await productModel.findByIdAndUpdate(productId, { $set: { $inc: -nums }});
+        // console.log(product)
+
+        console.log('User updated successfully:', user);
+
+        return res.status(200).json({ message: 'Cart updated successfully', user });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+
+
+
+exports.addAddressPatch = async ( req, res ) => {
+    try{
+        console.log('hai from addAddressPatch')
+        const userId = req.params.userId;
+        const { name, email, phone, pincode, state, country, altphone, city, landmark} = req.body;
+        console.log(name, email, phone, pincode, state, country, altphone, city, landmark);
+        const result = await userModel.findByIdAndUpdate( userId, { $push:{ address: { name, email, phone, alt_phone: altphone, city, landmark, state, country, pincode } }});
+        if (result) {
+            console.log('User address updated successfully:', result);
+            return res.status(200).json({ message: 'User address updated successfully', user: result });
+        } else {
+            // If the user was not found
+            console.log('User not found');
+            return res.status(404).json({ error: 'User not found' });
+        }
+    }catch(err){
+        console.log(err);
+    }
+};
+
+
+
+
+exports.cartProductDelete = async (req, res) => {
+    try {
+        const productId = req.params.productId;
+        const userId = req.session.user._id;
+        console.log(productId, userId );
+        const user = await userModel.findById(userId);
+
+        const productIndex = user.cart.findIndex(item => item.product == productId);
+
+        if (productIndex === -1) {
+            return res.status(404).json({ message: 'Product not found in cart' });
+        }
+
+        user.cart.splice(productIndex, 1);
+        await user.save();
+        res.status(200).json({ success: true, message: 'Product successfully removed from cart' });
+    } catch (error) {
+        console.error('Error removing product from cart:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
 }

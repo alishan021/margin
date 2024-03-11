@@ -35,11 +35,11 @@ const productSchema = new mongoose.Schema({
     details: {
         type: String, 
     },
-    // category: {
-    //     // type: Schema.Types.ObjectId,
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'category'
-    // },
+    category: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'category'
+    },
     status: {
         type: Boolean,
         default: true,
