@@ -81,10 +81,8 @@ exports.categoryDelete = async ( req, res ) => {
 
 exports.categoryUpdateGet = async ( req, res ) => {
     try{
-        console.log('enterd category product');
         const categoryId = req.params.categoryId;
         const category = await categoryModel.findById(categoryId);
-        console.log(category);
         if(!category){
             return res.status(400).json({ error: 'no category found'});
         }
@@ -102,17 +100,30 @@ exports.categoryUpdatePut = async ( req, res ) => {
     try{
         console.log('inside the categoryupdatePut');
         const { categoryName } = req.body;
-        console.log(categoryName);
         const categoryId = req.params.categoryId;
-        const check = await categoryModel.findOne({ categoryName: categoryName });
+        console.log('categoryId : ' + categoryId )
+        const dbCategory = await categoryModel.findById(categoryId, { categoryName: 1 });
+        console.log(dbCategory);
+        if(!dbCategory){
+            return res.status(400).json({ error: 'category not found'});
+        }
+        const dbCategoryName = dbCategory.categoryName;
+        console.log('dbCategoryName : ' + dbCategoryName );
+        console.log('categoryName : ' + categoryName );
+        if(dbCategoryName.toLowerCase().trim() == categoryName.toLowerCase().trim() ){
+            return res.status(400).json({ error: 'category is already exist'});
+        }
+        const check = await categoryModel.findOne({ categoryName: categoryName.toLowerCase().trim() });
+        console.log('check : ' + check );
         if(check){
-            res.status(400).json({ error: 'category is already exist'});
+            return res.status(400).json({ error: 'category is already exist'});
         }
         const result = await categoryModel.findByIdAndUpdate(categoryId, { categoryName: categoryName.toLowerCase() } );
         console.log(result);
-        return res.status(200).json({ message: 'user updated successfully'});
+        return res.status(200).json({ success: true, message: 'user updated successfully'});
     }
     catch(error){
         console.log('error : ' + error );
+        return res.status(500).json({ error: 'Internal server error' });
     }
 }

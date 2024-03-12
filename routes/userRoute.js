@@ -92,19 +92,59 @@ router.get('/logout', userController.userLogout );
 router.get('/dashboard', userAuth.userSessionNo, userController.dashboardGet );
 router.patch('/dashboard/user-details', userAuth.userSessionNo, userController.DashboardUserDetailsPatch );
 router.patch('/address/:userId', userController.addAddressPatch );
-router.delete('/address/:addressId', async ( req, res ) => {
-    const addressId = req.params.addressId;
-    const user = await userModel.findById(req.session.user._id);
-    if(!user){
-        res.status(400).json({ error: 'user not found again, login again'});
-    }else{
-        // const address = user.address.find( address => address._id == addressId );
-        const addressIndex = user.address.findIndex( address => address._id == addressId );
-        user.address.splice(addressIndex, 1);
-        await user.save();
-        res.status(200).json({ success: true, message: 'address successfully removed.' });
+router.delete('/address/:addressId', userController.deleteAddress );
+router.get('/address/edit/:addressId', async ( req, res ) => {
+    try{
+        console.log('hellow enter')
+        const addressId = req.params.addressId;
+        const user = await userModel.findById(req.session.user._id);
+        if(!user) return res.status(400).json({ error: 'user session expired, login again'});
+        const selectedAddress = user.address.find( address => address._id.toString() === addressId );
+        console.log('selectedAddress : ' + selectedAddress );
+        return res.status(200).json(selectedAddress);
+    }catch(err){
+        console.log(err);
     }
 })
+
+router.patch('/address/update/:addressId/:userId', async (req, res) => {
+    const addressId = req.params.addressId;
+    const userId = req.params.userId;
+    try {
+        const user = await userModel.findById(userId);
+        if (!user) return res.status(400).json({ error: 'User session expired, login again' });
+
+        // Find the index of the address in the user's addresses array
+        const addressIndex = user.address.findIndex(address => address._id == addressId);
+        if (addressIndex === -1) return res.status(400).json({ error: 'User address not found' });
+
+        // Update the fields of the found address
+        const { name, email, phone, pincode, state, country, altphone, city, landmark } = req.body;
+        console.log(name, email, phone, pincode, state, country, altphone, city, landmark);
+
+        // Update the specific address within the array
+        user.address[addressIndex].name = name;
+        user.address[addressIndex].email = email;
+        user.address[addressIndex].phone = phone;
+        user.address[addressIndex].pincode = pincode;
+        user.address[addressIndex].state = state;
+        user.address[addressIndex].country = country;
+        user.address[addressIndex].alt_phone = altphone;
+        user.address[addressIndex].city = city;
+        user.address[addressIndex].landmark = landmark;
+
+        // Save the updated user document
+        await user.save();
+
+        console.log('User address updated successfully');
+        return res.status(200).json({ message: 'User address updated successfully', user: user });
+
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 
 // User Cart
 router.get('/cart', userAuth.userSessionNo, userController.cartGet );

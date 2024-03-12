@@ -93,6 +93,113 @@ deleteBtn.forEach( button => {
 
 
 
+// document.addEventListener('DOMContentLoaded', (event) => {
+//     console.log('hai hellow');
+// 	const user = <%= user %>;
+// 	console.log(user);
+// })
+
+
+const navLinks = document.querySelectorAll('.nav-link');
+const editDiv = document.querySelector('[edit-div]');
+const editButtons = document.querySelectorAll('.btn-edit');
+const tabPane = document.querySelectorAll('.tab-pane');
+const editLink = document.querySelector('[edit-link]');
+const editAddress = document.querySelector('[address-edit]');
+
+editButtons.forEach(button => {
+    button.addEventListener('click', async (event) => {
+        try {
+            const addressId = button.getAttribute('data-address-id');
+            const index = button.getAttribute('data-index');
+            console.log(addressId);
+            
+            const confi = confirm('Are you sure you want to edit this address?');
+            if (!confi) return;
+
+            tabPane.forEach( item => item.classList.remove('show', 'active'));
+            editDiv.classList.add('show', 'active');
+            navLinks.forEach( item => item.classList.remove('active'));
+            editLink.setAttribute('aria-selected', 'true');
+            editLink.classList.add('active')
+
+            const response = await fetch(`/address/edit/${addressId}`);
+            
+            // Parse JSON response
+            const body = await response.json();
+            console.log(body);
+            for (const key in body) {
+                if (body.hasOwnProperty(key)) {
+                    const value = body[key];
+                    const inputElement = document.getElementById(key);
+                    if (inputElement) {
+                        inputElement.value = value;
+                    }
+                }
+            }
+            const landmark = document.querySelector('#landmark');
+            landmark.value = body.landmark;
+
+            editAddress.addEventListener('submit', async (event) => {
+                try{
+                    const formData = {};
+                    const userId = event.target.dataset.userId;
+
+                    for (const input of event.target.elements) {
+                        if (input.tagName !== 'INPUT' || !input.name) {
+                            continue;
+                        }
+                        formData[input.name] = input.value;
+                    }
+                    formData[landmark.name] = landmark.value;
+                
+                        console.log('haii diidi didiid diid')
+                        const responseUpdate = await fetch(`/address/update/${addressId}/${userId}`, {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(formData)
+                        })
+                        const bodyupdate = await responseUpdate.json()
+                        console.log(bodyupdate)
+                        if(bodyupdate.error){
+                            return displayError(bodyupdate);
+                        }else {
+                            window.location.href = '/dashboard#tab-address';
+                        }
+                }catch(err){
+                    console.log(err);
+                }
+            })
+
+        } catch (err) {
+            console.log(err);
+        }
+    });
+});
+
+
+
+const addAddress = document.querySelector('.add-address-link');
+const addLink = document.querySelector('add-link');
+const addDiv = document.querySelector('[add-div]');
+
+addAddress.addEventListener('click', (event) => {
+    console.log('haiiiii')
+    // event.preventDefault();
+    tabPane.forEach( item => item.classList.remove('show', 'active'));
+    addDiv.classList.add('show', 'active');
+    navLinks.forEach( item => item.classList.remove('active'));
+    addLink.setAttribute('aria-selected', 'true');
+    addLink.classList.add('active');
+
+})
+
+
+
+
+
 const msgPara = document.querySelector('.msg-para');
 
 const displayError = (result) => {
@@ -104,3 +211,12 @@ const displayError = (result) => {
 const displayMessage = (result) => {
     msgPara.innerHTML = result.message;
 }
+
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    console.log(window.location.hash);
+})

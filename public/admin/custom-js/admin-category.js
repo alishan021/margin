@@ -135,9 +135,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.log(data)
                     if(data.error){
                         return displayError(data)
+                    }else if(data.success){
+                        displaySucess({ message: 'product updated successfully' });
+                        setTimeout(() => window.location.reload(), 1000 );
+                    }else {
+                        return displayError('something unknown')
                     }
-                    displaySucess({ message: 'product updated successfully' });
-                    setTimeout(() => window.location.reload(), 1000 );
                 })
             })
         });

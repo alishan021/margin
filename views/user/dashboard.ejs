@@ -42,8 +42,11 @@
 								    <li class="nav-item">
 								        <a class="nav-link" id="tab-address-link" data-toggle="tab" href="#tab-address" role="tab" aria-controls="tab-address" aria-selected="false">Adresses</a>
 								    </li>
-								    <li class="nav-item">
-								        <a class="nav-link" id="tab-account-link" data-toggle="tab" href="#tab-account" role="tab" aria-controls="tab-account" aria-selected="false"> Add Address</a>
+								    <li class="nav-item d-none">
+								        <a class="nav-link" id="tab-add-link" data-toggle="tab" href="#tab-add-address" role="tab" aria-controls="tab-add-address" aria-selected="false" add-link> Add Address</a>
+								    </li>
+									<li class="nav-item d-none">
+								        <a class="nav-link" id="tab-edit-link" data-toggle="tab" href="#tab-edit-address" role="tab" aria-controls="tab-edit-address" aria-selected="false" edit-link > Edit Address</a>
 								    </li>
 								    <li class="nav-item">
 								        <a class="nav-link" href="/logout">Sign Out</a>
@@ -104,6 +107,7 @@
 
 								    <div class="tab-pane fade" id="tab-address" role="tabpanel" aria-labelledby="tab-address-link">
 								    	<p>The following addresses will be used on the checkout page by default.</p>
+										<a href="#tab-add-address" class="add-address-link"> Add address <i class="icon-edit"></i></a></p>
 
 										<% if(user.address.length > 0 ){ %>
 											<% user.address.forEach( (address, index ) => { %> 
@@ -112,14 +116,14 @@
 												<div class="row">
 													<div class="col-lg-6">
 														<div class="card card-dashboard">
-
 															
 															
+															
 
-														<div class="card-body">
-															<h3 class="card-title">Billing Address <%= index + 1 %></h3><!-- End .card-title -->
+															<div class="card-body">
+															<h3 class="card-title"><input type="radio" name="address-radio" id="address-radio" checked>  Billing Address <%= index + 1 %></h3><!-- End .card-title -->
 	
-															<p><%= address.name %>username<br>
+															<p><%= address.name %><br>
 																<%= address.email %><br>
 																<%= address.phone %><br>
 																<%= address.alt_phone %><br>
@@ -128,8 +132,8 @@
 																<%= address.city %><br>
 																<%= address.pincode %><br>
 																<%= address.landmark %><br>
-																<div><a href="#">Edit <i class="icon-edit"></i></a><br></div>
-																<div class="btn-delete d-inline" data-address-id="<%= address._id %>" ><a href="#"  >Delete <i class="fa-solid fa-trash"></i></a></div></p>
+																<div class="btn-edit d-inline" data-address-id="<%= address._id %>" data-index="<%= index %>" ><a href="#tab-edit-address">Edit <i class="icon-edit"></i></a><br></div>
+																<div class="btn-delete d-inline" data-address-id="<%= address._id %>" data-index="<%= index %>" ><a href="#"  >Delete <i class="fa-solid fa-trash"></i></a></div></p>
 														</div><!-- End .card-body -->
 
 	
@@ -164,7 +168,7 @@
 												
 												<p>You don't add any address<br>
 													
-													<a href="#add-address"> Add address <i class="icon-edit"></i></a></p>
+													<a href="#tab-add-address" class="add-address-link"> Add address <i class="icon-edit"></i></a></p>
 											</div><!-- End .card-body -->
 
 
@@ -173,9 +177,12 @@
 								    </div>
 									<!-- .End .tab-pane -->
 
-								    <div class="tab-pane fade" id="tab-account" role="tabpanel" aria-labelledby="tab-account-link" >
+								    <div class="tab-pane fade" id="tab-add-address" role="tabpanel" aria-labelledby="tab-address-link" add-div>
 								    	<form id="address-add" address-add data-user-id="<%= user._id %>">
-			                				
+
+											<h4 style="color: #c96;">Add Address</h4>
+			                				<hr class="md-3">
+
 			                				<label>Name *</label>
 			                				<input type="text" name="name" class="form-control" value="<%= user.username %>" required>
 
@@ -229,6 +236,71 @@
 			                				</button>
 			                			</form>
 								    </div><!-- .End .tab-pane -->
+
+									<!-- < if(address){ %> -->
+
+									<div class="tab-pane fade" id="tab-edit-address" role="tabpanel" aria-labelledby="tab-edit-link" edit-div >
+								    	<form id="address-edit" address-edit data-user-id="<%= user._id %>" >
+
+											<h4 style="color: #c96;">Edit Address</h4>
+			                				<hr class="md-3">
+			                				
+			                				<label>Name *</label>
+			                				<input type="text" name="name" id="name" class="form-control" required>
+
+			                				<label>Email *</label>
+			                				<input type="email" name="email" id="email" class="form-control" required>
+
+											<div class="row">
+			                					<div class="col-sm-6">
+			                						<label>Phone * </label>
+			                						<input type="text" name="phone" id="phone" class="form-control" required>
+			                					</div><!-- End .col-sm-6 -->
+
+			                					<div class="col-sm-6">
+			                						<label>Alt Phone </label>
+			                						<input type="text" name="altphone" id="alt_phone" class="form-control" required>
+			                					</div><!-- End .col-sm-6 -->
+			                				</div><!-- End .row -->
+
+											<div class="row">
+			                					<div class="col-sm-6">
+			                						<label>Pincode * </label>
+			                						<input type="text" name="pincode" id="pincode" class="form-control" required>
+			                					</div><!-- End .col-sm-6 -->
+
+			                					<div class="col-sm-6">
+			                						<label>City * </label>
+			                						<input type="text" name="city" id="city" class="form-control" required>
+			                					</div><!-- End .col-sm-6 -->
+			                				</div><!-- End .row -->
+
+											<div class="row">
+			                					<div class="col-sm-6">
+			                						<label>State * </label>
+			                						<input type="text" name="state" id="state" class="form-control" required>
+			                					</div><!-- End .col-sm-6 -->
+
+			                					<div class="col-sm-6">
+			                						<label>Country * </label>
+			                						<input type="text" name="country" id="country" class="form-control" required>
+			                					</div><!-- End .col-sm-6 -->
+			                				</div><!-- End .row -->
+
+		            						<label>landmark</label>
+		            						<textarea name="landmark" rows="6" id="landmark" class="form-control landmark" required></textarea>
+		            						<!-- <input type="text" name="landmark" class="form-control mb-2"> -->
+
+
+		                					<button type="submit" class="btn btn-outline-primary-2">
+			                					<span>SAVE </span>
+			            						<i class="icon-long-arrow-right"></i>
+			                				</button>
+			                			</form>
+								    </div><!-- .End .tab-pane -->
+
+									<!-- < } %> -->
+
 								</div>
 	                		</div><!-- End .col-lg-9 -->
 	                	</div><!-- End .row -->
@@ -270,8 +342,8 @@
 
 	<!-- custom-js -->
 	<script src="/user/custom-js/dashboard.js" defer ></script>
+
+
+
 </body>
-
-
-<!-- molla/dashboard.html  22 Nov 2019 10:03:13 GMT -->
 </html>

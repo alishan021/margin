@@ -33,4 +33,4 @@ document.querySelectorAll('.remove-col').forEach(tdElement => {
             window.location.reload();
         }
     });
-});    
+});

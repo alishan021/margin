@@ -601,3 +601,20 @@ exports.cartProductDelete = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 }
+
+
+
+
+exports.deleteAddress = async ( req, res ) => {
+    const addressId = req.params.addressId;
+    const user = await userModel.findById(req.session.user._id);
+    if(!user){
+        res.status(400).json({ error: 'user not found again, login again'});
+    }else{
+        // const address = user.address.find( address => address._id == addressId );
+        const addressIndex = user.address.findIndex( address => address._id == addressId );
+        user.address.splice(addressIndex, 1);
+        await user.save();
+        res.status(200).json({ success: true, message: 'address successfully removed.' });
+    }
+}
