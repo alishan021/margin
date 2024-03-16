@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- <link rel="stylesheet" href="/admin/custom-css/admin-users.css"> -->
+    <link rel="stylesheet" href="/admin/custom-css/navbar.css">
+    <link rel="stylesheet" href="/admin/custom-css/sidebar.css">
+    <link rel="stylesheet" href="/admin/custom-css/admin-products.css">
+    <link rel="stylesheet" href="/admin/custom-css/admin-orders.css">
+
+    <script src="/admin/custom-js/admin-orders.js" defer></script>
+    
+</head>
+<body>
+
+    <div class="page-wrapper">
+
+        <%- include('./layouts/navbar.ejs') %>
+
+        <div class="page-body">
+
+            <%- include('./layouts/sidebar.ejs') %> 
+
+            <main>
+                <div class="add-product-box">
+                        <h2 class="header">Orders List</h2>
+                        <div class="msg-box">
+                            <p class="msg-para"></p>
+                        </div>
+                </div>
+                <div class="order-list">
+                    <div class="table-div">
+                    <table class="content-table">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Products</th>
+                                <th>Price</th>
+                                <th>OrderId</th>
+                                <th>Address</th>
+                                <th>Payment method</th>
+                                <th>order Date</th>
+                                <th>Status</th>                           
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Users prinst as a loop -->
+                            <% orders.forEach( ( order, index ) => { %> 
+                                
+                            <tr>
+                                <td class="td-column" ><%= index + 1 %></td>
+                                <td class="td-column" >
+                                    <div>
+                                        <% order.products.forEach(element => { %>
+                                            <div class="image-and-name">
+                                                <img class="product-img" src="/products/<%= element.productId.images[0] %>" alt="product image">
+                                                <span><%= element.productId.name %></span>
+                                                <br>
+                                            </div>
+                                            <hr>
+                                        <% }); %>
+                                    </div>
+                                </td>
+                                <td class="td-column" ><%= order.totalPrice %></td>
+                                <td class="td-column" ><%= order._id %></td>
+                                <td class="td-column">
+                                    <span><%= order.address.name %></span><br><hr>
+                                    <span><%= order.address.email %></span><br><hr>
+                                    <span><%= order.address.phone %></span><br><hr>
+                                    <span><%= order.address.altphone %></span><br><hr>
+                                    <span><%= order.address.pincode %></span><br><hr>
+                                    <span><%= order.address.city %></span><br><hr>
+                                    <span><%= order.address.state %></span><br><hr>
+                                    <span><%= order.address.country %></span><br><hr>
+                                    <span><%= order.address.landmark %></span><br><hr>
+                                    <span><%= order.orderNotes %></span>
+                                </td>
+                                <td><%= order.paymentMethod %></td>
+                                <td><%= order.orderDate %></td>
+                                <td class="td-status td-column">
+                                    <select name="orderstatus" id="order-status">
+                                        <option value="pending">pending</option>
+                                        <option value="delivered">delivered</option>
+                                        <option value="returned">returned</option>
+                                        <option value="on the way">on the way</option>
+                                    </select>
+                                </td>
+                            </tr>
+
+
+                            <% }) %>
+                            <!-- Users loop ends -->
+                           
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+            </main>
+
+        </div>
+    </div>
+
+    
+</body>
+</html>

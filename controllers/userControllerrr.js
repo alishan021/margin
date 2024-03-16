@@ -6,7 +6,7 @@ const userModel = require('../models/user')
 const productModel = require('../models/products')
 const bcrypt = require('bcrypt');
 const categoryModel = require('../models/category');
-// const productModel = require('../models/products');
+const orderModel = require('../models/order');
 
 
 
@@ -406,7 +406,9 @@ exports.errorPageGet = ( req, res ) => {
 
 exports.dashboardGet = async ( req, res ) => {
     const user = await userModel.findById(req.session.user._id);
-    res.render('dashboard.ejs', { userIn: req.session.userIn, user });
+    const orders = await orderModel.find({ userId: req.session.user._id });
+    console.log(orders);
+    res.render('dashboard.ejs', { userIn: req.session.userIn, user, orders });
 }
 
 
@@ -414,15 +416,12 @@ exports.dashboardGet = async ( req, res ) => {
 
 exports.cartGet = async ( req, res ) => {
     const cartProducts = await userModel.findOne({ email: req.session.user.email }, { cart: 1 }).populate('cart.product');
-    // const cartProducts = await userModel.findOne({ email: req.session.user.email }).populate('cart.product');
-
-    if (!cartProducts) {
-        return res.status(404).send('User not found');
-    }
-
-    // console.log(cartProducts)
+    const user = req.session.user;
     console.log(cartProducts)
-    res.render('cart.ejs', { userIn: req.session.userIn, user: req.session.user, cartProducts });
+    if (!cartProducts || !user ) return res.status(404).send('User session expired, login again');
+
+    console.log(cartProducts)
+    res.render('cart.ejs', { userIn: req.session.userIn, user, cartProducts });
 }
 
 
@@ -435,9 +434,52 @@ exports.wishlistGet =  ( req, res ) => {
 
 
 
-exports.checkoutGet = ( req, res ) => {
-    res.render('checkout.ejs', { userIn: req.session.userIn, user: req.session.user });
+exports.preferredAddressGet = ( req, res ) => {
+    const addressId = req.params.addressId;
+    req.session.addressId = addressId;
+    if(addressId) return res.json({ message: 'address changed'});
 }
+
+
+
+
+exports.checkoutGet = async (req, res) => {
+    try {
+        const addressId = req.session.addressId;        
+        const user = await userModel.findById(req.session.user._id);
+        const address = user.address.find(item => item._id == addressId);
+        console.log(address);
+
+        if (!user) return res.status(400).json({ error: 'User session expired, login again' });
+
+        const productDetails = await getProductDetails(user.cart);
+        console.log(productDetails);
+
+        res.render('checkout.ejs', { userIn: req.session.userIn, products: productDetails, user, address });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+// Function to fetch product details for each item in the user's cart
+async function getProductDetails(cart) {
+    const productDetails = [];
+    for (const item of cart) {
+        const product = await productModel.findById(item.product);
+        if (product) {
+            productDetails.push({
+                product: product,
+                count: item.count,
+                _id: item._id,
+                added_at: item.added_at
+            });
+        }
+    }
+    return productDetails;
+}
+
+
 
 
 
@@ -496,12 +538,11 @@ exports.cartPatch = async ( req, res ) => {
             res.status(400).json({ error: 'user is not logged in'});
         }
         const product = await productModel.findById(productId);
-        if (!product) {
-            return res.status(404).json({ error: 'Product not found' });
-        }
-        if (!user || !user._id) {
-            return res.status(401).json({ error: 'User not authenticated' });
-        }
+
+        if(!product) return res.status(404).json({ error: 'Product not found' });
+        if(product.quantity <= 0) return res.status(400).json({ error: 'out of stock'});
+        if(!user || !user._id) return res.status(401).json({ error: 'User not authenticated' });
+
         const result = await userModel.findByIdAndUpdate(user._id , { $push: { cart: { product: productId } }});
         console.log(result);
         res.status(200).json({ message: 'product successfully added to cart'})
@@ -616,5 +657,124 @@ exports.deleteAddress = async ( req, res ) => {
         user.address.splice(addressIndex, 1);
         await user.save();
         res.status(200).json({ success: true, message: 'address successfully removed.' });
+    }
+}
+
+
+
+exports.addressEditGet =  async ( req, res ) => {
+    try{
+        console.log('hellow enter')
+        const addressId = req.params.addressId;
+        const user = await userModel.findById(req.session.user._id);
+        if(!user) return res.status(400).json({ error: 'user session expired, login again'});
+        const selectedAddress = user.address.find( address => address._id.toString() === addressId );
+        console.log('selectedAddress : ' + selectedAddress );
+        return res.status(200).json(selectedAddress);
+    }catch(err){
+        console.log(err);
+    }
+}
+
+
+
+
+exports.addressUpdatePatch = async (req, res) => {
+    const addressId = req.params.addressId;
+    const userId = req.params.userId;
+    try {
+        const user = await userModel.findById(userId);
+        if (!user) return res.status(400).json({ error: 'User session expired, login again' });
+
+        // Find the index of the address in the user's addresses array
+        const addressIndex = user.address.findIndex(address => address._id == addressId);
+        if (addressIndex === -1) return res.status(400).json({ error: 'User address not found' });
+
+        // Update the fields of the found address
+        const { name, email, phone, pincode, state, country, altphone, city, landmark } = req.body;
+        console.log(name, email, phone, pincode, state, country, altphone, city, landmark);
+
+        // Update the specific address within the array
+        user.address[addressIndex].name = name;
+        user.address[addressIndex].email = email;
+        user.address[addressIndex].phone = phone;
+        user.address[addressIndex].pincode = pincode;
+        user.address[addressIndex].state = state;
+        user.address[addressIndex].country = country;
+        user.address[addressIndex].alt_phone = altphone;
+        user.address[addressIndex].city = city;
+        user.address[addressIndex].landmark = landmark;
+
+        // Save the updated user document
+        await user.save();
+
+        console.log('User address updated successfully');
+        return res.status(200).json({ message: 'User address updated successfully', user: user });
+
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+
+
+
+exports.checkoutPost =  async ( req, res ) => {
+    const userId = req.params.userId;
+    try{
+        const user = await userModel.findById(req.session.user._id);
+        const address = {
+            name: req.body.name,
+            email: req.body.email,
+            phone: req.body.phone,
+            altphone: req.body.altphone,
+            pincode: req.body.pincode,
+            city: req.body.city,
+            state: req.body.state,
+            country: req.body.country,
+            landmark: req.body.landmark,
+        }
+
+        const productDetails = await getProductDetails(user.cart);
+
+        let totalPrice = 0;
+        productDetails.forEach((item, index ) => {
+            const itemPrice = item.product ? (item.product.price || 1) : 0;
+            totalPrice += itemPrice * item.count;
+        });
+        
+        const products = productDetails.map( async ( item, index ) => {
+            let dbProduct = await productModel.findById(item.product._id);
+            if(dbProduct.quantity - item.count <= 0 ) return res.status(400).json({ error: 'product is not available'});
+            dbProduct.quantity -= item.count;
+            await dbProduct.save();
+            return {
+                productId: item.product._id,
+                quantity: item.count,
+                productTotalPrice: item.product.price * item.count,
+            }
+        })
+
+        if(!user) return res.status(400).json({ error: 'login again, session expired'});
+        const order = await orderModel({
+            userId: req.params.userId,
+            products,
+            address,
+            orderNotes: req.body.ordernotes,
+            totalPrice ,
+            paymentMethod: 'COD'
+        });
+
+        const savedOrder = await order.save();
+        console.log(savedOrder);
+        if(savedOrder){
+            user.cart = [];
+            await user.save();
+            return res.json({ success: true, message: 'Order created successfully '});
+        } 
+            
+    }catch(err){
+        console.error(err);
     }
 }

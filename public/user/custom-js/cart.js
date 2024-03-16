@@ -34,3 +34,22 @@ document.querySelectorAll('.remove-col').forEach(tdElement => {
         }
     });
 });
+
+
+
+
+
+const radioButtons = document.querySelectorAll('[select-address]');
+
+radioButtons.forEach(radio => {
+    radio.addEventListener('change', (event) => {
+        if (event.target.checked) {
+            // const selectedAddress = event.target.value;
+            const addressId = event.target.dataset.addressId;
+            fetch(`/address/preffered/${addressId}`)
+                .then((response) => response.json())
+                .then(data => console.log(data))
+                .catch( err => console.log(err))
+        }
+    });
+});

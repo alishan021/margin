@@ -2,7 +2,10 @@
 <html lang="en">
 
 
-<%- include('./layouts/head.ejs') %>
+	<head>
+		<%- include('./layouts/head.ejs') %>
+		<link rel="stylesheet" href="/user/custom-css/dashboard.css">
+	</head>
 
 
 <body>
@@ -95,15 +98,34 @@
 										</div>
 								    </div><!-- .End .tab-pane -->
 
+
+
 								    <div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
-								    	<p>No order has been made yet.</p>
-								    	<a href="category.html" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
+
+										<% if(orders){ %>
+
+											<% orders.forEach( (order) => { %>
+												<div class="border p-5 m-2 order-box">
+													<div class="order-items" >
+													<% order.products.forEach( product => { %>
+														<div><%= order.product %></div>
+													<% } ) %>
+													</div>
+													<div class="order-items"><%= order.totalPrice %></div>
+													<div class="order-items"><%= order.orderStatus %></div>
+												</div>
+												<%}) %>
+												<br>
+											
+										<% }else { %>
+												
+												<p>No order has been made yet.</p>
+												<a href="/product-list" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
+
+										<%} %>
+
 								    </div><!-- .End .tab-pane -->
 
-								    <div class="tab-pane fade" id="tab-downloads" role="tabpanel" aria-labelledby="tab-downloads-link">
-								    	<p>No downloads available yet.</p>
-								    	<a href="category.html" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
-								    </div><!-- .End .tab-pane -->
 
 								    <div class="tab-pane fade" id="tab-address" role="tabpanel" aria-labelledby="tab-address-link">
 								    	<p>The following addresses will be used on the checkout page by default.</p>

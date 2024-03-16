@@ -92,14 +92,6 @@ deleteBtn.forEach( button => {
 
 
 
-
-// document.addEventListener('DOMContentLoaded', (event) => {
-//     console.log('hai hellow');
-// 	const user = <%= user %>;
-// 	console.log(user);
-// })
-
-
 const navLinks = document.querySelectorAll('.nav-link');
 const editDiv = document.querySelector('[edit-div]');
 const editButtons = document.querySelectorAll('.btn-edit');
@@ -153,7 +145,6 @@ editButtons.forEach(button => {
                     }
                     formData[landmark.name] = landmark.value;
                 
-                        console.log('haii diidi didiid diid')
                         const responseUpdate = await fetch(`/address/update/${addressId}/${userId}`, {
                             method: 'PATCH',
                             headers: {
@@ -186,7 +177,6 @@ const addLink = document.querySelector('add-link');
 const addDiv = document.querySelector('[add-div]');
 
 addAddress.addEventListener('click', (event) => {
-    console.log('haiiiii')
     // event.preventDefault();
     tabPane.forEach( item => item.classList.remove('show', 'active'));
     addDiv.classList.add('show', 'active');

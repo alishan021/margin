@@ -2,8 +2,10 @@
 <html lang="en">
 
 
-<!-- molla/category.html  22 Nov 2019 10:02:48 GMT -->
-<%- include('./layouts/head.ejs') %>
+<head>
+	<%- include('./layouts/head.ejs') %>
+</head>
+
 <body>
     <div class="page-wrapper">
 
@@ -126,7 +128,11 @@
                                                 </div><!-- End .product-action-vertical -->
 
                                                 <div class="product-action cart-button" data-product-id="<%= product._id %>" >
-                                                    <p class="btn-product btn-cart"><span>add to cart</span></p>
+													<% if(product.quantity > 0){ %>
+														<p class="btn-product btn-cart"><span>add to cart</span></p>
+													<%}else { %>
+														<p class="btn-product " style="background-color: #cc333363;" ><span class="text-danger font-weight-bold">Out of stock</span></p>
+													<% } %>
                                                 </div><!-- End .product-action -->
                                             </figure><!-- End .product-media -->
 

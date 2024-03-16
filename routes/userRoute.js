@@ -9,6 +9,7 @@ const otpModel = require('../models/db-otp');
 const userModel = require('../models/user');
 const { render } = require('ejs');
 const productModel = require('../models/products');
+const orderModel = require('../models/order');
 
 const router = express.Router();
 
@@ -93,57 +94,8 @@ router.get('/dashboard', userAuth.userSessionNo, userController.dashboardGet );
 router.patch('/dashboard/user-details', userAuth.userSessionNo, userController.DashboardUserDetailsPatch );
 router.patch('/address/:userId', userController.addAddressPatch );
 router.delete('/address/:addressId', userController.deleteAddress );
-router.get('/address/edit/:addressId', async ( req, res ) => {
-    try{
-        console.log('hellow enter')
-        const addressId = req.params.addressId;
-        const user = await userModel.findById(req.session.user._id);
-        if(!user) return res.status(400).json({ error: 'user session expired, login again'});
-        const selectedAddress = user.address.find( address => address._id.toString() === addressId );
-        console.log('selectedAddress : ' + selectedAddress );
-        return res.status(200).json(selectedAddress);
-    }catch(err){
-        console.log(err);
-    }
-})
-
-router.patch('/address/update/:addressId/:userId', async (req, res) => {
-    const addressId = req.params.addressId;
-    const userId = req.params.userId;
-    try {
-        const user = await userModel.findById(userId);
-        if (!user) return res.status(400).json({ error: 'User session expired, login again' });
-
-        // Find the index of the address in the user's addresses array
-        const addressIndex = user.address.findIndex(address => address._id == addressId);
-        if (addressIndex === -1) return res.status(400).json({ error: 'User address not found' });
-
-        // Update the fields of the found address
-        const { name, email, phone, pincode, state, country, altphone, city, landmark } = req.body;
-        console.log(name, email, phone, pincode, state, country, altphone, city, landmark);
-
-        // Update the specific address within the array
-        user.address[addressIndex].name = name;
-        user.address[addressIndex].email = email;
-        user.address[addressIndex].phone = phone;
-        user.address[addressIndex].pincode = pincode;
-        user.address[addressIndex].state = state;
-        user.address[addressIndex].country = country;
-        user.address[addressIndex].alt_phone = altphone;
-        user.address[addressIndex].city = city;
-        user.address[addressIndex].landmark = landmark;
-
-        // Save the updated user document
-        await user.save();
-
-        console.log('User address updated successfully');
-        return res.status(200).json({ message: 'User address updated successfully', user: user });
-
-    } catch (err) {
-        console.log(err);
-        return res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
+router.get('/address/edit/:addressId', userController.addressEditGet );
+router.patch('/address/update/:addressId/:userId', userController.addressUpdatePatch );
 
 
 // User Cart
@@ -151,6 +103,7 @@ router.get('/cart', userAuth.userSessionNo, userController.cartGet );
 router.patch('/cart/:productId', userController.cartPatch );
 router.patch('/cart/product/:userId/:productId/:nums', userController.cartCountPatch );
 router.patch('/cart/delete/:productId', userController.cartProductDelete );
+router.get('/address/preffered/:addressId', userController.preferredAddressGet );
 
 
 
@@ -161,6 +114,8 @@ router.get('/wishlist', userAuth.userSessionNo, userController.wishlistGet );
 
 // User checkout
 router.get('/checkout', userAuth.userSessionNo, userController.checkoutGet );
+router.post('/checkout/:userId', userController.checkoutPost );
+// router
 
 
 // Error page

@@ -48,7 +48,7 @@ var userSchema = new Schema({
     cart: [{
         product: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'products'
+            ref: 'Product'
         },
         count: {
             type: Number,

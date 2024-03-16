@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<%- include('./layouts/head.ejs') %>
+
+<head>
+	<%- include('./layouts/head.ejs') %>
+</head>
+
 
 <body>
     <div class="page-wrapper">
@@ -120,11 +124,14 @@
                                     </div><!-- End .details-filter-row -->
 
                                     <div class="product-details-action">
-                                        <a href="#" class="btn-product btn-add-cart btn-cart" data-product-id="<%= product._id %>" ><span data-product-id="<% product._id %>" >add to cart</span></a>
-
+                                        <% if(product.quantity > 0){ %>
+                                            <a href="#" class="btn-product btn-add-cart btn-cart" data-product-id="<%= product._id %>" ><span data-product-id="<% product._id %>" >add to cart</span></a>
+                                        <% }else { %>
+                                            <a class="btn-product no-underline"  style="background-color: #cc333363;" ><span class="text-danger font-weight-bold no-underline" >Out of stock</span></a>
+                                        <%} %>
                                         <div class="details-action-wrapper">
                                             <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
-                                            <a href="#" class="btn-product btn-compare" title="Compare"><span>Add to Compare</span></a>
+                                            <!-- <a href="#" class="btn-product btn-compare" title="Compare"><span>Add to Compare</span></a> -->
                                         </div><!-- End .details-action-wrapper -->
                                     </div><!-- End .product-details-action -->
 
@@ -219,6 +226,7 @@
     </div><!-- End .page-wrapper -->
     <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
 
+    <% if(product.quantity > 0){ %>
     <!-- Sticky Bar -->
     <div class="sticky-bar">
         <div class="container">
@@ -241,13 +249,15 @@
                     </div><!-- End .product-details-quantity -->
 
                     <div class="product-details-action">
-                        <a href="#" class="btn-product btn-add-cart btn-cart" data-product-id="<% product._id %>" ><span data-product-id="<% product._id %>" >add to cart</span></a>
+                            <a href="#" class="btn-product btn-add-cart btn-cart" data-product-id="<% product._id %>" ><span data-product-id="<% product._id %>" >add to cart</span></a>
+						<!-- <}else { %> -->
                         <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
                     </div><!-- End .product-details-action -->
                 </div><!-- End .col-6 -->
             </div><!-- End .row -->
         </div><!-- End .container -->
     </div><!-- End .sticky-bar -->
+	<% } %>
 
     <!-- Mobile Menu -->
     <div class="mobile-menu-overlay"></div><!-- End .mobil-menu-overlay -->

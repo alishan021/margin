@@ -8,6 +8,7 @@ const adminModel = require('../models/admin');
 const adminAuth = require('../middlewares/authAdmin');
 const userModel = require('../models/user');
 const categoryModel = require('../models/category');
+const orderModel = require('../models/order');
 const productModel = require('../models/products');
 // const {upload} = require('../middlewares/functions');
 
@@ -66,15 +67,25 @@ router.delete('/product/:id', admProductController.productDelete );
 
 router.get('/logout', adminController.logout );
 
-
-
 router.post('/products/add', upload.array('images', 6 ), admProductController.productsAdd );
-
 router.get('/products/edit/:productId', admProductController.productEditGet );
-
 router.post('/products/edit/:productId',  upload.array('images', 6 ), admProductController.productEditPost );
 
-
+router.get('/order', async ( req, res ) => {
+  try{
+    const orders = await orderModel.find({}, {}).populate('products.productId');
+    // // console.log(orders);
+    // orders.forEach( item => {
+    //     // console.log(item.products);
+    //     item.products.forEach( one => {
+    //         console.log(one.images);
+    //     });
+    // });
+    res.render('admin-order.ejs', { orders })
+  }catch(err){
+    console.log(err);
+  }
+})
 
 
 module.exports = router;
