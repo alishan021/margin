@@ -53,10 +53,10 @@
                                 <td class="td-column" ><%= index + 1 %></td>
                                 <td class="td-column" >
                                     <div>
-                                        <% order.products.forEach(element => { %>
+                                        <% order.products.forEach(product => { %>
                                             <div class="image-and-name">
-                                                <img class="product-img" src="/products/<%= element.productId.images[0] %>" alt="product image">
-                                                <span><%= element.productId.name %></span>
+                                                <img class="product-img" src="/products/<%= product.productId.images[0] %>" alt="product image">
+                                                <span><%= product.productId.name %></span>
                                                 <br>
                                             </div>
                                             <hr>

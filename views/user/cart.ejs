@@ -159,8 +159,12 @@
 												</tr>
 												
 												<tr class="summary-shipping">
-													<td><span class="font-weight-bold">Address :</span></td>
-													<td>&nbsp;</td>
+													<% if(user.address.length < 0){ %>
+														<td><a href="/dashboard#address"><span class="font-weight-bold">Add Address</span></a></td>
+													<%}else{ %>
+														<td><span class="font-weight-bold">Address :</span></td>
+														<td>&nbsp;</td>
+													<% } %>
 												</tr>
 
 												<form id="address-form">

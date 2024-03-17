@@ -406,9 +406,27 @@ exports.errorPageGet = ( req, res ) => {
 
 exports.dashboardGet = async ( req, res ) => {
     const user = await userModel.findById(req.session.user._id);
-    const orders = await orderModel.find({ userId: req.session.user._id });
-    console.log(orders);
-    res.render('dashboard.ejs', { userIn: req.session.userIn, user, orders });
+    const orders = await orderModel.find({ userId: req.session.user._id }).populate('products.productId');    console.log(orders);
+
+    // Fetch product documents separately
+//   const productIds = orders.flatMap((order) => order.products.map((product) => product.productId));
+//   const products = await productModel.find({ _id: { $in: productIds } });
+
+  // Merge product details into the orders
+//   const ordersWithProducts = orders.map((order) => {
+//     order.products = order.products.map((product) => {
+//       const fullProduct = products.find((p) => p._id.toString() === product.productId.toString());
+//       return { ...product, product: fullProduct };
+//     });
+//     return order;
+//   });
+
+//   console.log(ordersWithProducts);
+//   orders.forEach( item => {
+//     console.log(item.products);
+//   })
+
+  res.render('dashboard.ejs', { userIn: req.session.userIn, user, orders });
 }
 
 
@@ -416,7 +434,7 @@ exports.dashboardGet = async ( req, res ) => {
 
 exports.cartGet = async ( req, res ) => {
     const cartProducts = await userModel.findOne({ email: req.session.user.email }, { cart: 1 }).populate('cart.product');
-    const user = req.session.user;
+    const user = await userModel.findById(req.session.user._id);
     console.log(cartProducts)
     if (!cartProducts || !user ) return res.status(404).send('User session expired, login again');
 
@@ -720,60 +738,103 @@ exports.addressUpdatePatch = async (req, res) => {
 
 
 
-exports.checkoutPost =  async ( req, res ) => {
-    const userId = req.params.userId;
+exports.checkoutPost = async (req, res) => {
+    try {
+      const user = await userModel.findById(req.session.user._id);
+      const address = {
+        name: req.body.name,
+        email: req.body.email,
+        phone: req.body.phone,
+        altphone: req.body.altphone,
+        pincode: req.body.pincode,
+        city: req.body.city,
+        state: req.body.state,
+        country: req.body.country,
+        landmark: req.body.landmark,
+      };
+  
+      const productDetails = await getProductDetails(user.cart);
+  
+      let totalPrice = 0;
+      productDetails.forEach((item, index) => {
+        const itemPrice = item.product ? (item.product.price || 1) : 0;
+        totalPrice += itemPrice * item.count;
+      });
+  
+      const products = [];
+      for (const item of productDetails) {
+        const dbProduct = await productModel.findById(item.product._id);
+        if (dbProduct.quantity < item.count) {
+          return res.status(400).json({ error: `${dbProduct.name} is out of stock` });
+        }
+        dbProduct.quantity -= item.count;
+        await dbProduct.save();
+        products.push({
+          productId: item.product._id,
+          quantity: item.count,
+          productTotalPrice: item.product.price * item.count,
+        });
+      }
+  
+      if (!user) return res.status(400).json({ error: 'login again, session expired' });
+  
+      const order = await new orderModel({
+        userId: req.session.user._id,
+        products,
+        address,
+        orderNotes: req.body.ordernotes,
+        totalPrice,
+        paymentMethod: 'COD',
+      });
+  
+      const savedOrder = await order.save();
+      console.log(savedOrder);
+      if (savedOrder) {
+        user.cart = [];
+        await user.save();
+        return res.json({ success: true, message: 'Order created successfully' });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+
+exports.productCartPatch = async ( req, res ) => {
     try{
-        const user = await userModel.findById(req.session.user._id);
-        const address = {
-            name: req.body.name,
-            email: req.body.email,
-            phone: req.body.phone,
-            altphone: req.body.altphone,
-            pincode: req.body.pincode,
-            city: req.body.city,
-            state: req.body.state,
-            country: req.body.country,
-            landmark: req.body.landmark,
+        const productId = req.params.productId;
+        const quantity = req.params.quantity;
+        if (!req.session.user) {
+            return res.status(404).json({ error: 'User not found', redirect: '/login' });
+        }
+        const userId = req.session.user._id;
+        console.log(productId, quantity, userId );
+
+        const user = await userModel.findById(userId);
+        const productIndex = user.cart.findIndex(item => item._id.toString() === productId);
+        console.log(productIndex);
+
+        const isProduct = user.cart.find( doc => { return doc.product == productId  });
+        console.log('isProduct : ');
+        console.log(isProduct);
+        if(isProduct){
+            return res.status(400).json({ error: 'Product is already existed in the cart' });
         }
 
-        const productDetails = await getProductDetails(user.cart);
+        if(quantity > 10 || quantity <= 0 ){
+            return res.status(404).json({ error: 'maximum cart items 10' });
+        }
+        if (productIndex === -1) {
+            user.cart.push({ product: productId, count: quantity });
+        } else {
+            user.cart[productIndex].count = parseInt(quantity);
+        }
 
-        let totalPrice = 0;
-        productDetails.forEach((item, index ) => {
-            const itemPrice = item.product ? (item.product.price || 1) : 0;
-            totalPrice += itemPrice * item.count;
-        });
-        
-        const products = productDetails.map( async ( item, index ) => {
-            let dbProduct = await productModel.findById(item.product._id);
-            if(dbProduct.quantity - item.count <= 0 ) return res.status(400).json({ error: 'product is not available'});
-            dbProduct.quantity -= item.count;
-            await dbProduct.save();
-            return {
-                productId: item.product._id,
-                quantity: item.count,
-                productTotalPrice: item.product.price * item.count,
-            }
-        })
+        await user.save();
 
-        if(!user) return res.status(400).json({ error: 'login again, session expired'});
-        const order = await orderModel({
-            userId: req.params.userId,
-            products,
-            address,
-            orderNotes: req.body.ordernotes,
-            totalPrice ,
-            paymentMethod: 'COD'
-        });
+        console.log('User updated successfully:', user);
 
-        const savedOrder = await order.save();
-        console.log(savedOrder);
-        if(savedOrder){
-            user.cart = [];
-            await user.save();
-            return res.json({ success: true, message: 'Order created successfully '});
-        } 
-            
+        return res.status(200).json({ message: 'Cart updated successfully', user });
     }catch(err){
         console.error(err);
     }

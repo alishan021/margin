@@ -47,45 +47,7 @@ router.post('/login/new-password', userController.newPasswordPost );
 router.get('/product-list', userController.productListGet );
 
 router.get('/product/:productId', userController.productGet );
-router.patch('/product/cart/:productId/:quantity', async ( req, res ) => {
-    try{
-        const productId = req.params.productId;
-        const quantity = req.params.quantity;
-        if (!req.session.user) {
-            return res.status(404).json({ error: 'User not found', redirect: '/login' });
-        }
-        const userId = req.session.user._id;
-        console.log(productId, quantity, userId );
-
-        const user = await userModel.findById(userId);
-        const productIndex = user.cart.findIndex(item => item._id.toString() === productId);
-        console.log(productIndex);
-
-        const isProduct = user.cart.find( doc => { return doc.product == productId  });
-        console.log('isProduct : ');
-        console.log(isProduct);
-        if(isProduct){
-            return res.status(400).json({ error: 'Product is already existed in the cart' });
-        }
-
-        if(quantity > 10 || quantity <= 0 ){
-            return res.status(404).json({ error: 'maximum cart items 10' });
-        }
-        if (productIndex === -1) {
-            user.cart.push({ product: productId, count: quantity });
-        } else {
-            user.cart[productIndex].count = parseInt(quantity);
-        }
-
-        await user.save();
-
-        console.log('User updated successfully:', user);
-
-        return res.status(200).json({ message: 'Cart updated successfully', user });
-    }catch(err){
-        console.error(err);
-    }
-})
+router.patch('/product/cart/:productId/:quantity', userController.productCartPatch );
 
 router.get('/logout', userController.userLogout );
 

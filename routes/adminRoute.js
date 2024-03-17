@@ -73,14 +73,7 @@ router.post('/products/edit/:productId',  upload.array('images', 6 ), admProduct
 
 router.get('/order', async ( req, res ) => {
   try{
-    const orders = await orderModel.find({}, {}).populate('products.productId');
-    // // console.log(orders);
-    // orders.forEach( item => {
-    //     // console.log(item.products);
-    //     item.products.forEach( one => {
-    //         console.log(one.images);
-    //     });
-    // });
+    const orders = await orderModel.find({}).populate('products.productId');
     res.render('admin-order.ejs', { orders })
   }catch(err){
     console.log(err);

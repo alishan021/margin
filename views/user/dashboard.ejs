@@ -24,7 +24,7 @@
                 <div class="container">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/">Home</a></li>
-                        <li class="breadcrumb-item"><a href="#">Shop</a></li>
+                        <li class="breadcrumb-item"><a href="/product-list">Shop</a></li>
                         <li class="breadcrumb-item active" aria-current="page">My Account</li>
                     </ol>
                 </div><!-- End .container -->
@@ -100,31 +100,31 @@
 
 
 
-								    <div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
-
+									<div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
 										<% if(orders){ %>
-
 											<% orders.forEach( (order) => { %>
-												<div class="border p-5 m-2 order-box">
-													<div class="order-items" >
-													<% order.products.forEach( product => { %>
-														<div><%= order.product %></div>
-													<% } ) %>
+												<div class="border p-5 m-2 order-box d-flex">
+													<div class="order-items d-flex flex-column flex-grow-1 align-items-start" style="width: 50%;">
+														<% order.products.forEach( product => { %>
+															<div class="d-flex align-items-center">
+																<div class="product-image-container">
+																	<img class="product-image" src="/products/<%= product.productId.images[0] %>" alt="product-image">
+																</div>
+																<div class="product-name"><%= product.productId.name %></div>
+															</div>
+															<hr>
+														<% } ) %>
 													</div>
-													<div class="order-items"><%= order.totalPrice %></div>
-													<div class="order-items"><%= order.orderStatus %></div>
+													<div class="order-items flex-grow-1" style="width: 25%;"><%= order.totalPrice %></div>
+													<div class="order-items flex-grow-1" style="width: 25%;"><%= order.orderStatus %></div>
 												</div>
-												<%}) %>
-												<br>
-											
+											<%}) %>
+											<br>
 										<% }else { %>
-												
-												<p>No order has been made yet.</p>
-												<a href="/product-list" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
-
+											<p>No order has been made yet.</p>
+											<a href="/product-list" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
 										<%} %>
-
-								    </div><!-- .End .tab-pane -->
+									</div><!-- .End .tab-pane -->
 
 
 								    <div class="tab-pane fade" id="tab-address" role="tabpanel" aria-labelledby="tab-address-link">
@@ -190,7 +190,7 @@
 												
 												<p>You don't add any address<br>
 													
-													<a href="#tab-add-address" class="add-address-link"> Add address <i class="icon-edit"></i></a></p>
+													<!-- <a href="#tab-add-address" class="add-address-link"> Add address <i class="icon-edit"></i></a></p> -->
 											</div><!-- End .card-body -->
 
 
