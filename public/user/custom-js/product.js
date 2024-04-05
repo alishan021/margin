@@ -1,4 +1,5 @@
 const btnCart = document.querySelectorAll('.btn-add-cart');
+import { showAlert } from "../custom-js/alert-msg";
 
 btnCart.forEach(aElement => {
     aElement.addEventListener('click', async (event) => {
@@ -29,6 +30,7 @@ btnCart.forEach(aElement => {
         }
         if(body.error){
             console.log(body);
+            showAlert(body.error);
         }
     });
 });

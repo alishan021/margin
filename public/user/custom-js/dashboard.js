@@ -1,7 +1,8 @@
+
 const userDetailsForm = document.querySelector('.user-details-form');
 
 userDetailsForm.addEventListener('submit', async (event) => {
-    event.preventDefault(); // Prevent the default form submission behavior
+    event.preventDefault();
     
     const formDetils = $('.user-details-form').serialize();
 
@@ -16,12 +17,12 @@ userDetailsForm.addEventListener('submit', async (event) => {
         body: formDetils
     })
     const data = await response.json();
-    console.log(data);
+    console.log(data.message);
     if(data.error){
-        return displayError(data);
-    }else {
+        return showAlertError(data.error);
+    }else if(data.success){
         // window.location.href = '/dashboard';
-        return displayMessage(data);
+        return showAlertSuccess(data.message);
     }
 });
 
@@ -55,7 +56,7 @@ addressForm.addEventListener('submit', async (event) => {
         const body = await response.json()
         console.log(body)
         if(body.error){
-            return displayError(data);
+            return showAlertError(data.error);
         }else {
             window.location.href = '/dashboard';
         }
@@ -70,7 +71,7 @@ const deleteBtn = document.querySelectorAll('.btn-delete')
 deleteBtn.forEach( button => {
     button.addEventListener('click', async (event) => {
         try{
-            event.stopImmediatePropagation()
+            // event.Propagation();
             const addressId = button.getAttribute('data-address-id');
             if(addressId){
                 const confi = confirm('are you sure, you want to delete the address');
@@ -81,8 +82,10 @@ deleteBtn.forEach( button => {
             console.log(body);
             if(body.success){
                 window.location.reload();
+                showAlertSuccess(body.success)
             }else {
                 console.log(body.error);
+                showAlertError(body.error);
             }
         }catch(err){
             console.error(err);
@@ -155,7 +158,7 @@ editButtons.forEach(button => {
                         const bodyupdate = await responseUpdate.json()
                         console.log(bodyupdate)
                         if(bodyupdate.error){
-                            return displayError(bodyupdate);
+                            return showAlertError(bodyupdate.error);
                         }else {
                             window.location.href = '/dashboard#tab-address';
                         }
@@ -188,25 +191,52 @@ addAddress.addEventListener('click', (event) => {
 
 
 
+const orderBoxs = document.querySelectorAll('.order-box');
+
+orderBoxs.forEach(orderBox => {
+    orderBox.addEventListener('click', async (event) => {
+        const orderId = orderBox.getAttribute('data-order-id');
+        console.log(orderId);        
+        console.log("Order box clicked");
+        // const response = await fetch(`/order/${orderId}`);
+        // const data = await response.json();
+        // console.log(data);
+        // if(data.redirectUrl){
+        window.location.href = `/order/${orderId}`;
+        // }
+    });
+});
 
 
-const msgPara = document.querySelector('.msg-para');
 
-const displayError = (result) => {
-    msgPara.style.color = 'red';
-    msgPara.innerHTML = result.error;
-}
-
-
-const displayMessage = (result) => {
-    msgPara.innerHTML = result.message;
-}
-
-
-
-
-
-
-document.addEventListener('DOMContentLoaded', (event) => {
-    console.log(window.location.hash);
+const hellowAsk = document.querySelector('.hellow-ask');
+hellowAsk.addEventListener('click', (e) => {
+    console.log('hellow');
 })
+
+
+
+
+
+
+
+const alertMessageError = document.getElementById('alertMessageError');
+const alertMessageSuccess = document.getElementById('alertMessageSuccess');
+
+function showAlertError(message) {
+    alertMessageError.innerText = message;
+    alertMessageError.style.display = 'block';
+  setTimeout(() => {
+    alertMessageError.style.display = 'none';
+  }, 3000); 
+}
+
+
+function showAlertSuccess(message) {
+    alertMessageSuccess.innerText = message;
+    alertMessageSuccess.style.display = 'block';
+    setTimeout(() => {
+        alertMessageSuccess.style.display = 'none';
+    }, 3000); 
+}
+  

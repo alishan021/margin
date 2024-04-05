@@ -31,3 +31,8 @@
 .product-name {
     margin-left: 1rem;
 }
+
+
+.order-box {
+    cursor: pointer;
+} 

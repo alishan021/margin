@@ -38,7 +38,7 @@
                                     <a href="#">Product</a>
                                 </li>
                                 <li>
-                                    <a href="#" >Shop</a>
+                                    <a href="/product-list" >Shop</a>
                                 </li>
                             </ul><!-- End .menu -->
                         </nav><!-- End .main-nav -->
@@ -78,21 +78,66 @@
                 <div class="container">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/">Home</a></li>
-                        <li class="breadcrumb-item"><a href="#">Pages</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">404</li>
+                        <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="/dashboard#orders">orders</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">order</li>
                     </ol>
                 </div><!-- End .container -->
             </nav><!-- End .breadcrumb-nav -->
 
-        	<div class="error-content text-center" style="background-image: url(assets/images/backgrounds/error-bg.jpg)">
-            	<div class="container">
-            		<h1 class="error-title">Error 404</h1><!-- End .error-title -->
-            		<p>We are sorry, the page you've requested is not available.</p>
-            		<a href="/" class="btn btn-outline-primary-2 btn-minwidth-lg">
-            			<span>BACK TO HOMEPAGE</span>
-            			<i class="icon-long-arrow-right"></i>
-            		</a>
-            	</div><!-- End .container -->
+        	<div class="error-content text-center" >
+            	<div class="container p-5 border rounded" style="background-color: #d7d7d7;">
+                    <div class="d-flex align-items-center justify-content-between ">
+                        <div><h4 class="mb-0" style="color: #c96;">order details</h4></div>
+                        <div>OrderId: <%= order._id %></div>
+                    </div>
+                    <div>
+                        <% order.products.forEach(( product ) => { %>
+                            <div class="d-flex justify-content-between border border-white p-5 my-3 align-items-center">
+                                <div><img src="/products/<%= product.productId.images[0] %>" alt="product image"></div>
+                                <!-- <div>< product.productId.name %>hellow</div> -->
+                                <div><span><%= product.productId.name %></span></div>
+                                <div><span><%= product.quantity %></span></div>
+                                <div><span><b>$<%= product.productTotalPrice %></b></span></div>
+                            </div>
+                        <%}) %>
+                        <div class="d-flex justify-content-between align-items-end p-2 ">
+                            <div class="col-4 px-0">
+                                <div class="">
+                                    <%= order.address.name %>, 
+                                    <%= order.address.email %>, 
+                                    <%= order.address.phone %>, 
+                                    <%= order.address.pincode %>, 
+                                    <%= order.address.state %>, 
+                                    <%= order.address.country %>, 
+                                    <%= order.address.altphone %>, 
+                                    <%= order.address.city %>, 
+                                    <%= order.address.landmark %> 
+                                    <% if(order.orderNotes) %>  <br>Notes :  <%= order.orderNotes %>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-column align-items-end col-4 px-0">
+                                <div>payment method : <%= order.paymentMethod %></div>
+                                <div>order date : <%= new Date(order.orderDate).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) %></div>
+                                <div>order status : <%= order.orderStatus %></div>
+                                <div><b>$total price : <%= order.totalPrice %></b></div>
+                            </div>
+                        </div>
+                        <% if(order.orderValid){ %>
+
+                            <div class="d-flex">
+                                <div class="ml-auto cancel-order" data-order-id="<%= order._id %>" ><button type="button" class="btn btn-warning btn-cancel-order">Cancel Order</button></div>
+                            </div>
+                            
+                        <% }else { %>
+                            
+                            <div class="d-flex">
+                                <div class="ml-auto " ><button class="btn btn-danger btn-cancel-order">Order is cancelled</button></div>
+                            </div>
+                            
+                        <%} %>
+                    </div>
+                </div>
         	</div><!-- End .error-content text-center -->
         </main><!-- End .main -->
 
@@ -176,8 +221,11 @@
     <script src="/user/assets/js/owl.carousel.min.js"></script>
     <!-- Main JS File -->
     <script src="/user/assets/js/main.js"></script>
+
+
+    <!-- custom-js -->
+    <script src="/user/custom-js/order-details.js"></script>
+
 </body>
 
-
-<!-- molla/404.html  22 Nov 2019 10:04:04 GMT -->
 </html>

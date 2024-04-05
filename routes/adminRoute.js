@@ -4,6 +4,7 @@ const adminController = require('../controllers/adminController');
 const admProductController = require('../controllers/admProductController');
 const admUserController = require('../controllers/admUserController');
 const admCategoryController = require('../controllers/admCategoryController');
+const admOrdersController = require('../controllers/admOrdersController');
 const adminModel = require('../models/admin');
 const adminAuth = require('../middlewares/authAdmin');
 const userModel = require('../models/user');
@@ -71,14 +72,8 @@ router.post('/products/add', upload.array('images', 6 ), admProductController.pr
 router.get('/products/edit/:productId', admProductController.productEditGet );
 router.post('/products/edit/:productId',  upload.array('images', 6 ), admProductController.productEditPost );
 
-router.get('/order', async ( req, res ) => {
-  try{
-    const orders = await orderModel.find({}).populate('products.productId');
-    res.render('admin-order.ejs', { orders })
-  }catch(err){
-    console.log(err);
-  }
-})
+router.get('/order', admOrdersController.orderGet );
+router.patch('/order-status', admOrdersController.orderStatusPatch );
 
 
 module.exports = router;

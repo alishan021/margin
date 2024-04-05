@@ -60,8 +60,15 @@ const orderSchema = new mongoose.Schema({
         default:Date.now
     },
     orderStatus:{
-        type: Boolean,
-        default: false
+       type: String
+    },
+    returned:{
+        type:Boolean,
+        default:false
+    },
+    orderValid:{
+        type:Boolean,
+        default: true
     }
 })
 

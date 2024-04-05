@@ -27,3 +27,21 @@
 /* .td-column {
     border: 1px solid brown;
 } */
+
+
+
+.order-id {
+    width: 100px;
+}
+
+
+
+.order-status {
+    padding: 5px;
+    background-color: aqua;
+}
+
+
+.order-status:first-child{
+    display: none;
+}

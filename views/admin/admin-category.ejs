@@ -56,10 +56,19 @@
                         <tbody>
                             <!-- Users prinst as a loop -->
                             <% categorys.forEach((category, index ) => {  %>
+
                             <tr>
                                 <td><%= index + 1 %></td>
                                 <td><%= category.categoryName %></td>
-                                <td>category products</td>
+
+                                <td>
+                                    <% products.forEach((product, index ) => {  %>
+                                        <% if(product.category == category._id ){ %>
+                                            <%= product.name %> <br>
+                                        <% } %>
+                                    <% }) %>
+                                </td>
+
                                 <td class="user-status <%= category.isActive ? 'list' : 'unlist' %>" >
                                     <span>
                                         <% if(category.isActive){ %> Listed
@@ -73,6 +82,7 @@
                                     <button class="btn-edit"  data-category-id="<%= category._id %>">Edit</button>
                                 </td>                               
                             </tr>
+
                             <% }) %>
                             <!-- Users loop ends -->
                            

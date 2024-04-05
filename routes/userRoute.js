@@ -44,7 +44,8 @@ router.post('/login/validate-otp', userController.validateOtpPost );
 router.get('/login/new-password', userController.newPasswordGet );
 router.post('/login/new-password', userController.newPasswordPost );
 
-router.get('/product-list', userController.productListGet );
+router.get('/product-list/', userController.productListGet );
+router.get('/product-list/:sortBy', userController.productListGetSortBy );
 
 router.get('/product/:productId', userController.productGet );
 router.patch('/product/cart/:productId/:quantity', userController.productCartPatch );
@@ -79,6 +80,8 @@ router.get('/checkout', userAuth.userSessionNo, userController.checkoutGet );
 router.post('/checkout/:userId', userController.checkoutPost );
 // router
 
+router.get('/order/:orderId', userController.orderSingleGet );
+router.patch('/order/cancel/:orderId', userController.orderCalcellationPath );
 
 // Error page
 // router.get('/*', userController.errorPageGet );

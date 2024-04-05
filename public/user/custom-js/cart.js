@@ -13,6 +13,8 @@ cartItemNum.forEach( item => {
         })
         const body = await response.json();
         console.log(body);
+        if(body.success) showAlertSuccess(body.success);
+        else if(body.error) showAlertError(body.error);
     })
 })
 
@@ -31,7 +33,8 @@ document.querySelectorAll('.remove-col').forEach(tdElement => {
         console.log(body);
         if(body.success){
             window.location.reload();
-        }
+            showAlertSuccess(body.success);
+        }else if(body.error) showAlertError(body.error);
     });
 });
 
@@ -48,8 +51,39 @@ radioButtons.forEach(radio => {
             const addressId = event.target.dataset.addressId;
             fetch(`/address/preffered/${addressId}`)
                 .then((response) => response.json())
-                .then(data => console.log(data))
+                .then(body => {
+                    if(body.success) showAlertSuccess(body.success);
+                    else if(body.error) showAlertError(body.error);
+                })
                 .catch( err => console.log(err))
         }
     });
 });
+
+
+
+
+
+
+
+
+const alertMessageError = document.getElementById('alertMessageError');
+const alertMessageSuccess = document.getElementById('alertMessageSuccess');
+
+function showAlertError(message) {
+    alertMessageError.innerText = message;
+    alertMessageError.style.display = 'block';
+  setTimeout(() => {
+    alertMessageError.style.display = 'none';
+  }, 3000); 
+}
+
+
+function showAlertSuccess(message) {
+    alertMessageSuccess.innerText = message;
+    alertMessageSuccess.style.display = 'block';
+    setTimeout(() => {
+        alertMessageSuccess.style.display = 'none';
+    }, 3000); 
+}
+  

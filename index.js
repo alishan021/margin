@@ -38,9 +38,10 @@ app.use('/admin', require('./routes/adminRoute.js'));
 
 
 // 404 Not Found handler
-app.get('*', (req, res, next) => {
-    res.status(404).render('404.ejs')
-});
+// app.get('*', (req, res, next) => {
+//     console.log('response : ' + res );
+//     res.status(404).render('404.ejs')
+// });
 
   // 500 Internal Server Error handler
 // app.use((err, req, res, next) => {

@@ -1,5 +1,6 @@
 
 const categoryModel = require('../models/category');
+const productModel = require('../models/products');
 
 
 
@@ -7,7 +8,9 @@ const categoryModel = require('../models/category');
 
 exports.categoryGet =  async ( req, res ) => {
     const categorys = await categoryModel.find({}).sort({ createdAt: -1 });
-    res.render('admin-category.ejs', { categorys });
+    const products = await productModel.find({}, { name: 1, _id: -1, category: 1 });
+    console.log( products );
+    res.render('admin-category.ejs', { categorys, products });
 }
 
 

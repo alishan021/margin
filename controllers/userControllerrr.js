@@ -383,13 +383,38 @@ exports.productGet = async ( req, res ) => {
 exports.productListGet = async ( req, res ) => {
     try{
         const products = await productModel.find({ status: { $ne: false } });
-        const totalDocs = await productModel.find({ status: { $ne: false } }).count();
-        // const categorys = await categoryModel.find({});
-        console.log(products);
-        res.render('product-list.ejs', { products, totalDocs, userIn: req.session.userIn });
+        // const totalDocs = await  await productModel.find({ status: { $ne: false } }).count();
+        const totalDocs = products.length;
+        const categorys = await categoryModel.find({});
+        res.render('product-list.ejs', { products, totalDocs, userIn: req.session.userIn, categorys });
    }
    catch(error){
     console.log('error in productListGet: ' + error );
+    }
+}
+
+
+
+
+exports.productListGetSortBy = async ( req, res ) => {
+    const sortBy = req.params.sortBy;
+    console.log('sortBy : ' + sortBy);
+    try{
+        let products = [];
+        if(sortBy === undefined || !sortBy) products = await productModel.find({ status: { $ne: false } });
+        if(sortBy === 'a-to-z' ) products = await productModel.find({ status: { $ne: false }}).sort({ name: 1 });
+        if(sortBy === 'z-to-a' ) products = await productModel.find({ status: { $ne: false }}).sort({ name: -1 });
+        if(sortBy === 'low-to-high' ) products = await productModel.find({ status: { $ne: false }}).sort({ price: 1 });
+        if(sortBy === 'high-to-low' ) products = await productModel.find({ status: { $ne: false }}).sort({ price: -1 });
+        if(sortBy === 'new-arrivals' ) products = await productModel.find({ status: { $ne: false }}).sort({ create_at: -1 });
+
+        const totalDocs = products.length;
+        const categorys = await categoryModel.find({});
+
+        res.render('product-list.ejs', { products, totalDocs, userIn: req.session.userIn, categorys });
+
+    }catch(err){
+        console.log(err);
     }
 }
 
@@ -471,6 +496,7 @@ exports.checkoutGet = async (req, res) => {
         if (!user) return res.status(400).json({ error: 'User session expired, login again' });
 
         const productDetails = await getProductDetails(user.cart);
+        console.log('productDetails : ');
         console.log(productDetails);
 
         res.render('checkout.ejs', { userIn: req.session.userIn, products: productDetails, user, address });
@@ -485,6 +511,7 @@ async function getProductDetails(cart) {
     const productDetails = [];
     for (const item of cart) {
         const product = await productModel.findById(item.product);
+        if(product.quantity <= 0) continue;
         if (product) {
             productDetails.push({
                 product: product,
@@ -528,7 +555,7 @@ exports.DashboardUserDetailsPatch = async ( req, res ) => {
             const result = await userModel.findOneAndUpdate({ email: userSessionEmail }, { $set: { username, password: hashedPassword }}, { new: true } );
             console.log(result);
             req.session.user.username = username;
-            return res.status(200).json({ message: 'userDetails updated successfully'});
+            return res.status(200).json({ success: true, message: 'userDetails updated successfully'});
         }
     }
     catch(err){
@@ -741,6 +768,8 @@ exports.addressUpdatePatch = async (req, res) => {
 exports.checkoutPost = async (req, res) => {
     try {
       const user = await userModel.findById(req.session.user._id);
+      if(!user) return res.status(400).json({ error: 'User not found, Login again'});
+
       const address = {
         name: req.body.name,
         email: req.body.email,
@@ -765,7 +794,8 @@ exports.checkoutPost = async (req, res) => {
       for (const item of productDetails) {
         const dbProduct = await productModel.findById(item.product._id);
         if (dbProduct.quantity < item.count) {
-          return res.status(400).json({ error: `${dbProduct.name} is out of stock` });
+            continue;
+        //   return res.status(400).json({ error: `${dbProduct.name} is out of stock` });
         }
         dbProduct.quantity -= item.count;
         await dbProduct.save();
@@ -835,6 +865,39 @@ exports.productCartPatch = async ( req, res ) => {
         console.log('User updated successfully:', user);
 
         return res.status(200).json({ message: 'Cart updated successfully', user });
+    }catch(err){
+        console.error(err);
+    }
+}
+
+
+
+exports.orderSingleGet  = async ( req, res )  => {
+    try{
+        const orderId = req.params.orderId;
+        const dbOrder = await orderModel.findById(orderId).populate('products.productId');
+        console.log('dbOrder : ' + dbOrder.products);
+        console.log('dbOrder : ' + dbOrder.products.productId);
+        res.render('order-details.ejs', { order: dbOrder });
+        // if(!orderId) return res.status(400).json({ error: 'orderId not found', redirectUrl: false});
+        // if(!dbOrder) return res.status(400).json({ error: 'order not found', redirectUrl: false});
+        // return res.status(200).json({ message: 'order showing', redirectUrl: `/order/${orderId}`});
+    }catch(err) {
+        console.log(err);
+    }
+}
+
+
+
+exports.orderCalcellationPath = async ( req, res ) => {
+    const orderId = req.params.orderId;
+    try{
+        console.log(orderId);
+        const dbOrder = await orderModel.findById(orderId);
+        dbOrder.orderStatus = 'cancel';
+        dbOrder.orderValid = false;
+        dbOrder.save();
+        return res.status(400).json({ message: 'order cancelled'});
     }catch(err){
         console.error(err);
     }

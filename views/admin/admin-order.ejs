@@ -57,6 +57,7 @@
                                             <div class="image-and-name">
                                                 <img class="product-img" src="/products/<%= product.productId.images[0] %>" alt="product image">
                                                 <span><%= product.productId.name %></span>
+                                                <span>(<%= product.quantity %>)</span>
                                                 <br>
                                             </div>
                                             <hr>
@@ -64,7 +65,7 @@
                                     </div>
                                 </td>
                                 <td class="td-column" ><%= order.totalPrice %></td>
-                                <td class="td-column" ><%= order._id %></td>
+                                <td class="td-column order-id" ><%= order._id %></td>
                                 <td class="td-column">
                                     <span><%= order.address.name %></span><br><hr>
                                     <span><%= order.address.email %></span><br><hr>
@@ -78,13 +79,19 @@
                                     <span><%= order.orderNotes %></span>
                                 </td>
                                 <td><%= order.paymentMethod %></td>
-                                <td><%= order.orderDate %></td>
+                                <td><%= new Date(order.orderDate).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) %></td>
                                 <td class="td-status td-column">
-                                    <select name="orderstatus" id="order-status">
-                                        <option value="pending">pending</option>
-                                        <option value="delivered">delivered</option>
-                                        <option value="returned">returned</option>
-                                        <option value="on the way">on the way</option>
+                                    <p style="margin: 10px 10px;;"><%= order.orderStatus %></p>
+                                    <select name="orderstatus" id="order-status" class="order-status" data-order-id="<%= order._id %>">
+                                        <!-- < if( order.orderStatus ){ %> -->
+                                            <!-- <option value="<= order.orderStatus %>"><= order.orderStatus %></option> -->
+                                        <!-- < } %> -->
+                                        <option >select</option>
+                                        <option value="return">Return</option>
+                                        <option value="order-confirm" >Order Confirmed</option>
+                                        <option value="refund">Refunded Completed</option>
+                                        <option value="cancel">Order Cancelled</option>
+                                        <option value="deliver">Delivered</option>
                                     </select>
                                 </td>
                             </tr>
