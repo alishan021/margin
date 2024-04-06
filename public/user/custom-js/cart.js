@@ -13,7 +13,7 @@ cartItemNum.forEach( item => {
         })
         const body = await response.json();
         console.log(body);
-        if(body.success) showAlertSuccess(body.success);
+        if(body.success) showAlertSuccess(body.message);
         else if(body.error) showAlertError(body.error);
     })
 })
@@ -32,8 +32,8 @@ document.querySelectorAll('.remove-col').forEach(tdElement => {
         const body = await response.json();
         console.log(body);
         if(body.success){
-            window.location.reload();
-            showAlertSuccess(body.success);
+            showAlertSuccess(body.message);
+            setTimeout(() => window.location.reload() , 2000);
         }else if(body.error) showAlertError(body.error);
     });
 });
@@ -48,6 +48,7 @@ radioButtons.forEach(radio => {
     radio.addEventListener('change', (event) => {
         if (event.target.checked) {
             // const selectedAddress = event.target.value;
+            if(event.target.dataset.addressId = "") return;
             const addressId = event.target.dataset.addressId;
             fetch(`/address/preffered/${addressId}`)
                 .then((response) => response.json())

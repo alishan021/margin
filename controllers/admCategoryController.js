@@ -19,7 +19,7 @@ exports.categoryGet =  async ( req, res ) => {
 exports.createCategoryPost = async ( req, res ) => {
     try{
      console.log('inside add category');
-     const { category, status } = req.body;
+     let { category, status } = req.body;
      console.log('category  : ' + category);
      if(!category || category == '' ){
          console.log(`category can't be null`);
@@ -30,6 +30,7 @@ exports.createCategoryPost = async ( req, res ) => {
      if(checkCategory){
          return res.status(400).json({ error: 'category is already existed plus'});
      }
+     category = category.trim('');
      const result = await categoryModel.create({ categoryName: category });
      console.log('result : ' + result );
      return res.status(201).json({ message: 'category created successfully' });

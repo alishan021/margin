@@ -46,6 +46,7 @@ router.post('/login/new-password', userController.newPasswordPost );
 
 router.get('/product-list/', userController.productListGet );
 router.get('/product-list/:sortBy', userController.productListGetSortBy );
+router.get('/filter', userController.sortFilterGet );
 
 router.get('/product/:productId', userController.productGet );
 router.patch('/product/cart/:productId/:quantity', userController.productCartPatch );

@@ -75,7 +75,7 @@
 												<td class="price-col"><%= item.product.price %></td>
 												<td class="quantity-col">
 													<div class="cart-product-quantity">
-														<input type="number" class="form-control quantityInput" value="<%= item.count %>" min="1" max="10" step="1" data-decimals="0" data-product-id="<%= item._id %>" data-user-id="<%= cartProducts._id %>" required>
+														<input type="number" class="form-control quantityInput" value="<%= item.count %>" min="1" max="10" step="1" data-decimals="0" data-product-id="<%= item.product._id %>" data-user-id="<%= cartProducts._id %>" required>
 													</div><!-- End .cart-product-quantity -->
 												</td>
 												<td class="total-col"><%= item.product.price * item.count %></td>
@@ -169,13 +169,25 @@
 
 												<form id="address-form">
 
+													<tr class="summary-shipping-row">
+														<td>
+															<div class="custom-control custom-radio">
+																<input type="radio" id="address-1" name="selectedAddress" class="custom-control-input" select-address data-address-id="new" >
+																<label class="custom-control-label" for="address-1">
+																	<span class="font-weight-normal" >New Address</span>
+																	 <span class="font-italic" ></span></label>
+															</div><!-- End .custom-control -->
+														</td>
+														<td></td>
+													</tr><!-- End .summary-shipping-row -->
+
 												<% user.address.forEach( ( address, index ) => { %> 
 
 
 													<tr class="summary-shipping-row">
 														<td>
 															<div class="custom-control custom-radio">
-																<input type="radio" id="address<%= index %>" name="selectedAddress" class="custom-control-input" select-address data-address-id="<%= address._id %>" >
+																<input type="radio" id="address<%= index + 1 %>" name="selectedAddress" class="custom-control-input" select-address data-address-id="<%= address._id %>" >
 																<label class="custom-control-label" for="address<%= index %>">
 																	<span class="font-weight-normal" >Address <%= index + 1  %>:</span>
 																	 <span class="font-italic" ><%= user.address[index].landmark %></span></label>

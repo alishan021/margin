@@ -102,14 +102,7 @@
 
 
                             <div class="products mb-3">
-                                <div class="row justify-content-center">
-
-
-
-
-
-
-
+                                <div class="row justify-content-center product-item">
 
 
 
@@ -211,8 +204,16 @@
                 			<div class="sidebar sidebar-shop">
                 				<div class="widget widget-clean">
                 					<label>Filters:</label>
-                					<a href="#" class="sidebar-filter-clear">Clean All</a>
+                					<a href="/product-list" class="sidebar-filter-clear">Clean All</a>
                 				</div><!-- End .widget widget-clean -->
+
+								<div>
+									<!-- <div><p>search</p></div> -->
+									<div>
+										<!-- <span>search : </span> -->
+										<input type="search" class="my-3 px-3 py-2 border border-none product-serach" placeholder="search">
+									</div>
+								</div>
 
                 				<div class="widget widget-collapsible">
     								<h3 class="widget-title">
@@ -232,7 +233,7 @@
 													
 												<div class="filter-item" data-category-name="<%= category.categoryName %>">
 													<div class="custom-control custom-checkbox">
-														<input type="checkbox" class="custom-control-input filter-category-item" id="cat-<%= index + 1 %>" data-cat-name="<%= category.categoryName %>" name="<%= category.categoryName %>">
+														<input type="checkbox" class="custom-control-input filter-category-item" id="cat-<%= index + 1 %>" data-category-id="<%= category._id %>" name="<%= category.categoryName %>">
 														<label class="custom-control-label" for="cat-<%= index + 1 %>"><%= category.categoryName %></label>
 													</div><!-- End .custom-checkbox -->
 													<!-- <span class="item-count">3</span> -->
@@ -266,12 +267,16 @@
 
                                                 <!-- <div id="price-slider"></div> -->
 												<div id="slider"></div>
-												<div>
-													<!-- <div>
+												<div class="d-flex justify-content-between">
+													<div><span>min : $<span class="min-price"></span></span></div>
+													<div><span>max : $<span class="max-price"></span></span></div>
+												</div>
+												<!-- <div>
+													<div>
 														<span>min : $<span class="min-price"></span></span>
 														<span>max : $<span class="max-price"></span></span>
-													</div> -->
-												</div>
+													</div>
+												</div> -->
                                             </div><!-- End .filter-price -->
 										</div><!-- End .widget-body -->
 									</div><!-- End .collapse -->
@@ -321,52 +326,14 @@
 	<!-- custom js file -->
 	<script src="/user/custom-js/product-list.js" defer ></script>
 
-	<script id="product-data">
+	<!-- <script id="product-data">
 
 		// const products = `<= products %>`;
 		// console.log(products);
-		const categories = document.querySelector('.filter-items');
-		const checkedItems = [];
-		
-		document.querySelector('#btn-filter').addEventListener('click', () => {
-    		console.log('hellow');
-		});
-
-		categories.addEventListener('change', (event) => {
-			if(event.target.tagName === 'INPUT' && event.target.type === 'checkbox') {
-				if(event.target.checked) {
-                    checkedItems.push(event.target.name);
-                } else {
-					checkedItems.splice(checkedItems.indexOf(event.target.value), 1);
-                }
-                console.log(checkedItems);
-            }
-		})
 		
 
 
-		 // Initialize the noUiSlider
-		var slider = document.getElementById('slider');
-  			noUiSlider.create(slider, {
-  			  start: [0, 8000], // Initial values
-  			  connect: true,
-  			  range: {
-  			    'min': 0,
-  			    'max': 10000
-  			  }
-  		});
-
-  		let minPrice, maxPrice;
-  		slider.noUiSlider.on('change', function(values, handle) {
-  		  console.log('Selected values:', values);
-			const priceRange = document.querySelector('#filter-price-range');
-			minPrice = parseInt(values[0]), maxPrice = parseInt(values[1])
-			priceRange.innerHTML = `$${minPrice} - $${maxPrice}`;
-  		  // sendDataToBackend(values);
-  		});
-
-
-	</script>
+	</script> -->
 
 </body>
 </html>

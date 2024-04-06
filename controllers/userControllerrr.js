@@ -7,6 +7,7 @@ const productModel = require('../models/products')
 const bcrypt = require('bcrypt');
 const categoryModel = require('../models/category');
 const orderModel = require('../models/order');
+const { search } = require('../routes/userRoute');
 
 
 
@@ -383,7 +384,6 @@ exports.productGet = async ( req, res ) => {
 exports.productListGet = async ( req, res ) => {
     try{
         const products = await productModel.find({ status: { $ne: false } });
-        // const totalDocs = await  await productModel.find({ status: { $ne: false } }).count();
         const totalDocs = products.length;
         const categorys = await categoryModel.find({});
         res.render('product-list.ejs', { products, totalDocs, userIn: req.session.userIn, categorys });
@@ -396,27 +396,170 @@ exports.productListGet = async ( req, res ) => {
 
 
 
-exports.productListGetSortBy = async ( req, res ) => {
-    const sortBy = req.params.sortBy;
-    console.log('sortBy : ' + sortBy);
-    try{
-        let products = [];
-        if(sortBy === undefined || !sortBy) products = await productModel.find({ status: { $ne: false } });
-        if(sortBy === 'a-to-z' ) products = await productModel.find({ status: { $ne: false }}).sort({ name: 1 });
-        if(sortBy === 'z-to-a' ) products = await productModel.find({ status: { $ne: false }}).sort({ name: -1 });
-        if(sortBy === 'low-to-high' ) products = await productModel.find({ status: { $ne: false }}).sort({ price: 1 });
-        if(sortBy === 'high-to-low' ) products = await productModel.find({ status: { $ne: false }}).sort({ price: -1 });
-        if(sortBy === 'new-arrivals' ) products = await productModel.find({ status: { $ne: false }}).sort({ create_at: -1 });
+// exports.productListGetSortBy = async ( req, res ) => {
+//     const sortBy = req.params.sortBy;
+//     console.log('sortBy : ' + sortBy);
+//     const itemss = req.query;
+//     console.log(itemss);
+//     const search = req.query.search || "";
+//     let category = req.query.category ;
+//     const min = parseInt(req.query.min) || 0;
+//     const max = parseInt(req.query.max) || Infinity;
 
-        const totalDocs = products.length;
-        const categorys = await categoryModel.find({});
+//     (category)? category = category.split(','): {} ;
 
-        res.render('product-list.ejs', { products, totalDocs, userIn: req.session.userIn, categorys });
+//     console.log( search, category, min, max)
 
-    }catch(err){
-        console.log(err);
+//     try{
+//         let products = [];
+//         if(sortBy === undefined || !sortBy) products = await productModel.find({ status: { $ne: false } });
+//         if(sortBy === 'a-to-z' ) products = await productModel.find({ status: { $ne: false }}).sort({ name: 1 });
+//         if(sortBy === 'z-to-a' ) products = await productModel.find({ status: { $ne: false }}).sort({ name: -1 });
+//         if(sortBy === 'low-to-high' ) products = await productModel.find({ status: { $ne: false }}).sort({ price: 1 });
+//         if(sortBy === 'high-to-low' ) products = await productModel.find({ status: { $ne: false }}).sort({ price: -1 });
+//         if(sortBy === 'new-arrivals' ) products = await productModel.find({ status: { $ne: false }}).sort({ create_at: -1 });
+
+//         const totalDocs = products.length;
+//         const categorys = await categoryModel.find({});
+
+//         res.render('product-list.ejs', { products, totalDocs, userIn: req.session.userIn, categorys });
+
+//     }catch(err){
+//         console.log(err);
+//     }
+// }
+exports.productListGetSortBy = async (req, res) => {
+    try {
+        // Extracting query parameters with default values
+        const { sortBy } = req.params;
+        const { search = "", category = "", min = 0, max = Infinity } = req.query;
+
+        // Parsing category to array if provided
+        const categories = category ? category.split(",") : [];
+
+        // Aggregation pipeline stages
+        const pipeline = [
+            // Match stage for filtering
+            {
+                $match: {
+                    status: { $ne: false },
+                    name: { $regex: search, $options: "i" }, // Case-insensitive search
+                    category: { $in: categories },
+                    price: { $gte: parseInt(min), $lte: parseInt(max) }
+                }
+            }
+        ];
+
+        // Sorting stage based on sortBy parameter
+        if (sortBy === "a-to-z") {
+            pipeline.push({ $sort: { name: 1 } });
+        } else if (sortBy === "z-to-a") {
+            pipeline.push({ $sort: { name: -1 } });
+        } else if (sortBy === "low-to-high") {
+            pipeline.push({ $sort: { price: 1 } });
+        } else if (sortBy === "high-to-low") {
+            pipeline.push({ $sort: { price: -1 } });
+        } else if (sortBy === "new-arrivals") {
+            pipeline.push({ $sort: { create_at: -1 } });
+        }
+
+        // Executing aggregation pipeline
+        const products = await productModel.aggregate(pipeline);
+
+        // Sending response
+        res.render("product-list.ejs", {
+            products,
+            totalDocs: products.length,
+            userIn: req.session.userIn,
+            categorys: await categoryModel.find({})
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Internal Server Error");
     }
-}
+};
+
+
+
+
+
+// exports.sortFilterGet = async ( req, res ) => {
+//     console.log(req.query);
+//     let sortBy = req.query.sortBy;
+//     const search = req.query.search || "";
+//     const category = req.query.category || "";
+//     const min = parseInt(req.query.min) || 0;
+//     const max = parseInt(req.query.max) || Infinity;
+//     console.log( sortBy, search, category, min, max);
+
+//     if (sortBy === "a-to-z") sortBy = { name: 1 }
+//     else if (sortBy === "z-to-a") sortBy = { name: -1 }
+//     else if (sortBy === "low-to-high") sortBy = { price: 1 }
+//     else if (sortBy === "high-to-low") sortBy = { price: -1 }
+//     else if (sortBy === "new-arrivals") sortBy = { create_at: -1 }
+
+//     try{
+//         const products = await productModel.find({ name: { $regex: search, $options: "i"}})
+//                                                 .where("category")
+//                                                 .eq()
+//                                                 .sort(sortBy)
+
+//         res.status(200).json({ success: true, message: 'response successfull'})
+//     }catch(err){
+//         console.log(err);
+//     }
+// }
+
+// const productModel = require('./models/productModel'); // Import your product model
+
+exports.sortFilterGet = async (req, res) => {
+    try {
+        // Extract query parameters
+        const sortBy = req.query.sort;
+        const search = req.query.search || "";
+        const category = req.query.category || "";
+        const min = parseInt(req.query.min) || 0;
+        const max = parseInt(req.query.max) || Infinity;
+
+        console.log(sortBy, search, category, min, max);
+
+        // Define sort criteria based on sortBy parameter
+        let sortCriteria;
+        if (sortBy === "a-to-z") sortCriteria = { name: 1 };
+        else if (sortBy === "z-to-a") sortCriteria = { name: -1 };
+        else if (sortBy === "low-to-high") sortCriteria = { price: 1 };
+        else if (sortBy === "high-to-low") sortCriteria = { price: -1 };
+        else if (sortBy === "new-arrivals") sortCriteria = { created_at: -1 };
+
+        // Build query for filtering products
+        const query = productModel.find({ name: { $regex: search, $options: "i" } });
+        console.log(query)
+
+        // Apply additional filters
+        if (category) {
+            query.where('category').equals(category);
+        }
+        query.where('price').gte(min).lte(max);
+
+        // Apply sorting criteria
+        if (sortCriteria) {
+            query.sort(sortCriteria);
+            console.log(sortCriteria)
+        }
+
+        // Execute the query
+        const products = await query.exec();
+
+        console.log(products);
+
+        // Return the filtered and sorted products
+        res.status(200).json({ success: true, data: products });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+};
+
 
 
 
@@ -603,18 +746,20 @@ exports.cartCountPatch = async (req, res) => {
     const productId = req.params.productId;
     const nums = req.params.nums;
     const userId = req.params.userId;
+    console.log(productId, nums, userId );
 
     try {
         const user = await userModel.findById(userId);
-        console.log(productId, nums, userId );
 
         if (!user) {
             return res.status(404).json({ error: 'User not found', redirect: '/login' });
         }
 
         // Find the index of the product in the cart array
-        const productIndex = user.cart.findIndex(item => item._id.toString() === productId);
+        const productIndex = user.cart.findIndex(item => item.product.toString() === productId);
 
+        console.log( 'productIndex : ' + productIndex );
+        console.log(user.cart);
         console.log(user.cart[productIndex].count*1);
         if(nums > 10 || nums <= 0 ){
             return res.status(404).json({ error: 'maximum cart items 10' });
@@ -623,6 +768,9 @@ exports.cartCountPatch = async (req, res) => {
         if (productIndex == -1) {
             return res.status(404).json({ error: 'Product not found in the cart' });
         }
+        const product = await productModel.findById(productId);
+        console.log(product)
+        if(nums > product.quantity) return res.status(400).json({  error: 'no more products available'});
 
         user.cart[productIndex].count = parseInt(nums);
 
@@ -633,7 +781,7 @@ exports.cartCountPatch = async (req, res) => {
 
         console.log('User updated successfully:', user);
 
-        return res.status(200).json({ message: 'Cart updated successfully', user });
+        return res.status(200).json({ success: true, message: 'Cart updated successfully'}); // user 
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: 'Internal Server Error' });
@@ -643,7 +791,7 @@ exports.cartCountPatch = async (req, res) => {
 
 
 
-exports.addAddressPatch = async ( req, res ) => {
+exports.addAddressPatch = async ( req, res ) => {success
     try{
         console.log('hai from addAddressPatch')
         const userId = req.params.userId;
@@ -769,6 +917,7 @@ exports.checkoutPost = async (req, res) => {
     try {
       const user = await userModel.findById(req.session.user._id);
       if(!user) return res.status(400).json({ error: 'User not found, Login again'});
+      if(typeof Number(req.body.pincode) !== 'number' ) return res.status(400).json({ error: 'pincode must be number'});
 
       const address = {
         name: req.body.name,
