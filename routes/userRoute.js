@@ -74,6 +74,8 @@ router.get('/address/preffered/:addressId', userController.preferredAddressGet )
 
 // User wishlist
 router.get('/wishlist', userAuth.userSessionNo, userController.wishlistGet );
+router.post('/wishlist/:productId', userAuth.userSessionNo, userController.wishlistPost );
+router.delete('/product/remove/:productId', userController.wishlistDelete );
 
 
 // User checkout

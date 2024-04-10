@@ -59,11 +59,14 @@ var userSchema = new Schema({
             default: Date.now
     }}],    
     wishlist: [{
-            product_id: {
-                type: String
+        product_id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Product'
+
         },
         added_at: {
-            type: Date
+            type: Date,
+            default: Date.now
     }}],
     wallet: {
         card_no: {

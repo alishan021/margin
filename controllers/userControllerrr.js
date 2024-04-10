@@ -199,9 +199,7 @@ exports.redirecToOtp = ( req, res) => {
 
 
 exports.loginGet = ( req, res ) => {
-    // if(req.session.isLogin){
-    //     return res.redirect('/');
-    // }
+   console.log('login');
     res.render('login.ejs');
 }
 
@@ -601,7 +599,9 @@ exports.dashboardGet = async ( req, res ) => {
 
 
 exports.cartGet = async ( req, res ) => {
-    const cartProducts = await userModel.findOne({ email: req.session.user.email }, { cart: 1 }).populate('cart.product');
+    let cartProducts = await userModel.findOne({ email: req.session.user.email }, { cart: 1 }).populate('cart.product');
+    console.log
+    // cartProducts = cartProducts.filter( (product) => );
     const user = await userModel.findById(req.session.user._id);
     console.log(cartProducts)
     if (!cartProducts || !user ) return res.status(404).send('User session expired, login again');
@@ -613,8 +613,39 @@ exports.cartGet = async ( req, res ) => {
 
 
 
-exports.wishlistGet =  ( req, res ) => {
-    res.render('wishlist.ejs', { userIn: req.session.userIn, user: req.session.user });
+exports.wishlistGet =  async ( req, res ) => {
+    const user = await userModel.findById(req.session.user._id).populate('wishlist.product_id');
+    console.log(user);
+    res.render('wishlist.ejs', { userIn: req.session.userIn, user });
+}
+
+
+
+exports.wishlistPost = async ( req, res ) => {
+    const productId = req.params.productId;
+    console.log(productId);
+    try{
+        if(!productId) return res.status(400).json({ error: 'product Id not found' });
+        const user = await userModel.findById(req.session.user._id);
+        user.wishlist.forEach( item => {
+            if(item.product_id === productId) return res.status(400).json({ error: 'product already exists' });
+        })
+        user.wishlist.push({ product_id: productId });
+        user.save();
+        console.log(user);
+        if(user) return res.status(200).json({ success: true, message: 'product added to wishlist' })
+        else return res.status(400).json({ error: `can't add product into wishlist`});
+    }catch(err){
+        console.log(err);
+    }
+}
+
+
+
+exports.wishlistDelete = async ( req, res) => {
+    const productId = req.params.productId;
+    console.log(productId);
+    res.json('okay');
 }
 
 

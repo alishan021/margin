@@ -49,7 +49,7 @@ form{
 textarea,
 input
 {
-    padding: 5px 10px;
+    padding: 10px 20px;
     border-radius: 5px;
     /* border: none; */
 }
@@ -77,11 +77,18 @@ input
 .btn-submit
 {
     width: 50%;
-    background-color: darkblue;
-    padding: 5px 10px;
+    background-color: rgb(4, 102, 158);
+    padding: 10px 20px;
     color: white;
     border-radius: 10px;
+    font-weight: bold;
 }
+
+.btn-submit:hover {
+    background-color: darkblue;
+    cursor: pointer;
+}
+
 
 .two-col-div{
     display: flex;
@@ -98,7 +105,7 @@ input
 .image-preview-container-old, .image-preview-container-new {
     display: flex;
     flex-wrap: wrap;
-    border: 1px solid black;
+    /* border: 1px solid black; */
     margin: 5px 0;
 }
 
@@ -106,6 +113,7 @@ input
     position: relative;
     margin-right: 10px;
     margin-bottom: 10px; /* Add some spacing between images */
+    border: 1px solid black;
 }
 
 .image-preview {
@@ -114,18 +122,25 @@ input
     padding: 10px;
 }
 
-.delete-image-btn {
+.img-delete-btn {
     position: absolute;
-    top: 12px;
-    right: 12px;
-    background-color: rgba(255, 0, 0, 0.589);
-    color: white;
+    top: 5px;
+    right: 5px;
+    background-color: rgba(155, 155, 155, 0.589);
+    color: red;
     font-size: 8px;
     border: none;
-    padding: 5px; /* Example styling */
-    border-radius: 5px;
+    padding: 10px;
+    /* height: 30px; */
+    /* width: 30px; */
+    font-size: larger;
+    border-radius: 100%;
 }
 
+
+.img-delete-btn{
+    cursor: pointer;
+}
 
 
 .file-thumbnail{
@@ -135,4 +150,16 @@ input
 
 #category{
     padding: 5px;
+}
+
+
+.file-thumbnail{
+    border: 1px solid black;
+    width: 100px;
+    height: 100px;
+    position: relative;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    background-color: rgba(155, 155, 155, 0.589);
+
 }

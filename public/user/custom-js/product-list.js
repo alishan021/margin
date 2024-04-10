@@ -137,6 +137,22 @@ function renderFiltered(data) {
 
 
 
+const wishlistButtons = document.querySelectorAll('.btn-wishlist');
+wishlistButtons.forEach(( button ) => {
+    button.addEventListener('click', async () => {
+        console.log('button wishlist');
+        const productId = button.getAttribute('data-product-id');
+        const response = await fetch(`/wishlist/${productId}`, { method: 'POST' });
+        const result = await response.json();
+        console.log(result);
+        if(result.success) showAlertSuccess(result.message)
+        else showAlertError(result.error);
+    })
+})
+
+
+
+
 
 
 

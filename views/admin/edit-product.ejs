@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/admin/custom-css/sidebar.css">
     <link rel="stylesheet" href="/admin/custom-css/edit-products.css">
     <link rel="stylesheet" href="/admin/custom-css/msg-box.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="/admin/custom-js/edit-product.js" defer ></script>
 </head>
 <body>
@@ -24,7 +25,7 @@
             <div class="msg-box">
                 <p class="msg-para"></p>
             </div>
-            <form action="/admin/products/edit/<%= product._id %>"  method="post" enctype="multipart/form-data" >
+            <form action="/admin/products/edit/<%= product._id %>" data-product-id="<%= product._id %>"  method="post" enctype="multipart/form-data" >
                 <div class="input-item form-child" >
                     <label for="name"> Name : * </label>   
                     <input type="text" id="name" name="name" value="<%= product.name %>">
@@ -81,6 +82,7 @@
                         <% product.images.forEach((image, index ) => { %>
                             <div class="image-preview-div">
                                 <img src="/products/<%= image %>" class="image-preview" alt="Product Image">
+                                <i class="fa-solid fa-trash img-delete-btn" data-image-url="<%= image %>" data-product-id="<%= product._id %>"></i>
                             </div>
                         <% }); %>
                     </div> 
@@ -99,9 +101,9 @@
 
 
 
-<script>
-    const productId = `<%= product._id %>`;
-</script>
+<!-- <script>
+    const productId = `<= product._id %>`;
+</script> -->
 
 
 </body>

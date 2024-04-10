@@ -162,6 +162,7 @@ exports.productsAdd = async ( req, res ) => {
     try{
         console.log('inside /admin/products/edit/65e19ce446a158b1c9dfacbe');
         const productId = req.params.productId;
+        // req.session.productId = productId;
         const categorys = await categoryModel.find({});
         // console.log(categorys);
         // console.log('id: ' + productId );
@@ -227,5 +228,19 @@ exports.productEditPost = async ( req, res ) => {
    catch(error){
         console.log(`product port error : ${error}`);
    }
+}
 
+
+exports.productImageDelete = async ( req, res ) => {
+    const imageUrl = req.query.imageUrl;
+    const productId = req.query.productId;
+    console.log(imageUrl);
+    console.log(productId);
+    try{
+        if(!imageUrl || !productId) return res.status(400).json({ success: false, error: 'product image or product not found in db'});
+        const result = await productModel.findByIdAndUpdate(productId, { $pull: { images: imageUrl }});
+        if(result) return res.status(200).json({ success: true, message: 'Image removed from product details.'});
+    }catch(err){
+        console.log(err);
+    }
 }

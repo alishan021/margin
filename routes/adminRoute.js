@@ -71,6 +71,7 @@ router.get('/logout', adminController.logout );
 router.post('/products/add', upload.array('images', 6 ), admProductController.productsAdd );
 router.get('/products/edit/:productId', admProductController.productEditGet );
 router.post('/products/edit/:productId',  upload.array('images', 6 ), admProductController.productEditPost );
+router.delete('/products/delete-image', admProductController.productImageDelete );
 
 router.get('/order', admOrdersController.orderGet );
 router.patch('/order-status', admOrdersController.orderStatusPatch );

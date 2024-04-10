@@ -4,11 +4,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const selectedFilesPreview = document.getElementById('selected-files-preview');
 
     fileInput.addEventListener('change', function() {
-        selectedFilesPreview.innerHTML = ''; // Clear previous previews
+        // console.log(event)
+        selectedFilesPreview.innerHTML = '';
 
         const files = fileInput.files;
         if (files.length === 0) {
-            return; // No files selected
+            return;
         }else {
             const oldImages = document.querySelector('.image-preview-container-old');
             oldImages.style.display = 'none';
@@ -29,8 +30,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 fileThumbnail.alt = 'File Thumbnail';
                 fileThumbnail.classList.add('file-thumbnail');
                 filePreview.appendChild(fileThumbnail);
-                fileThumbnail.style.maxWidth = '100px';
-                fileThumbnail.style.maxHeight = '100px'; 
             }
 
             selectedFilesPreview.appendChild(filePreview);
@@ -42,9 +41,12 @@ document.addEventListener('DOMContentLoaded', function() {
 const form = document.querySelector('form');
 
 
+const productId = form.getAttribute('data-product-id');
+console.log(productId);
 form.addEventListener('submit', async function(event) {
     event.preventDefault();
     const formData = new FormData(form);
+    console.log(productId);
     // Send form data to server
     try {
         const response = await fetch(`/admin/products/edit/${ productId }`, {
@@ -68,8 +70,39 @@ form.addEventListener('submit', async function(event) {
 });
 
 
-const msgPara = document.querySelector('.msg-para');
 
+const imgDeleteButtons = document.querySelectorAll('.img-delete-btn');
+imgDeleteButtons.forEach( button => {
+    button.addEventListener('click', async (e) => {
+        const confi = confirm('Do you want to delete the image');
+        if(!confi) return ;
+        const imageUrl = button.getAttribute('data-image-url');
+        const productId = button.getAttribute('data-product-id');
+        console.log(imageUrl)
+        console.log(productId);
+
+        const response = await fetch(`/admin/products/delete-image?imageUrl=${imageUrl}&productId=${productId}`, { method: 'DELETE' });
+        const result = await response.json();
+        console.log(result);
+        if (result.success) {
+            const imagePreviewDiv = button.closest('.image-preview-div');
+            if (imagePreviewDiv) {
+                imagePreviewDiv.remove();
+                displaySuccess(result);
+            }
+        } else {
+            displayError(result);
+        }
+        // console.log(response);
+    })
+});
+
+
+document.querySelector('#image').addEventListener('click', () => console.log('image input clicked'));
+
+
+
+const msgPara = document.querySelector('.msg-para');
 
 const displayError = (result) => {
     const msgPara = document.querySelector('.msg-para');
