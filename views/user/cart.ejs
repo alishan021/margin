@@ -61,7 +61,7 @@
 											<td class="product-col">
 												<div class="product">
 													<figure class="product-media">
-														<a href="#">
+														<a href="/product/<%= item.product._id %>">
 															<img src="/products/<%= item.product.images[0] %>" alt="Product image">
 														</a>
 													</figure>
@@ -167,19 +167,19 @@
 													<% } %>
 												</tr>
 
-												<form id="address-form">
+												<!-- <form id="address-form"> -->
 
-													<tr class="summary-shipping-row">
+													<!-- <tr class="summary-shipping-row">
 														<td>
 															<div class="custom-control custom-radio">
 																<input type="radio" id="address-1" name="selectedAddress" class="custom-control-input" select-address data-address-id="new" >
 																<label class="custom-control-label" for="address-1">
 																	<span class="font-weight-normal" >New Address</span>
 																	 <span class="font-italic" ></span></label>
-															</div><!-- End .custom-control -->
+															</div>
 														</td>
 														<td></td>
-													</tr><!-- End .summary-shipping-row -->
+													</tr> -->
 
 												<% user.address.forEach( ( address, index ) => { %> 
 
@@ -200,7 +200,7 @@
 
 												<% }) %>
 
-											</form>
+											<!-- </form> -->
 
 
 

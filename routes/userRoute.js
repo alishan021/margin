@@ -7,11 +7,12 @@ const userController = require('../controllers/userControllerrr')
 const userAuth = require('../middlewares/authUser');
 const otpModel = require('../models/db-otp');
 const userModel = require('../models/user');
-const { render } = require('ejs');
+// const { render } = require('ejs');
 const productModel = require('../models/products');
 const orderModel = require('../models/order');
 
 const router = express.Router();
+
 
 
 // Home 
@@ -74,8 +75,8 @@ router.get('/address/preffered/:addressId', userController.preferredAddressGet )
 
 // User wishlist
 router.get('/wishlist', userAuth.userSessionNo, userController.wishlistGet );
-router.post('/wishlist/:productId', userAuth.userSessionNo, userController.wishlistPost );
-router.delete('/product/remove/:productId', userController.wishlistDelete );
+router.post('/wishlist/:productId', userController.wishlistPost );
+router.delete('/wishlist/remove/:productId', userController.wishlistDelete );
 
 
 // User checkout
@@ -88,6 +89,23 @@ router.patch('/order/cancel/:orderId', userController.orderCalcellationPath );
 
 // Error page
 // router.get('/*', userController.errorPageGet );
+
+const Razorpay = require('razorpay');
+var instance = new Razorpay({ key_id: process.env.RAZORPAY_KEYID, key_secret: process.env.RAZORPAY_KEYSECRET })
+
+
+router.post('/create/orderId', ( req, res ) => {
+    console.log('order using razorpay');
+
+    var options = {
+        amount: req.body.amount,  // amount in the smallest currency unit
+        currency: "INR",
+        receipt: "order_rcptid_11"
+      };
+      instance.orders.create(options, function(err, order) {
+        console.log(order);
+      });
+})
 
 
 

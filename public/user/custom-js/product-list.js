@@ -145,7 +145,11 @@ wishlistButtons.forEach(( button ) => {
         const response = await fetch(`/wishlist/${productId}`, { method: 'POST' });
         const result = await response.json();
         console.log(result);
-        if(result.success) showAlertSuccess(result.message)
+        if(result.success) showAlertSuccess(result.message);
+        else if(result.redirect) {
+            showAlertError(result.error);
+            setTimeout(() => window.location.href = result.redirect, 1000)
+        }
         else showAlertError(result.error);
     })
 })

@@ -7,6 +7,7 @@ const session = require('express-session');
 const cors = require('cors');
 const nocache = require("nocache");
 const cookieParser = require('cookie-parser');
+const Razorpay = require('razorpay');
 
 
 const app = express();
@@ -31,7 +32,10 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }))
 
 
-
+var instance = new Razorpay({
+    key_id: process.env.RAZORPAY_KEYID,
+    key_secret: process.env.RAZORPAY_KEYSECRET,
+});
 
 
 app.use('/', require('./routes/userRoute.js') );

@@ -130,7 +130,7 @@
                                             <a class="btn-product no-underline"  style="background-color: #cc333363;" ><span class="text-danger font-weight-bold no-underline" >Out of stock</span></a>
                                         <%} %>
                                         <div class="details-action-wrapper">
-                                            <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
+                                            <a class="btn-product btn-wishlist" title="Wishlist"data-product-id="<%= product._id %>"><span>Add to Wishlist</span></a>
                                             <!-- <a href="#" class="btn-product btn-compare" title="Compare"><span>Add to Compare</span></a> -->
                                         </div><!-- End .details-action-wrapper -->
                                     </div><!-- End .product-details-action -->
@@ -249,9 +249,9 @@
                     </div><!-- End .product-details-quantity -->
 
                     <div class="product-details-action">
-                            <a href="#" class="btn-product btn-add-cart btn-cart" data-product-id="<% product._id %>" ><span data-product-id="<% product._id %>" >add to cart</span></a>
+                        <a class="btn-product btn-add-cart btn-cart" data-product-id="<%= product._id %>" ><span data-product-id="<%= product._id %>" >add to cart</span></a>
 						<!-- <}else { %> -->
-                        <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
+                        <a class="btn-product btn-wishlist" title="Wishlist" data-product-id="<%= product._id %>" haid><span data-product-id="<%= product._id %>" >Add to Wishlist</span></a>
                     </div><!-- End .product-details-action -->
                 </div><!-- End .col-6 -->
             </div><!-- End .row -->

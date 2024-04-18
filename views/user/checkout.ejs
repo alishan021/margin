@@ -203,6 +203,10 @@
 		                					<span class="btn-text">Place Order</span>
 		                					<span class="btn-hover-text">Proceed to Checkout</span>
 		                				</button>
+
+										<button id="rzp-button1">Pay with Razorpay</button>
+										<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+										
 		                			</div><!-- End .summary -->
 		                		</aside><!-- End .col-lg-3 -->
 		                	</div><!-- End .row -->
@@ -243,8 +247,14 @@
     <!-- Main JS File -->
     <script src="/user/assets/js/main.js"></script>
 
+	<script>
+		var productTotal = `<%= productTotal %>`;
+		console.log('productTotal : ' + productTotal );
+	</script>
+
 	<!-- custom-js -->
 	<script src="/user/custom-js/checkout.js"></script>
+	
 
 </body>
 </html>

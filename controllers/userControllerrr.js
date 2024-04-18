@@ -199,7 +199,7 @@ exports.redirecToOtp = ( req, res) => {
 
 
 exports.loginGet = ( req, res ) => {
-   console.log('login');
+    console.log('login');
     res.render('login.ejs');
 }
 
@@ -573,26 +573,7 @@ exports.errorPageGet = ( req, res ) => {
 exports.dashboardGet = async ( req, res ) => {
     const user = await userModel.findById(req.session.user._id);
     const orders = await orderModel.find({ userId: req.session.user._id }).populate('products.productId');    console.log(orders);
-
-    // Fetch product documents separately
-//   const productIds = orders.flatMap((order) => order.products.map((product) => product.productId));
-//   const products = await productModel.find({ _id: { $in: productIds } });
-
-  // Merge product details into the orders
-//   const ordersWithProducts = orders.map((order) => {
-//     order.products = order.products.map((product) => {
-//       const fullProduct = products.find((p) => p._id.toString() === product.productId.toString());
-//       return { ...product, product: fullProduct };
-//     });
-//     return order;
-//   });
-
-//   console.log(ordersWithProducts);
-//   orders.forEach( item => {
-//     console.log(item.products);
-//   })
-
-  res.render('dashboard.ejs', { userIn: req.session.userIn, user, orders });
+    res.render('dashboard.ejs', { userIn: req.session.userIn, user, orders });
 }
 
 
@@ -625,11 +606,15 @@ exports.wishlistPost = async ( req, res ) => {
     const productId = req.params.productId;
     console.log(productId);
     try{
-        if(!productId) return res.status(400).json({ error: 'product Id not found' });
+        if(!productId || productId === undefined ) return res.status(400).json({ error: 'product Id not found' });
+        if(!req.session.user) return res.status(400).json({ redirect: '/login', error: 'User Not found, login again'});
         const user = await userModel.findById(req.session.user._id);
-        user.wishlist.forEach( item => {
-            if(item.product_id === productId) return res.status(400).json({ error: 'product already exists' });
-        })
+        const existingItem = user.wishlist.find(
+            (item) => item.product_id.toString() === productId
+        );
+      
+        if (existingItem) return res.status(400).json({ error: 'Product already exists in wishlist' });
+
         user.wishlist.push({ product_id: productId });
         user.save();
         console.log(user);
@@ -644,8 +629,16 @@ exports.wishlistPost = async ( req, res ) => {
 
 exports.wishlistDelete = async ( req, res) => {
     const productId = req.params.productId;
-    console.log(productId);
-    res.json('okay');
+    try{
+        const user = await userModel.findById(req.session.user._id);
+        user.wishlist.pull({ _id: productId});
+        const result = await user.save();
+
+       if(result) res.status(200).json({ success: true, message: 'product removed from the wishlist'})
+       else res.status(400).json({ error: "something went wrong can't remove the product in wishlist"});
+    }catch(err){
+        console.log(err);
+    }
 }
 
 
@@ -724,7 +717,10 @@ exports.DashboardUserDetailsPatch = async ( req, res ) => {
             const result = await userModel.updateOne({ email: userSessionEmail}, { $set: { username: username }});
             console.log(result);
             return res.status(200).json({ message: 'username updated successfully'});
-        }else {
+        } else{
+            const passwordMatch = await bcrypt.compare( oldpassword, req.session.user.password );
+            if(!passwordMatch) return res.status(400).json({ error: 'password is wrong'});
+
             const hashedPassword = await bcrypt.hash( password , parseInt(process.env.SALTROUNDS ));
             const result = await userModel.findOneAndUpdate({ email: userSessionEmail }, { $set: { username, password: hashedPassword }}, { new: true } );
             console.log(result);
@@ -1015,7 +1011,7 @@ exports.productCartPatch = async ( req, res ) => {
         const productId = req.params.productId;
         const quantity = req.params.quantity;
         if (!req.session.user) {
-            return res.status(404).json({ error: 'User not found', redirect: '/login' });
+            return res.status(404).json({ error: 'User not found please login', redirect: '/login' });
         }
         const userId = req.session.user._id;
         console.log(productId, quantity, userId );
@@ -1044,7 +1040,7 @@ exports.productCartPatch = async ( req, res ) => {
 
         console.log('User updated successfully:', user);
 
-        return res.status(200).json({ message: 'Cart updated successfully', user });
+        return res.status(200).json({ message: 'Cart updated successfully', user, success: true });
     }catch(err){
         console.error(err);
     }

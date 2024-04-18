@@ -46,6 +46,7 @@ const radioButtons = document.querySelectorAll('[select-address]');
 
 radioButtons.forEach(radio => {
     radio.addEventListener('change', (event) => {
+        console.log('hidisiidis')
         if (event.target.checked) {
             // const selectedAddress = event.target.value;
             if(event.target.dataset.addressId = "") return;

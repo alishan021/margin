@@ -34,16 +34,29 @@
             	<div class="container">
 					<table class="table table-wishlist table-mobile">
 						<thead>
+							<% if( user.wishlist.length == 0 ){ %>
+								
+								<h4>Wishlist is empty, <a href="/product-list">Add products to the page</a></h4>	
+								
+							<%}else { %>
+
 							<tr>
 								<th>Product</th>
 								<th>Price</th>
 								<th>Stock Status</th>
 								<th></th>
 							</tr>
+
+							<%} %>
+
+
 						</thead>
 
 						<tbody>
 
+
+
+								
 
 							<% user.wishlist.forEach( product => { %>
 								
@@ -51,7 +64,7 @@
 								<td class="product-col">
 									<div class="product">
 										<figure class="product-media">
-											<a href="#">
+											<a href="/product/<%= product.product_id._id %>">
 												<img src="/products/<%= product.product_id.images[0] %>" alt="Product image">
 											</a>
 										</figure>
@@ -69,10 +82,11 @@
 										<span class="out-of-stock"> Out of Stock </span>
 									<% } %>
 								</td>
-								<td class="remove-col" data-product-id="<%= product._id %>"><button class="btn-remove"><i class="icon-close"></i></button></td>
+								<td class="remove-col"><button class="btn-remove" data-product-id="<%= product._id %>"><i class="icon-close rem-product"></i></button></td>
 							</tr>
 
 							<% }); %>
+
 
 
 
@@ -116,6 +130,10 @@
     <script src="/user/assets/js/owl.carousel.min.js"></script>
     <!-- Main JS File -->
     <script src="/user/assets/js/main.js"></script>
+
+	<!-- custom-js-files -->
+    <script src="/user/custom-js/wishlist.js"></script>
+
 </body>
 
 
