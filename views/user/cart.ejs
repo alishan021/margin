@@ -167,40 +167,28 @@
 													<% } %>
 												</tr>
 
-												<!-- <form id="address-form"> -->
+												<form id="address-form">
 
-													<!-- <tr class="summary-shipping-row">
-														<td>
-															<div class="custom-control custom-radio">
-																<input type="radio" id="address-1" name="selectedAddress" class="custom-control-input" select-address data-address-id="new" >
-																<label class="custom-control-label" for="address-1">
-																	<span class="font-weight-normal" >New Address</span>
-																	 <span class="font-italic" ></span></label>
-															</div>
-														</td>
-														<td></td>
-													</tr> -->
-
-												<% user.address.forEach( ( address, index ) => { %> 
-
-
-													<tr class="summary-shipping-row">
-														<td>
-															<div class="custom-control custom-radio">
-																<input type="radio" id="address<%= index + 1 %>" name="selectedAddress" class="custom-control-input" select-address data-address-id="<%= address._id %>" >
-																<label class="custom-control-label" for="address<%= index %>">
-																	<span class="font-weight-normal" >Address <%= index + 1  %>:</span>
-																	 <span class="font-italic" ><%= user.address[index].landmark %></span></label>
-															</div><!-- End .custom-control -->
-														</td>
-														<td></td>
-													</tr><!-- End .summary-shipping-row -->
-													
-
-
-												<% }) %>
-
-											<!-- </form> -->
+													<% user.address.forEach( ( address, index ) => { %> 
+	
+	
+														<tr class="summary-shipping-row">
+															<td>
+																<div class="custom-control custom-radio">
+																	<input type="radio" id="address<%= index %>" name="selectedAddress" class="custom-control-input" select-address data-address-id="<%= address._id %>" >
+																	<label class="custom-control-label" for="address<%= index %>">
+																		<span class="font-weight-normal" >Address <%= index + 1  %>:</span>
+																		 <span class="font-italic" ><%= user.address[index].landmark %></span></label>
+																</div><!-- End .custom-control -->
+															</td>
+															<td></td>
+														</tr><!-- End .summary-shipping-row -->
+														
+	
+	
+													<% }) %>
+	
+												</form>
 
 
 

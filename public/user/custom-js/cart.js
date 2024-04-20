@@ -42,14 +42,32 @@ document.querySelectorAll('.remove-col').forEach(tdElement => {
 
 
 
+// const radioButtons = document.querySelectorAll('[select-address]');
+
+// radioButtons.forEach(radio => {
+//     radio.addEventListener('change', (event) => {
+//         if (event.target.checked) {
+//             // const selectedAddress = event.target.value;
+//             if(event.target.dataset.addressId = "") return;
+//             const addressId = event.target.dataset.addressId;
+//             fetch(`/address/preffered/${addressId}`)
+//                 .then((response) => response.json())
+//                 .then(body => {
+//                     if(body.success) showAlertSuccess(body.success);
+//                     else if(body.error) showAlertError(body.error);
+//                 })
+//                 .catch( err => console.log(err))
+//         }
+//     });
+// });
+
+
 const radioButtons = document.querySelectorAll('[select-address]');
 
 radioButtons.forEach(radio => {
     radio.addEventListener('change', (event) => {
-        console.log('hidisiidis')
         if (event.target.checked) {
             // const selectedAddress = event.target.value;
-            if(event.target.dataset.addressId = "") return;
             const addressId = event.target.dataset.addressId;
             fetch(`/address/preffered/${addressId}`)
                 .then((response) => response.json())

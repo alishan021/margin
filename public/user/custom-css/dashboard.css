@@ -36,3 +36,14 @@
 .order-box {
     cursor: pointer;
 } 
+
+
+.color-c96 {
+    color: #c96;
+}
+
+
+#wallet-amount {
+    width: 80%;
+    margin-right: 5px;
+}

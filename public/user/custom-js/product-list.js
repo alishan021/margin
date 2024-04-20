@@ -52,7 +52,7 @@ categories.addEventListener('change', (event) => {
 		if(event.target.checked) {
             categoryItems.push(event.target.dataset.categoryId);
         } else {
-			categoryItems.splice(categoryItems.indexOf(event.target.value), 1);
+			categoryItems.splice(categoryItems.indexOf(event.target.dataset.categoryId), 1);
         }
         console.log(categoryItems);
     }

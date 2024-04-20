@@ -4,74 +4,14 @@
 
 <head>
     <%- include('./layouts/head.ejs') %>
+    <link rel="stylesheet" href="/user/custom-css/product-detail.css">
 </head>
 
 <body>
     <div class="page-wrapper">
-        <header class="header">
-            <div class="header-top">
-                <div class="container">
 
+                <%- include('./layouts/header-2.ejs') %>
 
-                
-                </div><!-- End .container -->
-            </div><!-- End .header-top -->
-
-            <div class="header-middle sticky-header">
-                <div class="container">
-                    <div class="header-left">
-                        <button class="mobile-menu-toggler">
-                            <span class="sr-only">Toggle mobile menu</span>
-                            <i class="icon-bars"></i>
-                        </button>
-
-                        <a href="/" class="logo">
-                            <img src="/user/assets/images/logo.png" alt="Molla Logo" width="105" height="25">
-                        </a>
-
-                        <nav class="main-nav">
-                            <ul class="menu sf-arrows">
-                                <li class="megamenu-container active">
-                                    <a href="/" >Home</a>
-                                </li>
-                                <li>
-                                    <a href="#">Product</a>
-                                </li>
-                                <li>
-                                    <a href="/product-list" >Shop</a>
-                                </li>
-                            </ul><!-- End .menu -->
-                        </nav><!-- End .main-nav -->
-                    </div><!-- End .header-left -->
-
-                    <div class="header-right">
-                        <div class="header-search">
-                            <a href="#" class="search-toggle" role="button" title="Search"><i class="icon-search"></i></a>
-                            <form action="#" method="get">
-                                <div class="header-search-wrapper">
-                                    <label for="q" class="sr-only">Search</label>
-                                    <input type="search" class="form-control" name="q" id="q" placeholder="Search in..." required>
-                                </div><!-- End .header-search-wrapper -->
-                            </form>
-                        </div><!-- End .header-search -->
-                        <div class="dropdown compare-dropdown">
-                            <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static" title="Compare Products" aria-label="Compare Products">
-                                <i class="icon-random"></i>
-                            </a>
-
-                           
-                        </div><!-- End .compare-dropdown -->
-
-                        <div class="dropdown cart-dropdown">
-                            <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
-                                <i class="icon-shopping-cart"></i>
-                                <!-- <span class="cart-count">2</span> -->
-                            </a>
-                        </div><!-- End .cart-dropdown -->
-                    </div><!-- End .header-right -->
-                </div><!-- End .container -->
-            </div><!-- End .header-middle -->
-        </header><!-- End .header -->
 
         <main class="main">
             <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
@@ -119,23 +59,31 @@
                             <div class="d-flex flex-column align-items-end col-4 px-0">
                                 <div>payment method : <%= order.paymentMethod %></div>
                                 <div>order date : <%= new Date(order.orderDate).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) %></div>
-                                <div>order status : <%= order.orderStatus %></div>
                                 <div><b>$total price : <%= order.totalPrice %></b></div>
                             </div>
                         </div>
-                        <% if(order.orderValid){ %>
 
-                            <div class="d-flex">
-                                <div class="ml-auto cancel-order" data-order-id="<%= order._id %>" ><button type="button" class="btn btn-warning btn-cancel-order">Cancel Order</button></div>
+                        <div class="d-flex">
+                            <div class="ml-auto order-status" data-order-id="<%= order._id %>">
+
+                                <% if(order.orderValid && !order.orderStatus && !order.returned){ %>
+                                            <h6 class="text-success">Arriving</h6>
+                                            <button class="btn btn-warning btn-sm btn-cancel-order" data-order-id="<%= order._id %>">Cancel</button>
+                                <% } else if(!order.orderValid && order.orderStatus && !order.returned){ %>
+                                            <h6 class="text-success">Delivered</h6>
+                                            <button class="btn btn-danger btn-sm btn-return-order" data-order-id="<%= order._id %>">Return</button>
+                                <% } else if(!order.orderValid && !order.orderStatus && !order.returned){ %>
+                                            <h6 class="text-danger">Cancelled</h6>
+                                <% } else if(!order.orderValid && !order.orderStatus && order.returned){ %>
+                                            <h6 class="text-danger">Returned</h6>
+                                <% }else { %>
+                                            <h6 class="text-danger">...</h6>
+                                <% } %>
+
                             </div>
-                            
-                        <% }else { %>
-                            
-                            <div class="d-flex">
-                                <div class="ml-auto " ><button class="btn btn-danger btn-cancel-order">Order is cancelled</button></div>
-                            </div>
-                            
-                        <%} %>
+                        </div>
+
+
                     </div>
                 </div>
         	</div><!-- End .error-content text-center -->
@@ -221,10 +169,12 @@
     <script src="/user/assets/js/owl.carousel.min.js"></script>
     <!-- Main JS File -->
     <script src="/user/assets/js/main.js"></script>
+    
 
 
     <!-- custom-js -->
     <script src="/user/custom-js/order-details.js"></script>
+
 
 </body>
 

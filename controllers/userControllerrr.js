@@ -515,7 +515,7 @@ exports.sortFilterGet = async (req, res) => {
         // Extract query parameters
         const sortBy = req.query.sort;
         const search = req.query.search || "";
-        const category = req.query.category || "";
+        let category = req.query.category || [];
         const min = parseInt(req.query.min) || 0;
         const max = parseInt(req.query.max) || Infinity;
 
@@ -530,28 +530,35 @@ exports.sortFilterGet = async (req, res) => {
         else if (sortBy === "new-arrivals") sortCriteria = { created_at: -1 };
 
         // Build query for filtering products
-        const query = productModel.find({ name: { $regex: search, $options: "i" } });
-        console.log(query)
+        let query = productModel.find({ name: { $regex: search, $options: "i" } });
+        // console.log(query)
 
         // Apply additional filters
         if (category) {
-            query.where('category').equals(category);
+            let categories = category.split(',');
+            console.log('categories : ');
+            console.log(categories);
+            query.where('category').in(categories);
         }
+        // if (category.length > 0) {
+        //     console.log(category);
+        //     query = query.where('category').in(category);
+        // }
         query.where('price').gte(min).lte(max);
 
         // Apply sorting criteria
         if (sortCriteria) {
             query.sort(sortCriteria);
-            console.log(sortCriteria)
+            // console.log(sortCriteria)
         }
 
         // Execute the query
         const products = await query.exec();
 
-        console.log(products);
+        // console.log(products);
 
         // Return the filtered and sorted products
-        res.status(200).json({ success: true, data: products });
+        return res.status(200).json({ success: true, data: products });
     } catch (err) {
         console.log(err);
         res.status(500).json({ success: false, message: 'Internal server error' });
@@ -572,7 +579,18 @@ exports.errorPageGet = ( req, res ) => {
 
 exports.dashboardGet = async ( req, res ) => {
     const user = await userModel.findById(req.session.user._id);
-    const orders = await orderModel.find({ userId: req.session.user._id }).populate('products.productId');    console.log(orders);
+    const orders = await orderModel.find({ userId: req.session.user._id }).populate('products.productId').sort({ orderDate: -1 });
+    // console.log(orders)
+    let orderStatus = '...';
+    for( let order of orders){
+        orderStatus = "...";
+        if(order.orderValid && !order.orderStatus && !order.returned ) order.orderMessage = 'Arriving';
+        else if(!order.orderValid && order.orderStatus && !order.returned ) order.orderMessage = 'Delivered';
+        else if(!order.orderValid && !order.orderStatus && !order.returned ) order.orderMessage = 'Cancelled';
+        else if(!order.orderValid && !order.orderStatus && order.returned ) order.orderMessage = 'Return';
+        else orderStatus = '.....';
+    }
+    console.log(orders);
     res.render('dashboard.ejs', { userIn: req.session.userIn, user, orders });
 }
 
@@ -946,6 +964,8 @@ exports.checkoutPost = async (req, res) => {
       if(!user) return res.status(400).json({ error: 'User not found, Login again'});
       if(typeof Number(req.body.pincode) !== 'number' ) return res.status(400).json({ error: 'pincode must be number'});
 
+      console.log(req.body)
+
       const address = {
         name: req.body.name,
         email: req.body.email,
@@ -983,6 +1003,9 @@ exports.checkoutPost = async (req, res) => {
       }
   
       if (!user) return res.status(400).json({ error: 'login again, session expired' });
+      if(req.body.paymentMethod === "wallet"){
+        if( user.wallet.amount < totalPrice ) return res.status(400).json({ error: `balance in wallet : ${user.wallet.amount}` });
+      }
   
       const order = await new orderModel({
         userId: req.session.user._id,
@@ -990,7 +1013,8 @@ exports.checkoutPost = async (req, res) => {
         address,
         orderNotes: req.body.ordernotes,
         totalPrice,
-        paymentMethod: 'COD',
+        paymentMethod: req.body.paymentMethod || 'COD',
+        orderValid: true,
       });
   
       const savedOrder = await order.save();
@@ -1051,10 +1075,15 @@ exports.productCartPatch = async ( req, res ) => {
 exports.orderSingleGet  = async ( req, res )  => {
     try{
         const orderId = req.params.orderId;
-        const dbOrder = await orderModel.findById(orderId).populate('products.productId');
-        console.log('dbOrder : ' + dbOrder.products);
-        console.log('dbOrder : ' + dbOrder.products.productId);
-        res.render('order-details.ejs', { order: dbOrder });
+        const order = await orderModel.findById(orderId).populate('products.productId');
+        // console.log('dbOrder : ' + order);
+        let orderStatus = "...";
+        if(order.orderValid && !order.orderStatus && !order.returned ) order.orderMessage = 'Arriving';
+        else if(!order.orderValid && order.orderStatus && !order.returned ) order.orderMessage = 'Delivered';
+        else if(!order.orderValid && !order.orderStatus && !order.returned ) order.orderMessage = 'Cancelled';
+        else if(!order.orderValid && !order.orderStatus && order.returned ) order.orderMessage = 'Delivered';
+        else orderStatus = '.....';
+        res.render('order-details.ejs', { order, userIn: req.session.user });
         // if(!orderId) return res.status(400).json({ error: 'orderId not found', redirectUrl: false});
         // if(!dbOrder) return res.status(400).json({ error: 'order not found', redirectUrl: false});
         // return res.status(200).json({ message: 'order showing', redirectUrl: `/order/${orderId}`});
@@ -1065,16 +1094,73 @@ exports.orderSingleGet  = async ( req, res )  => {
 
 
 
-exports.orderCalcellationPath = async ( req, res ) => {
+exports.orderCancellationPath = async ( req, res ) => {
     const orderId = req.params.orderId;
     try{
         console.log(orderId);
         const dbOrder = await orderModel.findById(orderId);
-        dbOrder.orderStatus = 'cancel';
+        let user;
+        if(dbOrder.paymentMethod !== 'COD'){
+            user = await userModel.findById(dbOrder.userId);
+            console.log(dbOrder);
+            if(!user) return res.status(404).json({ error: 'user not found, login again'});
+            console.log(user.wallet.amount, dbOrder.totalPrice);
+            user.wallet.amount += parseInt(dbOrder.totalPrice);
+            console.log(user);
+            console.log(user.wallet.amount, dbOrder.totalPrice);
+            console.log(typeof user.wallet.amount);
+            await user.save();
+        }
+        dbOrder.orderStatus = false;
         dbOrder.orderValid = false;
-        dbOrder.save();
-        return res.status(400).json({ message: 'order cancelled'});
+        dbOrder.returned = false;
+        await dbOrder.save();
+        console.log(user);
+        return res.status(200).json({ success: true, message: 'order cancelled'});
     }catch(err){
         console.error(err);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+
+exports.orderReturnPatch = async ( req, res ) => {
+    const orderId = req.params.orderId;
+    try{
+        const dbOrder = await orderModel.findById(orderId);
+        let user;
+        if(dbOrder.paymentMethod !== 'COD'){
+            user = await userModel.findById(dbOrder.userId);
+            if(!user) return res.status(404).json({ error: 'user not found, login again'});
+            user.wallet.amount = dbOrder.amount;
+            await user.save();
+        }
+        dbOrder.returned = true;
+        dbOrder.orderStatus = false;
+        dbOrder.orderValid = false;
+        await dbOrder.save();
+        return res.status(200).json({ message: 'order returned'});
+    }catch(err){
+        console.log(err);
+    }
+}
+
+
+
+
+exports.addWalletAmount = async ( req, res ) => {
+    const userId = req.params.userId;
+    const amount = req.params.amount;
+    console.log(userId, amount);
+    try{
+        if(!userId) return res.status(403).json({ error: 'user not found, login again' });
+        if(!amount) return res.status(403).json({ error: 'Please enter an amount' });
+        const user = await userModel.findById(userId);
+        user.wallet.amount += parseInt(amount);
+        await user.save();
+        return res.status(200).json({ success: true, message: `${amount}Rs added to wallet` });
+    }catch(error){
+        console.log(error);
+        return res.status(500).json({ error: 'Internal server error' });
     }
 }

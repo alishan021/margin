@@ -69,25 +69,20 @@ var userSchema = new Schema({
             default: Date.now
     }}],
     wallet: {
-        card_no: {
-            type: String, 
-        },
-        cvv: {
-            type: String,
-        },expiry: {
-            type: String,
-        },
         amount: {
-            type: Number, 
+            type: Number,
+            default: 0
         },
         created_at: {
             type: Date
         },
         modified_at: {
-            type: Date
+            type: Date,
+            default: Date.now
         },
         status: {
-            type: Boolean
+            type: Boolean,
+            default: true,
         }},
     created_at: {
         type: Date

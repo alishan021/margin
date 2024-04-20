@@ -42,17 +42,17 @@ app.use('/', require('./routes/userRoute.js') );
 app.use('/admin', require('./routes/adminRoute.js'));
 
 
-// // 404 Not Found handler
-// app.get('*', (req, res, next) => {
-//     console.log('response : ' + res );
-//     res.status(404).render('404.ejs')
-// });
+// 404 Not Found handler
+app.get('*', (req, res, next) => {
+    console.log('response : ' + res );
+    res.status(404).render('404.ejs')
+});
 
-//   // 500 Internal Server Error handler
-// app.use((err, req, res, next) => {
-//     console.error(err.stack);
-//     res.status(500).render('500.ejs', { userIn: req.session.userIn });
-// });
+  // 500 Internal Server Error handler
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).render('500.ejs', { userIn: req.session.userIn });
+});
   
 
 

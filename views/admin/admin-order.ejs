@@ -81,17 +81,13 @@
                                 <td><%= order.paymentMethod %></td>
                                 <td><%= new Date(order.orderDate).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) %></td>
                                 <td class="td-status td-column">
-                                    <p style="margin: 10px 10px;;"><%= order.orderStatus %></p>
+                                    <p style="margin: 10px 10px;;"><%= order.orderMessage %></p>
                                     <select name="orderstatus" id="order-status" class="order-status" data-order-id="<%= order._id %>">
-                                        <!-- < if( order.orderStatus ){ %> -->
-                                            <!-- <option value="<= order.orderStatus %>"><= order.orderStatus %></option> -->
-                                        <!-- < } %> -->
                                         <option >select</option>
-                                        <option value="return">Return</option>
-                                        <option value="order-confirm" >Order Confirmed</option>
-                                        <option value="refund">Refunded Completed</option>
-                                        <option value="cancel">Order Cancelled</option>
+                                        <option value="arrive">Arriving</option>
                                         <option value="deliver">Delivered</option>
+                                        <option value="cancel">Cancelled</option>
+                                        <option value="return">Return</option>
                                     </select>
                                 </td>
                             </tr>

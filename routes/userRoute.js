@@ -61,6 +61,7 @@ router.patch('/address/:userId', userController.addAddressPatch );
 router.delete('/address/:addressId', userController.deleteAddress );
 router.get('/address/edit/:addressId', userController.addressEditGet );
 router.patch('/address/update/:addressId/:userId', userController.addressUpdatePatch );
+router.post('/wallet/:userId/:amount', userController.addWalletAmount)
 
 
 // User Cart
@@ -82,10 +83,11 @@ router.delete('/wishlist/remove/:productId', userController.wishlistDelete );
 // User checkout
 router.get('/checkout', userAuth.userSessionNo, userController.checkoutGet );
 router.post('/checkout/:userId', userController.checkoutPost );
-// router
+
 
 router.get('/order/:orderId', userController.orderSingleGet );
-router.patch('/order/cancel/:orderId', userController.orderCalcellationPath );
+router.patch('/order/cancel/:orderId', userController.orderCancellationPath );
+router.patch('/order/return/:orderId', userController.orderReturnPatch );
 
 // Error page
 // router.get('/*', userController.errorPageGet );
@@ -94,19 +96,31 @@ const Razorpay = require('razorpay');
 var instance = new Razorpay({ key_id: process.env.RAZORPAY_KEYID, key_secret: process.env.RAZORPAY_KEYSECRET })
 
 
-router.post('/create/orderId', ( req, res ) => {
-    console.log('order using razorpay');
 
-    var options = {
-        amount: req.body.amount,  // amount in the smallest currency unit
-        currency: "INR",
-        receipt: "order_rcptid_11"
-      };
-      instance.orders.create(options, function(err, order) {
-        console.log(order);
-      });
-})
+router.post('/create/orderId', (req, res) => {
+  console.log('Creating order using Razorpay');
 
+  // Get the order details from the request body
+  const { amount } = req.body;
+
+  // Create the order options
+  const options = {
+    amount: amount, // Amount in the smallest currency unit
+    currency: "INR",
+    receipt: "order_rcptid_11" // Unique order receipt ID
+  };
+
+  // Create the order using the Razorpay instance
+  instance.orders.create(options, (err, order) => {
+    if (err) {
+      console.error('Error creating Razorpay order:', err);
+      return res.status(500).json({ error: 'Error creating order' });
+    }
+
+    console.log('Razorpay order created:', order);
+    return res.status(200).json({ orderId: order.id });
+  });
+});
 
 
 

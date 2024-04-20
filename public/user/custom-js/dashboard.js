@@ -240,3 +240,106 @@ function showAlertSuccess(message) {
     }, 3000); 
 }
   
+
+
+
+
+
+const btnWallet = document.querySelector('.btn-wallet');
+btnWallet.addEventListener('click', (event) => {
+    const amount = document.querySelector('#wallet-amount').value;
+    if(amount <= 0 ) showAlertError('Amount must be greater than zero');
+    const userId = event.target.getAttribute('data-user-id');
+    razorpay( userId, +amount);
+})
+
+function razorpay( userId, amount){
+    try{
+
+        $(document).ready(function() {
+            $.ajax({
+          url: "/create/orderId",
+          method: "POST",
+          data: JSON.stringify({ amount: amount*100 }),
+          contentType: "application/json",
+          success: function(response) {
+            orderId = response.orderId;
+            console.log(orderId);
+            $("button").show();
+      
+            var options = {
+              "key": "rzp_test_ODVEghJRjenb9A",
+              "amount": "200000",
+              "currency": "INR",
+              "name": "Margin",
+              "description": "Test Transaction",
+              "image": "https://example.com/your_logo",
+              "order_id": orderId,
+              "handler": function(response) {
+                alert(response.razorpay_payment_id);
+                alert(response.razorpay_order_id);
+                alert(response.razorpay_signature);
+                addWalletAmount( userId, amount);
+              },
+              "prefill": {
+                "name": "Muhammed Alishan",
+                "email": "alishan.example@gmail.com",
+                "contact": "0000000000"
+              },
+              "notes": {
+                "address": "Razorpay Corporate Office"
+              },
+              "theme": {
+                "color": "#3399cc"
+              }
+            };
+            
+            var rzp1 = new Razorpay(options);
+    
+            rzp1.on('payment.failed', function(response) {
+              alert('payment failed');
+              showAlertError('Payment Failed');
+              console.log(response.error.code);
+              console.log(response.error.description);
+              console.log(response.error.source);
+              console.log(response.error.step);
+              console.log(response.error.reason);
+              console.log(response.error.metadata.order_id);
+              console.log(response.error.metadata.payment_id);
+            });
+    
+            rzp1.on('payment.error', function (response) {
+                alert('payment error');
+                console.log('Payment error:', response.error);
+            });
+    
+            rzp1.open();
+          }
+        });
+      });
+      return true;
+    }catch(err){
+        alertMessageError(err);
+    }
+}
+
+
+
+async function addWalletAmount(userId, amount) {
+    try {
+      const response = await fetch(`/wallet/${userId}/${amount}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const body = await response.json();
+      if (body.error) {
+        return showAlertError(body.error);
+      } else {
+        window.location.href = '/dashboard';
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
