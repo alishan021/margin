@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit product</title>
+    <link rel="stylesheet" href="/admin/custom-css/navbar.css">
+    <link rel="stylesheet" href="/admin/custom-css/sidebar.css">
+    <link rel="stylesheet" href="/admin/custom-css/add-coupon.css">
+    <link rel="stylesheet" href="/admin/custom-css/msg-box.css">
+    <script src="/admin/custom-js/add-coupon.js" defer ></script>
+</head>
+<body>
+
+    <div class="page-wrapper">
+        <%- include('./layouts/navbar.ejs') %>
+        <div class="page-body">
+            <%- include('./layouts/sidebar.ejs') %> 
+
+    <div class="div-1">
+
+        <div class="div-2">
+            <h2 class="header">Coupon</h2>
+            <div class="msg-box">
+                <p class="msg-para"></p>
+            </div>
+            <form action="/admin/coupon/add" method="post"  >
+                <div class="input-item form-child" >
+                    <label for="coupon-code"> Coupon code : * </label>   
+                    <input type="text" id="coupon-code" name="coupon-code" >
+                </div>
+                <div class="form-child two-col-div" >
+                    <div class="input-item two-col " >
+                        <label for="start-date"> Start Date</label>    
+                        <input type="date" id="start-date" name="start-date" >
+                    </div>
+                    <div class="input-item two-col " >
+                        <label for="end-date"> End Date : * </label>    
+                        <input type="date" id="end-date" name="end-date" >
+                    </div>
+                </div>
+                <div class="input-item form-child" >
+                    <label for="purchase-amount"> Max Purchase Amount :  </label>    
+                    <input type="number" id="purchase-amount" name="purchase-amount" >
+                </div>
+                <div class="input-item form-child" >
+                    <label for="discount-amount"> Discount Amount : </label>    
+                    <input type="number" id="discount-amount" name="discount-amount" >
+                </div>
+                <div class="form-child">
+                    <button class="btn-submit">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+
+
+</body>
+</html>

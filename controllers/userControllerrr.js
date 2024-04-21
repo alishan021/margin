@@ -7,6 +7,7 @@ const productModel = require('../models/products')
 const bcrypt = require('bcrypt');
 const categoryModel = require('../models/category');
 const orderModel = require('../models/order');
+const couponModel = require('../models/coupons');
 const { search } = require('../routes/userRoute');
 
 
@@ -590,7 +591,6 @@ exports.dashboardGet = async ( req, res ) => {
         else if(!order.orderValid && !order.orderStatus && order.returned ) order.orderMessage = 'Return';
         else orderStatus = '.....';
     }
-    console.log(orders);
     res.render('dashboard.ejs', { userIn: req.session.userIn, user, orders });
 }
 
@@ -676,13 +676,10 @@ exports.checkoutGet = async (req, res) => {
         const addressId = req.session.addressId;        
         const user = await userModel.findById(req.session.user._id);
         const address = user.address.find(item => item._id == addressId);
-        console.log(address);
 
         if (!user) return res.status(400).json({ error: 'User session expired, login again' });
 
         const productDetails = await getProductDetails(user.cart);
-        console.log('productDetails : ');
-        console.log(productDetails);
 
         res.render('checkout.ejs', { userIn: req.session.userIn, products: productDetails, user, address });
     } catch (err) {
@@ -985,6 +982,8 @@ exports.checkoutPost = async (req, res) => {
         const itemPrice = item.product ? (item.product.price || 1) : 0;
         totalPrice += itemPrice * item.count;
       });
+      if(req.body.discountPrice) totalPrice -= req.body.discountPrice;
+      console.log('.discountPrice : ' + req.body.discountPrice, 'totalPrice : ' + totalPrice );
   
       const products = [];
       for (const item of productDetails) {
@@ -1018,8 +1017,9 @@ exports.checkoutPost = async (req, res) => {
       });
   
       const savedOrder = await order.save();
-      console.log(savedOrder);
+    //   console.log(savedOrder);
       if (savedOrder) {
+        user.wallet.amount -= totalPrice; 
         user.cart = [];
         await user.save();
         return res.json({ success: true, message: 'Order created successfully' });
@@ -1038,15 +1038,12 @@ exports.productCartPatch = async ( req, res ) => {
             return res.status(404).json({ error: 'User not found please login', redirect: '/login' });
         }
         const userId = req.session.user._id;
-        console.log(productId, quantity, userId );
 
         const user = await userModel.findById(userId);
         const productIndex = user.cart.findIndex(item => item._id.toString() === productId);
-        console.log(productIndex);
 
         const isProduct = user.cart.find( doc => { return doc.product == productId  });
-        console.log('isProduct : ');
-        console.log(isProduct);
+
         if(isProduct){
             return res.status(400).json({ error: 'Product is already existed in the cart' });
         }
@@ -1096,19 +1093,13 @@ exports.orderSingleGet  = async ( req, res )  => {
 
 exports.orderCancellationPath = async ( req, res ) => {
     const orderId = req.params.orderId;
+    let user;
     try{
-        console.log(orderId);
         const dbOrder = await orderModel.findById(orderId);
-        let user;
         if(dbOrder.paymentMethod !== 'COD'){
             user = await userModel.findById(dbOrder.userId);
-            console.log(dbOrder);
             if(!user) return res.status(404).json({ error: 'user not found, login again'});
-            console.log(user.wallet.amount, dbOrder.totalPrice);
             user.wallet.amount += parseInt(dbOrder.totalPrice);
-            console.log(user);
-            console.log(user.wallet.amount, dbOrder.totalPrice);
-            console.log(typeof user.wallet.amount);
             await user.save();
         }
         dbOrder.orderStatus = false;
@@ -1159,6 +1150,26 @@ exports.addWalletAmount = async ( req, res ) => {
         user.wallet.amount += parseInt(amount);
         await user.save();
         return res.status(200).json({ success: true, message: `${amount}Rs added to wallet` });
+    }catch(error){
+        console.log(error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+
+
+exports.couponCheck = async ( req, res ) => {
+    const couponCode = req.params.couponCode;
+    const productTotal = req.params.productTotal;
+    console.log(couponCode);
+    try{
+        if(!couponCode) return res.status(300).json({ status: false });
+        const coupon = await couponModel.findOne({ couponCode });
+        if(!coupon) return res.status(300).json({ status: false });
+        if( productTotal >= coupon.purchaseAmount ) {
+            let discountPrice = productTotal - coupon.discountAmount;
+            return res.status(200).json({ status: true, discountPrice });
+        } 
     }catch(error){
         console.log(error);
         return res.status(500).json({ error: 'Internal server error' });

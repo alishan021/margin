@@ -5,6 +5,7 @@ const admProductController = require('../controllers/admProductController');
 const admUserController = require('../controllers/admUserController');
 const admCategoryController = require('../controllers/admCategoryController');
 const admOrdersController = require('../controllers/admOrdersController');
+const admCouponController = require('../controllers/admCouponController');
 const adminModel = require('../models/admin');
 const adminAuth = require('../middlewares/authAdmin');
 const userModel = require('../models/user');
@@ -75,6 +76,24 @@ router.delete('/products/delete-image', admProductController.productImageDelete 
 
 router.get('/order', admOrdersController.orderGet );
 router.patch('/order-status', admOrdersController.orderStatusPatch );
+
+router.get('/coupon', admCouponController.couponGet );
+router.get('/coupon/add', admCouponController.addCouponGet );
+router.post('/coupon/add', admCouponController.addCouponPost );
+router.delete('/coupon/delete/:couponId', admCouponController.couponDelete );
+
+
+// // 404 Not Found handler
+// router.get('*', (req, res, next) => {
+//   console.log('response : ' + res );
+//   res.status(404).send('404 Error')
+// });
+
+// // 500 Internal Server Error handler
+// router.use((err, req, res, next) => {
+//   console.error(err.stack);
+//   res.status(500).send('500 Error');
+// });
 
 
 module.exports = router;

@@ -3,12 +3,37 @@ const checkoutForm = document.querySelector('#checkout-order');
 let selectPaymentMethod = 'payment-1';
 var formData = {};
 var userId;
+var originalPrice = productTotal;
+let couponApplied = false, confi = false;
+var discountPrice = 0;
 
 checkoutForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
+  event.preventDefault();
+  
+  const landmark = document.querySelector('.landmark');
+  const orderNotes = document.querySelector('.order-notes');
+  const couponCode = document.querySelector('#checkout-discount-input').value;
 
-    const landmark = document.querySelector('.landmark');
-    const orderNotes = document.querySelector('.order-notes');
+    if((couponCode || couponCode !== '') && !couponApplied ){
+      console.log(couponCode);
+      const responseCoupon = await fetch(`/coupon/check/${couponCode}/${productTotal}`);
+      const bodyCoupon = await responseCoupon.json();
+      if(!bodyCoupon.status) {
+        showAlertError('Coupon code is wrong');
+        setTimeout(() => {
+          confi = confirm('The coupon you enter is wrong, Do you like to proceed with out coupon');
+        }, 1000);
+        if(!confi) return;
+      }
+      if(bodyCoupon.status){
+        couponApplied = true;
+        discountPrice = originalPrice - bodyCoupon.discountPrice;
+        formData.discountPrice = discountPrice ;
+        productTotal = bodyCoupon.discountPrice;
+        showAlertSuccess(`you got a discount of ${originalPrice - productTotal}`);
+      } 
+    }
+
     userId = event.target.dataset.userId;
 
     for (const input of event.target.elements) {
@@ -19,6 +44,7 @@ checkoutForm.addEventListener('submit', async (event) => {
     }
     formData[landmark.name] = landmark.value;
     formData[orderNotes.name] = orderNotes.value;
+
     try{
         if(selectPaymentMethod === 'payment-1'){
           console.log('payment number 1 - COD');
