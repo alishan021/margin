@@ -81,15 +81,19 @@
                                 <td><%= order.paymentMethod %></td>
                                 <td><%= new Date(order.orderDate).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) %></td>
                                 <td class="td-status td-column">
-                                    <p style="margin: 10px 10px;;"><%= order.orderMessage %></p>
-                                    <select name="orderstatus" id="order-status" class="order-status" data-order-id="<%= order._id %>">
-                                        <option >select</option>
-                                        <option value="arrive">Arriving</option>
-                                        <option value="deliver">Delivered</option>
-                                        <option value="cancel">Cancelled</option>
-                                        <option value="return">Return</option>
-                                    </select>
-                                </td>
+                                    <% order.products.forEach((product) => { %>
+                                      <select name="productStatus" class="product-status" data-order-id="<%= order._id %>" data-product-id="<%= product.productId._id %>">
+                                        <option value="current" <% if (product.orderStatus) { %> selected <% } %>>
+                                          <%= product.orderMessage %>
+                                        </option>
+                                        <option value="arrive" <% if (product.orderMessage === 'Arriving') { %> selected <% } %>>Arriving</option>
+                                        <option value="deliver" <% if (product.orderMessage === 'Delivered') { %> selected <% } %>>Delivered</option>
+                                        <option value="cancel" <% if (product.orderMessage === 'Cancelled') { %> selected <% } %>>Cancelled</option>
+                                        <option value="return" <% if (product.orderMessage === 'Return') { %> selected <% } %>>Return</option>
+                                      </select>
+                                    <% }) %>
+                                  </td>
+                                
                             </tr>
 
 

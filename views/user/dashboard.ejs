@@ -104,8 +104,7 @@
 
 
 									<div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
-										<% if(orders){ %>
-											<span class="hellow-ask">hello</span>
+										<% if(orders.length > 0){ %>
 
 											<% orders.forEach( (order) => { %>
 												<div class="border p-5 m-2 order-box d-flex" data-order-id="<%= order._id %>">
@@ -122,6 +121,7 @@
 													</div>
 													<div class="order-items flex-grow-1" style="width: 25%;"><%= order.totalPrice %></div>
 													<div class="order-items flex-grow-1" style="width: 25%;"><%= order.orderMessage %></div>
+													<div class="order-items flex-grow-1" style="width: 25%;"><%= order.paymentMethod %></div>
 												</div>
 												
 											<%}) %>

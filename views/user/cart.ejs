@@ -105,10 +105,11 @@
 			            			<div class="cart-discount">
 			            				<form action="#">
 			            					<div class="input-group">
-				        						<input type="text" class="form-control" required placeholder="coupon code">
-				        						<div class="input-group-append">
-													<button class="btn btn-outline-primary-2" type="submit"><i class="icon-long-arrow-right"></i></button>
-												</div><!-- .End .input-group-append -->
+				        						<!-- <input type="text" class="form-control" required placeholder="coupon code"> -->
+				        						<!-- <div class="input-group-append"> -->
+													<!-- <button class="btn btn-outline-primary-2" type="submit"><i class="icon-long-arrow-right"></i></button> -->
+												<!-- </div> -->
+												<!-- .End .input-group-append -->
 			        						</div><!-- End .input-group -->
 			            				</form>
 			            			</div><!-- End .cart-discount -->
@@ -168,6 +169,18 @@
 												</tr>
 
 												<form id="address-form">
+
+													<tr class="summary-shipping-row">
+														<td>
+															<div class="custom-control custom-radio">
+																<input type="radio" id="no-address" name="selectedAddress" class="custom-control-input" select-address data-address-id="" >
+																<label class="custom-control-label" for="no-address">
+																	<span class="font-weight-normal" >Add New Address. </span>
+																	 <span class="font-italic" ></span></label>
+															</div><!-- End .custom-control -->
+														</td>
+														<td></td>
+													</tr><!-- End .summary-shipping-row -->
 
 													<% user.address.forEach( ( address, index ) => { %> 
 	

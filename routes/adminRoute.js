@@ -6,6 +6,7 @@ const admUserController = require('../controllers/admUserController');
 const admCategoryController = require('../controllers/admCategoryController');
 const admOrdersController = require('../controllers/admOrdersController');
 const admCouponController = require('../controllers/admCouponController');
+const admSalesReportController = require('../controllers/admSalesReport');
 const adminModel = require('../models/admin');
 const adminAuth = require('../middlewares/authAdmin');
 const userModel = require('../models/user');
@@ -81,6 +82,8 @@ router.get('/coupon', admCouponController.couponGet );
 router.get('/coupon/add', admCouponController.addCouponGet );
 router.post('/coupon/add', admCouponController.addCouponPost );
 router.delete('/coupon/delete/:couponId', admCouponController.couponDelete );
+
+router.get('/sales-report', admSalesReportController.salesReportGet );
 
 
 // // 404 Not Found handler

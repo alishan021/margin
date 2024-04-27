@@ -86,8 +86,8 @@ router.post('/checkout/:userId', userController.checkoutPost );
 
 
 router.get('/order/:orderId', userController.orderSingleGet );
-router.patch('/order/cancel/:orderId', userController.orderCancellationPath );
-router.patch('/order/return/:orderId', userController.orderReturnPatch );
+router.patch('/order/cancel/:orderId/:productId', userController.orderCancellationPath );
+router.patch('/order/return/:orderId/:productId', userController.orderReturnPatch );
 
 router.get('/coupon/check/:couponCode/:productTotal', userController.couponCheck );
 

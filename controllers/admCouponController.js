@@ -23,6 +23,9 @@ exports.addCouponPost = async ( req, res ) => {
     const { couponCode , startDate, endDate, purchaseAmount ,discountAmount } = req.body;
     console.log(req.body);
     try{
+        if( !endDate || !startDate || !purchaseAmount || !discountAmount || !couponCode ) return res.status(400).json({ error: 'All fields are required' });
+        if( +discountAmount >= +purchaseAmount ) return res.status(400).json({ error: 'purchase amount must be greater than discount amount' });
+        if( new Date(endDate) <= new Date(startDate) ) return res.status(400).json({ error: 'end date must be greater than start date' });
         const isCouponCheck = await couponModel.findOne( { couponCode: couponCode });
         if(isCouponCheck) return res.status(400).json({ error: 'coupon code is already existed'})
         if (!couponCode || !startDate || !endDate)  return res.status(400).json({ error: 'Coupon code, start date, and end date are required' });

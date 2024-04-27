@@ -1,44 +1,75 @@
+const orderStatusAll = document.querySelectorAll('.product-status');
 
-const orderStatusAll = document.querySelectorAll('.order-status');
+orderStatusAll.forEach((orderStatus) => {
+  orderStatus.addEventListener('change', async (event) => {
+    const orderId = orderStatus.getAttribute('data-order-id');
+    const productId = orderStatus.getAttribute('data-product-id');
+    const selectedOption = orderStatus.options[orderStatus.selectedIndex];
+    const newStatus = selectedOption.value;
 
-orderStatusAll.forEach(( orderStatus ) => {
+    console.log(orderId, productId);
+    console.log(newStatus);
 
-    orderStatus.addEventListener('change', async (event) => {
+    let orderStatusValue = false, returnedValue = false, orderValidValue = true;
 
-        const orderId = orderStatus.getAttribute('data-order-id');
-        const selectedOption = orderStatus.options[orderStatus.selectedIndex];
-        const newOrderStatus = selectedOption.value;
+    switch (newStatus) {
+      case 'arrive':
+        orderStatusValue = false;
+        returnedValue = false;
+        orderValidValue = true;
+        break;
+      case 'deliver':
+        orderStatusValue = true;
+        returnedValue = false;
+        orderValidValue = false;
+        break;
+      case 'cancel':
+        orderStatusValue = false;
+        returnedValue = false;
+        orderValidValue = false;
+        break;
+      case 'return':
+        orderStatusValue = false;
+        returnedValue = true;
+        orderValidValue = false;
+        break;
+    }
 
-        console.log(orderId);
-        console.log(newOrderStatus);
+    const data = { orderStatus: orderStatusValue, returned: returnedValue, orderValid: orderValidValue, orderId, productId };
 
-        let orderStatusValue = false, returnedValue = false, orderValidValue = false;
+    console.log(data);
 
-        if(newOrderStatus === 'arrive') { orderStatusValue = false, returnedValue = false, orderValidValue = true }
-        else if(newOrderStatus === 'deliver') { orderStatusValue = true, returnedValue = false, orderValidValue = false }
-        else if(newOrderStatus === 'cancel') { orderStatusValue = false, returnedValue = false, orderValidValue = false }
-        else if(newOrderStatus === 'return') { orderStatusValue = false, returnedValue = true, orderValidValue = false }
-
-        const data = { 
-            orderStatus: orderStatusValue, 
-            returned : returnedValue, 
-            orderValid : orderValidValue, 
-            orderId, 
-        };
-
-        console.log(data);
-
-        const response = await fetch('/admin/order-status', {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
-        const body = await response.json();
-        if(body) window.location.reload();
-        console.log(body);
+    const response = await fetch('/admin/order-status', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
     });
-    
-})
-    
+
+    const body = await response.json();
+    // if(body.error) {
+    //   displayError(body.error);
+    // }
+    console.log(body);
+    window.location.reload();
+  });
+});
+
+
+
+const msgPara = document.querySelector('.msg-para');
+
+const displayError = (result) => {
+    const msgPara = document.querySelector('.msg-para');
+    msgPara.parentElement.className = 'msg-box-error';
+    msgPara.innerHTML = result;
+}
+
+
+
+const displaySuccess = (result) => {
+    const msgPara = document.querySelector('.msg-para');
+    msgPara.parentElement.className = 'msg-box-success';
+    msgPara.innerHTML = result;
+}

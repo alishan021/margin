@@ -37,8 +37,13 @@
 	                <div class="container">
             			<div class="checkout-discount">
             				<form action="#">
-        						<input type="text" class="form-control"  id="checkout-discount-input">
-            					<label for="checkout-discount-input" class="text-truncate">Have a coupon? <span>Click here to enter your code</span></label>
+        						<input type="text" class="form-control"  id="checkout-discount-input" list="hellow">
+            					<label for="checkout-discount-input" class="text-truncate" style="z-index: -1;">Have a coupon? <span>Click here to enter your code</span></label>
+								<datalist id="hellow">
+									<% coupons.forEach( coupon => { %>
+										<option value="<%= coupon.couponCode %>"></option>
+									<% }) %>
+								</datalist>
             				</form>
             			</div><!-- End .checkout-discount -->
             			<form action="#" id="checkout-order" data-user-id="<%= user._id %>">

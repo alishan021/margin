@@ -1,0 +1,103 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+
+.table-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* background-color: lightblue; */
+}
+
+.content-table{
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.9em;
+    width: 94%;
+    /* min-width: 400px; */
+    border-radius: 5px 5px 0 0;
+    /* overflow: hidden; */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15) ;
+}
+
+.content-table thead tr {
+    background-color: lightblue;
+    /* background-color: #009879; */
+    position: sticky;
+    top: 0;
+    color: #fff;
+    text-align:  left;
+    font-weight: bold;
+}
+
+.content-table th,
+.content-table td {
+    padding: 12px 15px;
+    /* max-width: 100px; */
+}
+
+.content-table tbody {
+    border-bottom: 1px solid #dddddd;
+}
+
+.content-table tbody tr:nth-of-type( even ){
+    background-color: #f3f3f3;
+}
+
+.content-table tbody tr {
+    border-bottom: 2px solid lightblue;
+    /* border-bottom: 2px solid #009879; */
+}
+
+.content-table tbody tr.active-row {
+    font-weight: bold;
+    color: #009879;
+}
+
+
+.from-to-date {
+    display: flex;
+    margin-left: 50px;
+    gap: 10px;
+    align-items: center;
+}
+
+.input-date {
+    padding: 5px 20px;
+}
+
+.btn-apply, button {
+    padding: 8px 20px;
+    color: white;
+    /* background-color: rgb(95, 201, 236); */
+    background-color: rgb(55, 187, 231);
+    border: none;
+    border-radius: 5px;
+}
+
+
+.btn-apply:hover, button:hover {
+    background-color: rgb(33, 151, 190);
+    cursor: pointer;
+}
+
+
+.options-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.download-buttons {
+    margin-right: 50px;
+}
+
+/* 
+button {
+    padding: 8px 20px;
+    color: white;
+    background-color: rgb(95, 201, 236);
+    border: none;
+    border-radius: 5px;} */

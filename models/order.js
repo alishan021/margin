@@ -16,7 +16,19 @@ const orderSchema = new mongoose.Schema({
         },
         productTotalPrice:{
             type:Number,
-        }
+        },
+        orderStatus:{
+            type: Boolean,
+            default: false,
+         },
+         returned:{
+             type: Boolean,
+             default:false
+         },
+         orderValid:{
+             type:Boolean,
+             default: true
+         }
     }],
     address: {
         name: {
@@ -52,6 +64,10 @@ const orderSchema = new mongoose.Schema({
     orderNotes: {
         type: String
     },
+    originalPrice: {
+        type: Number,
+        default: 0,
+    },
     totalPrice:{
         type:Number
     },
@@ -59,19 +75,11 @@ const orderSchema = new mongoose.Schema({
         type:Date,
         default:Date.now
     },
-    orderStatus:{
-       type: Boolean,
-       default: false,
-    },
-    returned:{
-        type: Boolean,
-        default:false
-    },
-    orderValid:{
-        type:Boolean,
-        default: true
+    coupnUsed: {
+        type: String,
+        default: '',
     }
-})
+});
 
 const orderModel = new mongoose.model( 'Order', orderSchema );
 module.exports = orderModel;

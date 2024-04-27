@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/admin/custom-css/navbar.css">
+    <link rel="stylesheet" href="/admin/custom-css/sidebar.css">
+    <link rel="stylesheet" href="/admin/custom-css/sales-report.css">
+
+    <script src="/admin/custom-js/sales-report.js"></script>
+    
+</head>
+<body>
+
+    <div class="page-wrapper">
+
+        <!-- Navbar starts here -->
+        <%- include('./layouts/navbar.ejs') %>
+        <!-- Navbar ends here -->
+
+        <div class="page-body">
+
+            <%- include('./layouts/sidebar.ejs') %> 
+
+            <main>
+                    <div class="msg-box">
+                        <p class="msg-para"></p>
+                    </div>
+                <div>
+                    <br>
+                    <h1>Sales Report</h1>
+                    <br>
+                    <hr>
+                    <br>
+
+                    <div class="options-container"> 
+                        <div class="from-to-date">
+
+                            <div>
+                                <input type="date" name="from-date" id="from-date" class="input-date">
+                            </div>
+                            <div>    
+                                <input type="date" name="to-date" id="to-date" class="input-date">
+                            </div>
+                            <div>
+                                <button class="btn-apply"  type="button">Apply</button>
+                            </div>
+                        </div>
+                        <div class="download-buttons">
+                            <button>Download as PDF</button>
+                            <button>Download as Excel</button>
+                        </div>
+                    </div>
+
+                    <div class="table-div">
+                    <table class="content-table">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Date</th>
+                                <th>OrderId</th>
+                                <th>Payment method</th>
+                                <th>Total Amount</th>
+                                <th>Total Amount</th>
+                                <th>Total Amount</th>
+                               
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <% orders.forEach(( order, index ) => { %>
+                                
+                                <tr>
+                                    <td><%= index + 1 %></td>
+                                    <td><%= order.orderDate %></td>
+                                    <td><%= order._id %></td>
+                                    <td><%= order.paymentMethod %></td>
+                                    <td><%= order.totalPrice %></td>
+                                    <td><%= order.userId.username %></td>
+                                    <td><%= order.coupnUsed %></td>
+                                </tr>
+
+                            <% }); %>
+
+                            <tr>
+                                <td>jdsdkdslald</td>
+                                <td>jdsdkdslald</td>
+                                <td>jdsdkdslald</td>
+                                <td>jdsdkdslald</td>
+                                <td>jdsdkdslald</td>
+                                <td>jdsdkdslald</td>
+                                <td>jdsdkdslald</td>
+                            </tr>
+                            <tr>
+                                <td>jdsdkdslald</td>
+                                <td>jdsdkdslald</td>
+                                <td>jdsdkdslald</td>
+                                <td>jdsdkdslald</td>
+                                <td>jdsdkdslald</td>
+                                <td>jdsdkdslald</td>
+                                <td>jdsdkdslald</td>
+                            </tr>
+                            <tr>
+                                <td>jdsdkdslald</td>
+                                <td>jdsdkdslald</td>
+                                <td>jdsdkdslald</td>
+                                <td>jdsdkdslald</td>
+                                <td>jdsdkdslald</td>
+                                <td>jdsdkdslald</td>
+                                <td>jdsdkdslald</td>
+                            </tr>
+                           
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+            </main>
+
+        </div>
+    </div>
+    
+</body>
+</html>

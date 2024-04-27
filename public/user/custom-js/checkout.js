@@ -29,7 +29,11 @@ checkoutForm.addEventListener('submit', async (event) => {
         couponApplied = true;
         discountPrice = originalPrice - bodyCoupon.discountPrice;
         formData.discountPrice = discountPrice ;
+        formData.couponApplied = true;
+        formData.couponCode = couponCode;
         productTotal = bodyCoupon.discountPrice;
+        const confi = confirm(`You got a discount of ${originalPrice - productTotal}, do you like to continue with out coupon`);
+        if(!confi) return;
         showAlertSuccess(`you got a discount of ${originalPrice - productTotal}`);
       } 
     }

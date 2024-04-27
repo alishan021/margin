@@ -2,40 +2,60 @@ const orderModel = require('../models/order');
 
 
 
+exports.orderGet = async (req, res) => {
+  try {
+    const orders = await orderModel.find({}).sort({ orderDate: -1 }).populate('products.productId');
 
-exports.orderGet = async ( req, res ) => {
-    try{
-      const orders = await orderModel.find({}).populate('products.productId');
-      let orderStatus = '...';
-      for( let order of orders){
-          orderStatus = "...";
-          if(order.orderValid && !order.orderStatus && !order.returned ) order.orderMessage = 'Arriving';
-          else if(!order.orderValid && order.orderStatus && !order.returned ) order.orderMessage = 'Delivered';
-          else if(!order.orderValid && !order.orderStatus && !order.returned ) order.orderMessage = 'Cancelled';
-          else if(!order.orderValid && !order.orderStatus && order.returned ) order.orderMessage = 'Return';
-          else orderStatus = '.....';
+    for (let order of orders) {
+      for (let product of order.products) {
+        if (product.orderValid && !product.orderStatus && !product.returned) {
+          product.orderMessage = 'Arriving';
+        } else if (!product.orderValid && product.orderStatus && !product.returned) {
+          product.orderMessage = 'Delivered';
+        } else if (!product.orderValid && !product.orderStatus && !product.returned) {
+          product.orderMessage = 'Cancelled';
+        } else if (!product.orderValid && !product.orderStatus && product.returned) {
+          product.orderMessage = 'Return';
+        } else {
+          product.orderMessage = '...';
+        }
       }
-      // console.log(orders);
-      res.render('admin-order.ejs', { orders });
-    }catch(err){
-      console.log(err);
     }
-  }
 
-
-exports.orderStatusPatch = async ( req, res ) => {
-  try{
-    const { orderStatus, returned, orderValid, orderId } = req.body;
-    console.log(orderStatus, returned, orderValid, orderId);
-    if(!orderId ) return res.status(400).json({ error: 'orderId is not available, login again'});
-    const order = await orderModel.findById( orderId );
-    order.orderStatus = orderStatus;
-    order.returned = returned;
-    order.orderValid = orderValid;
-    const result = await order.save();
-    console.log(result);
-    res.json({ message: 'order status updated successfully'});
-  }catch(err){
+    res.render('admin-order.ejs', { orders });
+  } catch (err) {
     console.log(err);
   }
-}
+};
+
+exports.orderStatusPatch = async (req, res) => {
+  try {
+    const { orderStatus, returned, orderValid, orderId, productId } = req.body;
+    console.log(orderStatus, returned, orderValid, orderId, productId);
+    if (!orderId || !productId) {
+      return res.status(400).json({ error: 'orderId or productId, is not available, login again' });
+    }
+
+    const order = await orderModel.findById(orderId).populate('products.productId');
+    console.log(order);
+    const product = order.products.find((p) => { 
+      console.log(p.productId._id.toString(), productId);
+      return p.productId._id.toString() === productId;
+    });
+    console.log(product);
+
+    if (product) {
+      product.orderStatus = orderStatus;
+      product.returned = returned;
+      product.orderValid = orderValid;
+
+      await order.save();
+      res.json({ message: 'Product status updated successfully' });
+    } else {
+      res.status(404).json({ message: 'Product not found' });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};

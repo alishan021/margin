@@ -247,6 +247,7 @@ function showAlertSuccess(message) {
 
 const btnWallet = document.querySelector('.btn-wallet');
 btnWallet.addEventListener('click', (event) => {
+    console.log('your wallet')
     const amount = document.querySelector('#wallet-amount').value;
     if(amount <= 0 ) showAlertError('Amount must be greater than zero');
     const userId = event.target.getAttribute('data-user-id');
