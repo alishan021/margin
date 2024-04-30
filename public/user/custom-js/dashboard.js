@@ -209,10 +209,10 @@ orderBoxs.forEach(orderBox => {
 
 
 
-const hellowAsk = document.querySelector('.hellow-ask');
-hellowAsk.addEventListener('click', (e) => {
-    console.log('hellow');
-})
+// const hellowAsk = document.querySelector('.hellow-ask');
+// hellowAsk.addEventListener('click', (e) => {
+//     console.log('hellow');
+// })
 
 
 

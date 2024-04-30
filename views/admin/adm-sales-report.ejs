@@ -8,7 +8,10 @@
     <link rel="stylesheet" href="/admin/custom-css/sidebar.css">
     <link rel="stylesheet" href="/admin/custom-css/sales-report.css">
 
-    <script src="/admin/custom-js/sales-report.js"></script>
+    <link rel="stylesheet" href="/admin/custom-css/msg-box.css">
+
+    <script src="/admin/custom-js/sales-report.js" defer></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script> -->
     
 </head>
 <body>
@@ -30,9 +33,25 @@
                 <div>
                     <br>
                     <h1>Sales Report</h1>
-                    <br>
                     <hr>
                     <br>
+
+                    <div class="sales-report-container">
+                        <div class="sales-report-box">
+                          <h4><span>Today:</span><%= dailyStats.dailyOrderCount %> orders</h4>
+                          <h4><span>Revenue:</span>$<%= dailyStats.dailyRevenueAmount %></h4>
+                        </div>
+                      
+                        <div class="sales-report-box">
+                          <h4><span>This Month:</span><%= monthlyStats.monthlyOrderCount %> orders</h4>
+                          <h4><span>Revenue:</span>$<%= monthlyStats.monthlyRevenueAmount %></h4>
+                        </div>
+                      
+                        <div class="sales-report-box">
+                          <h4><span>This Year:</span><%= yearlyStats.yearlyOrderCount %> orders</h4>
+                          <h4><span>Revenue:</span>$<%= yearlyStats.yearlyRevenueAmount %></h4>
+                        </div>
+                    </div>
 
                     <div class="options-container"> 
                         <div class="from-to-date">
@@ -48,13 +67,69 @@
                             </div>
                         </div>
                         <div class="download-buttons">
-                            <button>Download as PDF</button>
+                            <!-- <button onclick="generatePDF()">Download as PDF</button> -->
+                            <select name="report-type" id="report-type">
+                                <option value="custom" selected>Custom</option>
+                                <option value="daily">Daily</option>
+                                <option value="monthly">Weekly</option>
+                                <option value="yearly">Yearly</option>
+                            </select>
+                            <button id="generate-pdf">Download as PDF</button>
                             <button>Download as Excel</button>
                         </div>
                     </div>
 
-                    <div class="table-div">
-                    <table class="content-table">
+                    <div class="sales-report-div">
+                        <div>
+                            <div><span>Orders : <b><span class="noOfOrders"></span></b></span></div>
+                            <div><span>Revenue : <b><span class="revenueAmount"></span></b></span></div>
+                        </div>
+                        <div>
+                            <span>Number of Users : <b><span class="noOfUsers"></span></b></span>
+                        </div>
+                        <div class="top-products-sale">
+                            <h3>Top products sale</h3>
+                        </div>
+                        <div class="top-categories-sale">
+                            <h3>Top Category sale</h3>
+                        </div>
+                        <div class="payment-options">
+                            <h3>Choosed Payment Option </h3>
+                        </div>
+                        <div class="order-status">
+                            <h3>Order Status Summary</h3>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+
+        </div>
+    </div>
+
+<!-- 
+<script>
+
+    document.getElementById('generate-pdf').addEventListener('click', function() {
+      var element = document.getElementById('sales-report');
+      html2pdf(element, {
+        margin: 1,
+        filename: 'table.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 4 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+
+});
+    }); -->
+    
+    </script>
+    
+</body>
+</html>
+
+
+ <!-- <div class="table-div container">
+                    <table id="sales-report" class="content-table">
                         <thead>
                             <tr>
                                 <th>No.</th>
@@ -62,63 +137,28 @@
                                 <th>OrderId</th>
                                 <th>Payment method</th>
                                 <th>Total Amount</th>
-                                <th>Total Amount</th>
-                                <th>Total Amount</th>
+                                <th>Username</th>
+                                <th>couponUsed</th>
                                
                             </tr>
                         </thead>
                         <tbody>
 
-                            <% orders.forEach(( order, index ) => { %>
+                            < orders.forEach(( order, index ) => { %>
                                 
                                 <tr>
-                                    <td><%= index + 1 %></td>
-                                    <td><%= order.orderDate %></td>
-                                    <td><%= order._id %></td>
-                                    <td><%= order.paymentMethod %></td>
-                                    <td><%= order.totalPrice %></td>
-                                    <td><%= order.userId.username %></td>
-                                    <td><%= order.coupnUsed %></td>
+                                    <td><= index + 1 %></td>
+                                    <td><= order.deliveredAt.toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) %></td> 
+                                    <td><= order._id %></td>
+                                    <td><= order.paymentMethod %></td>
+                                    <td><= order.totalPrice %></td>
+                                    <td><= order.userId.username %></td>
+                                    <td><= order.couponUsed %></td>
                                 </tr>
 
-                            <% }); %>
+                            < }); %>
 
-                            <tr>
-                                <td>jdsdkdslald</td>
-                                <td>jdsdkdslald</td>
-                                <td>jdsdkdslald</td>
-                                <td>jdsdkdslald</td>
-                                <td>jdsdkdslald</td>
-                                <td>jdsdkdslald</td>
-                                <td>jdsdkdslald</td>
-                            </tr>
-                            <tr>
-                                <td>jdsdkdslald</td>
-                                <td>jdsdkdslald</td>
-                                <td>jdsdkdslald</td>
-                                <td>jdsdkdslald</td>
-                                <td>jdsdkdslald</td>
-                                <td>jdsdkdslald</td>
-                                <td>jdsdkdslald</td>
-                            </tr>
-                            <tr>
-                                <td>jdsdkdslald</td>
-                                <td>jdsdkdslald</td>
-                                <td>jdsdkdslald</td>
-                                <td>jdsdkdslald</td>
-                                <td>jdsdkdslald</td>
-                                <td>jdsdkdslald</td>
-                                <td>jdsdkdslald</td>
-                            </tr>
                            
                         </tbody>
                     </table>
-                    </div>
-                </div>
-            </main>
-
-        </div>
-    </div>
-    
-</body>
-</html>
+                    </div> -->

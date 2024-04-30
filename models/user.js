@@ -85,7 +85,8 @@ var userSchema = new Schema({
             default: true,
         }},
     created_at: {
-        type: Date
+        type: Date,
+        default: Date.now
     },
     status: {
         type: Boolean,

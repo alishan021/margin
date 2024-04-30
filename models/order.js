@@ -28,6 +28,9 @@ const orderSchema = new mongoose.Schema({
          orderValid:{
              type:Boolean,
              default: true
+         },
+         deliveredAt: {
+            type: Date,
          }
     }],
     address: {
@@ -75,10 +78,14 @@ const orderSchema = new mongoose.Schema({
         type:Date,
         default:Date.now
     },
-    coupnUsed: {
+    couponUsed: {
         type: String,
         default: '',
-    }
+    },
+    deliveredAt: {
+        type: Date,
+        // default: Date.now
+     }
 });
 
 const orderModel = new mongoose.model( 'Order', orderSchema );

@@ -1039,6 +1039,7 @@ exports.checkoutPost = async (req, res) => {
       if (!user) return res.status(400).json({ error: 'login again, session expired' });
       if(req.body.paymentMethod === "wallet"){
         if( user.wallet.amount < totalPrice ) return res.status(400).json({ error: `balance in wallet : ${user.wallet.amount}` });
+        user.wallet.amount -= totalPrice; 
       }
   
       const order = await new orderModel({
@@ -1049,14 +1050,13 @@ exports.checkoutPost = async (req, res) => {
         originalPrice,
         totalPrice,
         paymentMethod: req.body.paymentMethod || 'COD',
-        coupnUsed: req.body.couponCode || 'false',
+        couponUsed: req.body.couponCode || 'false',
         orderValid: true,
       });
   
       const savedOrder = await order.save();
     //   console.log(savedOrder);
       if (savedOrder) {
-        user.wallet.amount -= totalPrice; 
         user.cart = [];
         await user.save();
         if (req.body.couponCode) await couponModel.updateOne({ couponCode: req.body.couponCode }, { $push: { usedUsers: user._id } });

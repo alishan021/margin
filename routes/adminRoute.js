@@ -83,8 +83,12 @@ router.get('/coupon/add', admCouponController.addCouponGet );
 router.post('/coupon/add', admCouponController.addCouponPost );
 router.delete('/coupon/delete/:couponId', admCouponController.couponDelete );
 
-router.get('/sales-report', admSalesReportController.salesReportGet );
-
+router.get('/sales-report/', admSalesReportController.salesReportGet );
+// router.get('/sales-report/custom/:fromDate/:toDate', admSalesReportController.customSalesReportGet );
+router.get('/sales-report/custom', admSalesReportController.customSalesReportGet);
+router.get('/generate-sales-report', admSalesReportController.generateSalesReportPDF );
+router.get('/sales/pdf', admSalesReportController.genPdf );
+router.get('/sales-report-total', admSalesReportController.salesReportTotalGet );
 
 // // 404 Not Found handler
 // router.get('*', (req, res, next) => {

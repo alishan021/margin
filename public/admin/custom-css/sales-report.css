@@ -16,7 +16,7 @@
     border-collapse: collapse;
     margin: 25px 0;
     font-size: 0.9em;
-    width: 94%;
+    width: 90%;
     /* min-width: 400px; */
     border-radius: 5px 5px 0 0;
     /* overflow: hidden; */
@@ -60,7 +60,7 @@
 
 .from-to-date {
     display: flex;
-    margin-left: 50px;
+    /* margin-left: 1%; */
     gap: 10px;
     align-items: center;
 }
@@ -90,9 +90,9 @@
     justify-content: space-between;
 }
 
-.download-buttons {
-    margin-right: 50px;
-}
+/* .download-buttons { */
+    /* margin-right: 1%; */
+/* } */
 
 /* 
 button {
@@ -100,4 +100,86 @@ button {
     color: white;
     background-color: rgb(95, 201, 236);
     border: none;
-    border-radius: 5px;} */
+    border-radius: 5px;
+} */
+
+
+
+.sales-report-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+
+  .sales-report-box {
+    background-color: #e6f7ff;
+    border: 1px solid #b3e0ff;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 30%;
+  }
+
+  .sales-report-box h4 {
+    margin: 10px 0;
+    font-size: 16px;
+    color: #333;
+  }
+
+  .sales-report-box h4 span {
+    font-weight: bold;
+  }
+
+  .content-table {
+    width: 100%;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+
+.sales-report-div {
+    width: 100%;
+    margin-top: 10px;
+    padding: 20px;
+    border: 1px solid black;
+}
+
+.sales-report-div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.sales-report-div > div {
+    flex: 1 0 45%;
+    background-color: #f0f8ff; /* Light blue background */
+    padding: 20px;
+    /* margin-bottom: 20px; */
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.sales-report-div h3 {
+    margin-bottom: 10px;
+}
+
+.product-item,
+.category-item,
+.payment-item,
+.status-item {
+    background-color: #fff; /* White background for item boxes */
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.product-item p,
+.category-item p,
+.payment-item p,
+.status-item p {
+    margin: 0;
+}

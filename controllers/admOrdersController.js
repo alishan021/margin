@@ -43,6 +43,9 @@ exports.orderStatusPatch = async (req, res) => {
       return p.productId._id.toString() === productId;
     });
     console.log(product);
+    order.deliveredAt = Date.now()
+    if(product.orderStatus) product.deliveredAt = Date.now();
+
 
     if (product) {
       product.orderStatus = orderStatus;
