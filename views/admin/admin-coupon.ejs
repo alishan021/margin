@@ -57,8 +57,8 @@
                                 <tr>
                                     <td><%= index + 1 %></td>
                                     <td><%= coupon.couponCode %></td>
-                                    <td><%= coupon.startDate %></td>
-                                    <td><%= coupon.endDate %></td>
+                                    <td><%= coupon.startDate.toLocaleDateString() %></td>
+                                    <td><%= coupon.endDate.toLocaleDateString() %></td>
                                     <td><%= coupon.isActive %></td>
                                     <td><%= coupon.purchaseAmount %></td>
                                     <td><%= coupon.discountAmount %></td>

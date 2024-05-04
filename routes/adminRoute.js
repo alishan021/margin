@@ -85,10 +85,10 @@ router.delete('/coupon/delete/:couponId', admCouponController.couponDelete );
 
 router.get('/sales-report/', admSalesReportController.salesReportGet );
 // router.get('/sales-report/custom/:fromDate/:toDate', admSalesReportController.customSalesReportGet );
-router.get('/sales-report/custom', admSalesReportController.customSalesReportGet);
-router.get('/generate-sales-report', admSalesReportController.generateSalesReportPDF );
-router.get('/sales/pdf', admSalesReportController.genPdf );
+router.get('/sales-report/:reportType', admSalesReportController.customSalesReportGet);
+router.get('/sales/pdf/:reportType', admSalesReportController.genPdfGet );
 router.get('/sales-report-total', admSalesReportController.salesReportTotalGet );
+router.get('/sales/excel/:reportType', admSalesReportController.salesReportExcelGet );
 
 // // 404 Not Found handler
 // router.get('*', (req, res, next) => {

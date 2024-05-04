@@ -63,19 +63,20 @@
                                 <input type="date" name="to-date" id="to-date" class="input-date">
                             </div>
                             <div>
+                                <select name="report-type" id="report-type" class="input-date">
+                                    <option value="custom" >Custom</option>
+                                    <option value="daily" selected >Daily</option>
+                                    <option value="monthly">monthly</option>
+                                    <option value="yearly">Yearly</option>
+                                </select>
                                 <button class="btn-apply"  type="button">Apply</button>
                             </div>
                         </div>
                         <div class="download-buttons">
                             <!-- <button onclick="generatePDF()">Download as PDF</button> -->
-                            <select name="report-type" id="report-type">
-                                <option value="custom" selected>Custom</option>
-                                <option value="daily">Daily</option>
-                                <option value="monthly">Weekly</option>
-                                <option value="yearly">Yearly</option>
-                            </select>
+                           
                             <button id="generate-pdf">Download as PDF</button>
-                            <button>Download as Excel</button>
+                            <button id="generate-excel">Download as Excel</button>
                         </div>
                     </div>
 

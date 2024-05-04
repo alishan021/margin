@@ -1039,7 +1039,7 @@ exports.checkoutPost = async (req, res) => {
       if (!user) return res.status(400).json({ error: 'login again, session expired' });
       if(req.body.paymentMethod === "wallet"){
         if( user.wallet.amount < totalPrice ) return res.status(400).json({ error: `balance in wallet : ${user.wallet.amount}` });
-        user.wallet.amount -= totalPrice; 
+        user.wallet.amount -= totalPrice;
       }
   
       const order = await new orderModel({

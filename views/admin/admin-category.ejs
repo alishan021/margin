@@ -63,7 +63,7 @@
 
                                 <td>
                                     <% products.forEach((product, index ) => {  %>
-                                        <% if(product.category == category._id ){ %>
+                                        <% if(product.category == category._id.toString() ){ %>
                                             <%= product.name %> <br>
                                         <% } %>
                                     <% }) %>

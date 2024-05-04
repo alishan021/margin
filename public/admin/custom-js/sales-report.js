@@ -16,9 +16,11 @@ const filterButton = document.querySelector('.btn-apply');
 filterButton.addEventListener('click', async (event) => {
 
     console.log(fromDate.value, toDate.value);
+    if((formDate.value && !toDate.value) || (!formDate.value && toDate.value)) return displayError('error no date.');
+    const reportType = findReportType();
     
     // Construct the URL with query parameters
-    const url = `/admin/sales-report/custom?fromDate=${fromDate.value}&toDate=${toDate.value}`;
+    const url = `/admin/sales-report/${reportType}?fromDate=${fromDate.value}&toDate=${toDate.value}`;
 
     const response = await fetch(url);
     const body = await response.json();
@@ -45,45 +47,13 @@ filterButton.addEventListener('click', async (event) => {
 
 
 const generateReportButton = document.querySelector('#generate-pdf');
-// generateReportButton.addEventListener('click', async (event) => {
-//     const fromDate = document.querySelector('#from-date').value;
-//     const toDate = document.querySelector('#to-date').value;
-
-//     try {
-//         const response = await fetch(`/admin/generate-sales-report?fromDate=${fromDate}&toDate=${toDate}`, {
-//             method: 'GET',
-//             headers: {
-//                 'Content-Type': 'application/json'
-//             }
-//         });
-
-//         if (!response.ok) {
-//             throw new Error('Failed to generate sales report');
-//         }
-
-//         const data = await response.json();
-//         const pdfFilePath = data.pdfFilePath;
-
-//         // If you want to download the PDF file
-//         window.open(pdfFilePath);
-
-//         // If you want to display a success message
-//         // alert('Sales report generated successfully');
-
-//     } catch (error) {
-//         console.error('Error generating sales report:', error.message);
-//         // Handle error, e.g., display error message to the user
-//     }
-// });
-
-
 generateReportButton.addEventListener('click', async (event) => {
     console.log('inside the button pdf');
     const reportType = findReportType();
     console.log(reportType);
     if(reportType === 'custom' && (!fromDate.value || !toDate.value )) return displayError('select date if or change custom');
 
-    const response = await fetch('/admin/sales/pdf');
+    const response = await fetch(`/admin/sales/pdf/${reportType}?fromDate=${fromDate.value}&toDate=${toDate.value}`);
 
     if (response.ok) {
         const blob = await response.blob();
@@ -103,6 +73,30 @@ generateReportButton.addEventListener('click', async (event) => {
     }
 });
 
+
+
+const generateExcelButton = document.querySelector('#generate-excel');
+generateExcelButton.addEventListener('click', async (event) => {
+    console.log('inside print excel');
+    const reportType = findReportType();
+    console.log('reportType: ' + reportType);
+    if(reportType === 'custom' && (!fromDate.value || !toDate.value )) return displayError('select date if or change custom');
+
+    const response = await fetch(`/admin/sales/excel/${reportType}?fromDate=${fromDate.value}&toDate=${toDate.value}`);
+
+    if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `sales-report-${reportType}-${Date.now()}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    } else {
+      console.error('Failed to generate Excel:', response.status, response.statusText);
+    }
+});
 
 
 

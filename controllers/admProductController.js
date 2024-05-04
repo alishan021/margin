@@ -119,11 +119,11 @@ exports.productsAdd = async ( req, res ) => {
          const images = [];
          console.log(req.files);
          if(!name || !price || !quantity ){
-             res.status(400).json({ error: 'name price and quantity are required'});
+             return res.status(400).json({ error: 'name price and quantity are required'});
          }
          if (!req.files || req.files.length === 0) {
              console.log('At least one image is required');
-             res.status(400).json({ error: 'atleast one image is required '});
+             return res.status(400).json({ error: 'atleast one image is required '});
          }        
  
          for(const file of req.files){

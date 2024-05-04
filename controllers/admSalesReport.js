@@ -2,59 +2,11 @@ const orderModel = require("../models/order");
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const userModel = require("../models/user");
+const excel4node = require('excel4node');
 
 
 
 
-
-
-exports.genPdf = (req, res) => {
-    res.writeHead(200, {
-        'Content-Type': 'application/pdf',
-        'Content-Disposition': 'attachment; filename="sales-report.pdf"'
-    });
-
-    const doc = new PDFDocument();
-    doc.pipe(res);
-
-    // Build the PDF content
-    buildPDF(doc);
-
-    doc.end();
-}
-
-async function buildPDF(doc) {
-    let commonReport = await getOrderStats();
-    console.log( commonReport );
-    // Add content to the PDF document
-    doc.fontSize(30)
-        .text('Sales Report', { align: 'center' })
-        .moveDown(); // Move down to create space below the heading
-
-     doc.fontSize(15)
-        .text(`Daily Order Count : ${ commonReport }`)
-        .text(`Daily Order revenue : ${ commonReport }`)
-
-    doc.fontSize(25)
-       .addPage()
-       .fontSize(25)
-       .text('Here is some vector graphics...', 100, 100)
-       .save()
-       .moveTo(100, 150)
-       .lineTo(100, 250)
-       .lineTo(200, 250)
-       .fill('#FF3300')
-       .scale(0.6)
-       .translate(470, -380)
-       .path('M 250,75 L 323,301 131,161 369,161 177,301 z')
-       .fill('red', 'even-odd')
-       .restore()
-       .addPage()
-       .fillColor('blue')
-       .text('Here is a link!', 100, 100)
-       .underline(100, 100, 160, 27, { color: '#0000FF' })
-       .link(100, 100, 160, 27, 'http://google.com/');
-}
 
 
 
@@ -67,7 +19,7 @@ exports.salesReportGet = async (req, res) => {
         
         orders = orders.filter(order => order.products.some(product => product.orderStatus));
         const { dailyStats, monthlyStats, yearlyStats  } = await getOrderStats();
-        res.render('adm-sales-report.ejs', { orders, dailyStats, monthlyStats, yearlyStats } );
+        return res.render('adm-sales-report.ejs', { orders, dailyStats, monthlyStats, yearlyStats } );
     } catch (err) {
         console.log(err);
     }
@@ -77,11 +29,22 @@ exports.salesReportGet = async (req, res) => {
 
 exports.customSalesReportGet = async ( req, res ) => {
     try{
-        // const fromDate = req.params.fromDate;
-        // const toDate = req.params.toDate;
-        const fromDate = req.query.fromDate;
-        const toDate = req.query.toDate;
-        console.log(fromDate, toDate);
+        let reportType = req.params.reportType, fromDate, toDate;
+        const currentDate = new Date();
+        if(reportType === 'daily'){
+            fromDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - 1);
+            toDate = new Date();
+        }else if( reportType === 'monthly'){
+            fromDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, currentDate.getDate());
+            toDate = new Date();
+        }else if( reportType === 'yearly'){
+            fromDate = new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), currentDate.getDate());
+            toDate = new Date();
+        }else {
+            fromDate = req.query.fromDate;
+            toDate = req.query.toDate;
+        }
+        console.log( 'custom sales report : ' + '\nreportType : ' + reportType, '\nfromDate : ' + fromDate, '\ntoDate : '  + toDate);
         if( new Date(fromDate) >= new Date(toDate)) return res.json({ error: 'start date must be less than end date'});
         let orders = await orderModel.find({
             deliveredAt: {
@@ -92,19 +55,19 @@ exports.customSalesReportGet = async ( req, res ) => {
         orders = orders.filter(order => order.products.some(product => product.orderStatus));
         const { dailyStats, monthlyStats, yearlyStats } = await getOrderStats( );
         const noOfUsers = await usersCount(fromDate, toDate);
-        console.log(noOfUsers);
+        // console.log(noOfUsers);
         const noOfOrders = await orderCount(fromDate, toDate);
-        console.log(noOfOrders);
+        // console.log(noOfOrders);
         const revenueAmount = await getRevenueAmount(fromDate, toDate);
-        console.log(revenueAmount);
+        // console.log(revenueAmount);
         const productsSale = await getTopProductsSale(fromDate, toDate);
-        console.log(productsSale);
+        // console.log(productsSale);
         const topCategoryies = await getTopCategoryies(fromDate, toDate);
-        console.log(topCategoryies);
+        // console.log(topCategoryies);
         const paymentOptions = await getNoOfPayments(fromDate, toDate);
-        console.log(paymentOptions);
+        // console.log(paymentOptions);
         const orderStatus = await getProductStatus(fromDate, toDate);
-        console.log(orderStatus);
+        // console.log(orderStatus);
         const data = { noOfOrders, noOfUsers, revenueAmount, productsSale, topCategoryies, paymentOptions, orderStatus };
         return res.status(200).json({ message: 'success', orders, dailyStats, monthlyStats, yearlyStats, data });
     }catch(err){
@@ -152,80 +115,23 @@ async function getOrderStats() {
 
 
 
-async function categoryStats( fromDate, toDate ) {
-    ( fromDate ) ? fromDate : false;
-    ( toDate ) ? toDate : false;
-}
-
-
-
-
-
-
-
-exports.generateSalesReportPDF = async (req, res) => {
-    try {
-        const fromDate = req.query.fromDate;
-        const toDate = req.query.toDate;
-
-        // Retrieve sales data from MongoDB
-        const orders = await orderModel.find({
-            createdAt: {
-                $gte: new Date(fromDate),
-                $lte: new Date(toDate)
-            }
-        }).populate('userId');
-
-        // Create a new PDF document
-        const doc = new PDFDocument();
-
-        // Pipe the PDF to a file (or response stream)
-        const pdfFilePath = 'sales_report.pdf';
-        const writeStream = fs.createWriteStream(pdfFilePath);
-        doc.pipe(writeStream);
-
-        // Add content to the PDF
-        doc.fontSize(20).text('Sales Report', { align: 'center' }).moveDown();
-        
-        // Iterate through orders and add details to the PDF
-        orders.forEach((order, index) => {
-            doc.fontSize(16).text(`Order ${index + 1}`, { underline: true }).moveDown();
-            doc.text(`Order ID: ${order._id}`);
-            doc.text(`Customer: ${order.userId.name}`);
-            doc.text(`Total Amount: ${order.totalAmount}`);
-            doc.moveDown();
-        });
-
-        // Finalize the PDF
-        doc.end();
-
-        // Respond with the PDF file path or stream it as a response
-        res.status(200).json({ message: 'PDF generated successfully', pdfFilePath });
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-}
-
-
-
 
 
 exports.salesReportTotalGet = async ( req, res ) => {
     const noOfUsers = await usersCount();
-    console.log(noOfUsers);
+    // console.log(noOfUsers);
     const noOfOrders = await orderCount();
-    console.log(noOfOrders);
+    // console.log(noOfOrders);
     const revenueAmount = await getRevenueAmount();
-    console.log(revenueAmount);
+    // console.log(revenueAmount);
     const productsSale = await getTopProductsSale();
-    console.log(productsSale);
+    // console.log(productsSale);
     const topCategoryies = await getTopCategoryies();
-    console.log(topCategoryies);
+    // console.log(topCategoryies);
     const paymentOptions = await getNoOfPayments();
-    console.log(paymentOptions);
+    // console.log(paymentOptions);
     const orderStatus = await getProductStatus();
-    console.log(orderStatus);
+    // console.log(orderStatus);
     const data = { noOfOrders, noOfUsers, revenueAmount, productsSale, topCategoryies, paymentOptions, orderStatus };
     return res.json({ data });
 }
@@ -503,3 +409,247 @@ async function getProductStatus(fromDate, toDate) {
         throw err;
     }
 }
+
+
+
+
+
+exports.genPdfGet = async (req, res) => {
+
+    const reportType = req.params.reportType;
+    let fromDate = req.query.fromDate;
+    let toDate = req.query.toDate;
+
+    console.log('\nreportType : ' + reportType, '\nfromDate : ' + fromDate, '\ntoDate : ' + toDate );
+
+    res.writeHead(200, {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': 'attachment; filename="sales-report.pdf"'
+    });
+    const doc = new PDFDocument({ font: 'Helvetica', margin: 50});
+    doc.pipe(res);
+
+    const currentDate = new Date();
+    if(reportType === 'daily'){
+        fromDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - 1);
+        toDate = new Date();
+    }else if( reportType === 'monthly'){
+        fromDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, currentDate.getDate());
+        toDate = new Date();
+    }else if( reportType === 'yearly'){
+        fromDate = new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), currentDate.getDate());
+        toDate = new Date();
+    }else {
+        fromDate = req.query.fromDate;
+        toDate = req.query.toDate;
+    }
+
+    console.log('\nfromDate : ' + fromDate, '\ntoDate : ' + toDate );
+
+    const no_of_orders = await orderCount(fromDate, toDate);
+    const total_revenue = await getRevenueAmount(fromDate, toDate);
+    const no_of_users = await usersCount(fromDate, toDate);
+
+    const top_products = await getTopProductsSale(fromDate, toDate);
+    const top_categories = await getTopCategoryies(fromDate, toDate);
+    const top_payments = await getNoOfPayments(fromDate, toDate);
+    const order_status = await getProductStatus(fromDate, toDate);
+
+    const parameters = [ no_of_orders, total_revenue, no_of_users, top_products, top_categories, top_payments, order_status ];
+    console.log(...parameters);
+    genSalesReportPDF(doc, ...parameters);
+
+    doc.end();
+}
+
+
+
+async function genSalesReportPDF(doc, ...parameters) {
+
+    const [no_of_orders, total_revenue, no_of_users, top_products, top_categories, top_payments, order_status] = parameters;
+
+    doc.fontSize(18).font('Helvetica-Bold').text('SALES REPORT', { align: 'center' })
+        .moveDown();
+
+    doc.font('Helvetica').fontSize(10).text(`Date : ${new Date(Date.now()).toLocaleDateString()}`, { align: 'right'});
+
+    doc.font('Helvetica-Bold').fontSize(14).text('MARGIN');
+    doc.moveDown(0.3)
+        .font('Helvetica')
+        .fontSize(8).text(`Abcd street`)
+        .fontSize(8).text(`Calicut, Kerala, 673020`)
+        .fontSize(8).text(`1800-208-9898`)
+        
+    let hr = 160;
+        
+    generateHr(doc, doc.y + 10);
+    
+    // orders , revenue and number of users
+    doc.moveDown(2);
+    doc.font('Helvetica-Bold').moveDown(0.5)
+        .text(`Orders : ${no_of_orders}`).moveDown(0.5)
+        .text(`Revenue : ${total_revenue}$`).moveDown(0.5)
+        .text(`Users signup  : ${no_of_users}`);
+    generateHr(doc, doc.y + 10);
+        
+    // top selling products looping
+    doc.moveDown(2);
+    doc.font('Helvetica-Bold').fontSize(14).text('Top Selling Products');
+    doc.font('Helvetica').fontSize(10).moveDown();
+    for( let i = 0; i < top_products.length; i++ ){ doc.text(`${i+1} . ${top_products[i].productName} : ${ top_products[i].count }`).moveDown(0.3) }
+    generateHr(doc, doc.y + 10);
+
+    // top categories products looping
+    doc.moveDown(2);
+    doc.font('Helvetica-Bold').fontSize(14).text(`Top Selling Categories`);
+    doc.font('Helvetica').fontSize(10).moveDown();
+    for( let i = 0; i < top_categories.length; i++ ){ doc.text(`${i+1} . ${top_categories[i].categoryName} : ${ top_categories[i].count }`).moveDown(0.3) }
+    generateHr(doc, doc.y + 10);
+
+
+    // most using payments systems products looping
+    doc.moveDown(2);
+    doc.font('Helvetica-Bold').fontSize(14).text('Most Using Payment Options');
+    doc.font('Helvetica').fontSize(10).moveDown();
+    for( let i = 0; i < top_payments.length; i++ ){ doc.text(`${i+1} . ${top_payments[i]._id} : ${ top_payments[i].count }`).moveDown(0.3) }
+    generateHr(doc, doc.y + 10);
+
+
+    // Order status looping
+    doc.moveDown(2);
+    doc.font('Helvetica-Bold').fontSize(14).text('Order Status');
+    doc.font('Helvetica').fontSize(10).moveDown();
+    for( let i = 0; i < order_status.length; i++ ){ doc.text(`${i+1} . ${order_status[i]._id} : ${ order_status[i].count }`).moveDown(0.3) }
+    generateHr(doc, doc.y + 10);
+
+    return;
+}
+
+
+function generateHr(doc, y) {
+    doc
+      .strokeColor("#aaaaaa")
+      .lineWidth(1)
+      .moveTo(50, y)
+      .lineTo(550, y)
+      .stroke();
+  }
+
+
+
+
+  exports.salesReportExcelGet = async ( req, res ) => {
+    try{
+
+        const reportType = req.params.reportType;
+        let fromDate = req.query.fromDate;
+        let toDate = req.query.toDate;
+
+    console.log('\nreportType : ' + reportType, '\nfromDate : ' + fromDate, '\ntoDate : ' + toDate );
+
+    const currentDate = new Date();
+    if(reportType === 'daily'){
+        fromDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - 1);
+        toDate = new Date();
+    }else if( reportType === 'monthly'){
+        fromDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, currentDate.getDate());
+        toDate = new Date();
+    }else if( reportType === 'yearly'){
+        fromDate = new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), currentDate.getDate());
+        toDate = new Date();
+    }else {
+        fromDate = req.query.fromDate;
+        toDate = req.query.toDate;
+    }
+
+    console.log('\nfromDate : ' + fromDate, '\ntoDate : ' + toDate );
+
+    const no_of_orders = await orderCount(fromDate, toDate);
+    const total_revenue = await getRevenueAmount(fromDate, toDate);
+    const no_of_users = await usersCount(fromDate, toDate);
+
+    const top_products = await getTopProductsSale(fromDate, toDate);
+    const top_categories = await getTopCategoryies(fromDate, toDate);
+    const top_payments = await getNoOfPayments(fromDate, toDate);
+    const order_status = await getProductStatus(fromDate, toDate);
+
+    const parameters = [ no_of_orders, total_revenue, no_of_users, top_products, top_categories, top_payments, order_status ];
+    console.log(...parameters);
+
+    const workbook = new excel4node.Workbook();
+    const headerStyle = workbook.createStyle({
+        font: { bold: true }
+    });
+    const worksheet1 = workbook.addWorksheet('Sheet 1');
+    await genExcelReport(worksheet1, headerStyle, ...parameters);
+
+     // Write the workbook to a buffer
+     const buffer = await workbook.writeToBuffer();
+     
+     // Send the buffer as a response
+     res.writeHead(200, {
+       'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+       'Content-Disposition': 'attachment; filename="sales-report.xlsx"',
+       'Content-Length': buffer.length
+     });
+     res.end(buffer);
+    }catch(err){
+        console.log(err);
+    }
+  }
+
+
+
+  async function genExcelReport(worksheet, headerStyle, no_of_orders, total_revenue, no_of_users, top_products, top_categories, top_payments, order_status) {
+
+    // Add data to the worksheet
+    let row = 2, col;
+    worksheet.cell(row, 1).string('Sales Report').style(headerStyle);
+    worksheet.removeColumn(3, 1000); // Remove columns from 3 to the end
+
+
+    worksheet.cell(row += 2, 1).string('No. of Orders');
+    worksheet.cell(row, 2).number(no_of_orders);
+    worksheet.cell(++row, 1).string('Total Revenue');
+    worksheet.cell(row, 2).number(total_revenue);
+    worksheet.cell(++row, 1).string('No. of Users');
+    worksheet.cell(row, 2).number(no_of_users);
+
+    row += 2;
+     // Add top products
+     worksheet.cell(row, 1).string('Top Products').style(headerStyle);
+     row++;
+     top_products.forEach((product, index) => {
+         worksheet.cell(row + index, 1).string(`${index + 1}. ${product.productName}`);
+         worksheet.cell(row + index, 2).number(product.count);
+     });
+
+     // Add top categories
+     row += top_products.length + 1;
+     worksheet.cell(row, 1).string('Top Categories').style(headerStyle);
+     row++;
+     top_categories.forEach((category, index) => {
+         worksheet.cell(row + index, 1).string(`${index + 1}. ${category.categoryName}`);
+         worksheet.cell(row + index, 2).number(category.count);
+     });
+ 
+     // Add top payments
+     row += top_categories.length + 1;
+     worksheet.cell(row, 1).string('Top Payments').style(headerStyle);
+     row++;
+     top_payments.forEach((payment, index) => {
+         worksheet.cell(row + index, 1).string(`${index + 1}. ${payment._id}`);
+         worksheet.cell(row + index, 2).number(payment.count);
+     });
+     
+     // Add order status
+     row += top_payments.length + 1;
+     worksheet.cell(row, 1).string('Order Status').style(headerStyle);
+     row++;
+     order_status.forEach((status, index) => {
+         worksheet.cell(row + index, 1).string(`${status.name}`);
+         worksheet.cell(row + index, 2).number(status.count);
+     });
+  
+    return worksheet;
+  }
