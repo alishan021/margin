@@ -26,6 +26,7 @@ router.get('/signup/otp', userController.sendOtp, userController.signupOtpGet );
 router.post('/signup/otp/validate', userController.signupOtpPost );
 // Saving user singup data into database
 router.get('/post-user', userController.userSignupPost );
+router.get('/check-referal/:referalCode', userController.checkReferalcode );
 
 // Login
 router.get('/login', userAuth.userSessionYes ,userController.loginGet );
@@ -61,7 +62,8 @@ router.patch('/address/:userId', userController.addAddressPatch );
 router.delete('/address/:addressId', userController.deleteAddress );
 router.get('/address/edit/:addressId', userController.addressEditGet );
 router.patch('/address/update/:addressId/:userId', userController.addressUpdatePatch );
-router.post('/wallet/:userId/:amount', userController.addWalletAmount)
+router.post('/wallet/:userId/:amount', userController.addWalletAmount);
+router.get('/order/invoice/:orderId', userController.genInvoice );
 
 
 // User Cart

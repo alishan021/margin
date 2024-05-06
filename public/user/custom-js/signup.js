@@ -8,6 +8,7 @@ form.addEventListener('submit', async (event) => {
     console.log('form submit');
 
     const body = getUserDetails();
+    console.log(body);
     const validateResult = verifyUserDetails(body)
     console.log('validateReult : ' + validateResult);
     console.log('body : ' + body );
@@ -35,8 +36,11 @@ const getUserDetails = () => {
     const email = document.querySelector('[email]').value;
     const password = document.querySelector('[password]').value;
     const passwordRe = document.querySelector('[passwordRe]').value;
+    const referalCode = (document.querySelector('[referalCode]').value || null);
 
-    return body = { username, email, password, passwordRe }
+    console.log(username, email, password, passwordRe, referalCode);
+
+    return body = { username, email, password, passwordRe, referalCode };
 }
 
 
@@ -62,10 +66,34 @@ const verifyUserDetails = (body) => {
         const result = { success: false, message: 'Password is not matching' }
         return displayError( result );
     }
-    
+    // if( !referalCode || referalCode === "" ) 
     return { success: true };
 }
 
+
+
+const referalButton = document.querySelector('.referal-button');
+referalButton.addEventListener('click', async (event) => {
+    event.preventDefault();
+    console.log('inside referal code check')
+    const referalCode = document.querySelector('[referalCode]').value;
+    if( !referalCode || referalCode === '') displayReferalStatus('type referal code')
+    const response = await fetch(`/check-referal/${referalCode}`);
+    const body = await response.json();
+    console.log(body);
+    if(!body.success){
+        displayReferalStatus(body.message)
+    }else if(body.success){
+        displayReferalStatus(body.message)
+    }
+})
+
+const referalStatus = document.querySelector('.referal-status');
+const displayReferalStatus = (message, color) => {
+    referalStatus.style.fontSize = '15px';
+    // referalStatus.style.backgroundColor = 'lightblue'
+    referalStatus.innerHTML = message;
+}
 
 
 const displayError = (result) => {

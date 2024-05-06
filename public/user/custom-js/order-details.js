@@ -64,6 +64,33 @@ returnOrderAll.forEach((returnOrder) => {
 
 
 
+
+const btnInvoice = document.querySelector('#btn-invoice'); 
+btnInvoice.addEventListener('click', async (event) => {
+  const orderId = event.target.getAttribute('data-order-id');
+  console.log(orderId);
+  const response = await fetch(`/order/invoice/${orderId}`);
+
+  if(response.ok) {
+    const blob = await response.blob()
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${orderId}-invoice.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+  }else {
+    const body = await response.json();
+    console.log(body);
+  }
+  
+ 
+})
+
+
+
 const alertMessageError = document.getElementById('alertMessageError');
 const alertMessageSuccess = document.getElementById('alertMessageSuccess');
 

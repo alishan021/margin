@@ -9,6 +9,7 @@ const categoryModel = require('../models/category');
 const orderModel = require('../models/order');
 const couponModel = require('../models/coupons');
 const { search } = require('../routes/userRoute');
+const PDFDocument = require('pdfkit');
 
 
 
@@ -30,7 +31,7 @@ exports.validateSignupBody = async (req, res, next ) => {
 
     console.log('enter in to validatesignupbody');
 
-    const body = { username, email, password, passwordRe } = req.body;
+    const body = { username, email, password, passwordRe, referalCode } = req.body;
     req.session.userEmail = email;
     req.session.signupBody = body;
     console.log(req.session);
@@ -171,23 +172,47 @@ exports.signupOtpPost = async (req, res) => {
 
 exports.userSignupPost = async ( req, res, next ) => {
     try{
-        const { username, email, password } = req.session.signupBody;
+        const { username, email, password, referalCode } = req.session.signupBody;
+        console.log(  username, email, password, referalCode );
 
         // req.session.userEmail = email;
     
         const hashedPassword = await bcrypt.hash( password, parseInt(process.env.SALTROUNDS) );   
     
-        const userData = { username, email, password: hashedPassword };
+        const userData = { username, email, password: hashedPassword, referalCode };
         const result = await userModel.create(userData);
+        if( result || referalCode ) {
+            const user = await userModel.findOne({ referalCode: referalCode });
+            if(user) {
+                user.wallet.amount += 100;
+                await user.save();
+            }
+            console.log('user : ' + user );
+        }
     
         console.log(result);    
         res.redirect('/login');
         // res.json({ success: true });
        }
     catch(error) {
-        console.log('error : ' + error );
+        console.error('userSignupPost Error : ' + error );
     }
     next();
+}
+
+
+
+exports.checkReferalcode = async ( req, res ) => {
+    const referalCode = req.params.referalCode;
+    console.log(referalCode);
+    try{
+        const findReferalCode = await userModel.findOne({ referalCode: referalCode });
+        console.log(findReferalCode);
+        if(findReferalCode) return res.json({ success: true, message: 'Referal code is valid'});
+        else return res.json({ success: false, message: "can't find the referal code, try again."});
+    }catch(err){
+        console.log('Error on checkReferalcode : ' + err )
+    }
 }
 
 
@@ -745,7 +770,7 @@ async function getProductDetails(cart) {
 
 
 exports.DashboardUserDetailsPatch = async ( req, res ) => {
-    const { username, email, oldpassword, password, passwordre } = req.body;
+    const { username, email, oldpassword, password, passwordre, referal_code } = req.body;
     const userSessionEmail = req.session.user.email; 
     console.log(username, email )
     if(!username || !email){
@@ -755,23 +780,27 @@ exports.DashboardUserDetailsPatch = async ( req, res ) => {
         console.log(userSessionEmail);
         return res.status(400).json({ error: `please signin through ${userSessionEmail}`})
     }
-    if(password !== passwordre ){
+    if(( password && passwordre ) && (password !== passwordre) ){
         return res.status(400).json({ error: 'password is not matching'});
     }
-    if( password < 6 ){
+    if( password && password < 6 ){
         return res.status(400).json({ error: 'password need atlease 6 charcters'});
     }
     try{
+        if( referal_code ) {
+            let result = await userModel.findOne({ referalCode: referal_code});
+            if( result ) return res.json({ error: 'try another referal code'});
+        }
         if(!oldpassword || oldpassword == ''){
-            const result = await userModel.updateOne({ email: userSessionEmail}, { $set: { username: username }});
+            const result = await userModel.updateOne({ email: userSessionEmail}, { $set: { username: username, referalCode: referal_code }});
             console.log(result);
-            return res.status(200).json({ message: 'username updated successfully'});
+            return res.status(200).json({ success: true, message: 'userDetails updated successfully'});
         } else{
             const passwordMatch = await bcrypt.compare( oldpassword, req.session.user.password );
             if(!passwordMatch) return res.status(400).json({ error: 'password is wrong'});
 
             const hashedPassword = await bcrypt.hash( password , parseInt(process.env.SALTROUNDS ));
-            const result = await userModel.findOneAndUpdate({ email: userSessionEmail }, { $set: { username, password: hashedPassword }}, { new: true } );
+            const result = await userModel.findOneAndUpdate({ email: userSessionEmail }, { $set: { username, password: hashedPassword, referalCode: referal_code }}, { new: true } );
             console.log(result);
             req.session.user.username = username;
             return res.status(200).json({ success: true, message: 'userDetails updated successfully'});
@@ -867,7 +896,7 @@ exports.cartCountPatch = async (req, res) => {
 
 
 
-exports.addAddressPatch = async ( req, res ) => {success
+exports.addAddressPatch = async ( req, res ) => {
     try{
         console.log('hai from addAddressPatch')
         const userId = req.params.userId;
@@ -1235,3 +1264,87 @@ exports.couponCheck = async ( req, res ) => {
         return res.status(500).json({ error: 'Internal server error' });
     }
 }
+
+
+
+exports.genInvoice = async ( req, res ) => {
+    const orderId = req.params.orderId;
+    console.log(orderId);
+
+    const doc = new PDFDocument({ font: 'Helvetica', margin: 50});
+    doc.pipe(res);
+
+    const order = await orderModel.findById(orderId).populate('products.productId');
+    console.log(order);
+    
+    genInvoicePdf(doc, orderId, order );
+
+    doc.end();
+}
+
+
+function genInvoicePdf(doc, orderId, order ) {
+
+    doc.fontSize(18).font('Helvetica-Bold').text('Invoice', { align: 'center' })
+        .moveDown();
+
+    doc.font('Helvetica-Bold').fontSize(10).text(`Date : ${new Date(Date.now()).toLocaleDateString()}`, { align: 'right'});
+
+    doc.font('Helvetica-Bold').fontSize(14).text('MARGIN');
+    doc.moveDown(0.3)
+        .font('Helvetica')
+        .fontSize(8).text(`Abcd street`)
+        .fontSize(8).text(`Calicut, Kerala, 673020`)
+        .fontSize(8).text(`1800-208-9898`)
+        .fontSize(8).font('Helvetica-Bold').text(`orderId : ${orderId}`, { align: 'right'});
+
+    generateHr(doc, doc.y + 10);
+    let y = doc.y + 20;
+    doc.font('Helvetica-Bold').text('No', 60, y)
+        .text('product', 100, y)
+        .text('Quantity', 250, y)
+        .text('Price', 400, y)
+        .text('Total', 500, y);
+
+    generateHr(doc, doc.y + 10);
+
+    y += 40;
+
+    order.products.forEach(( item, index ) => {
+        
+        doc.font('Helvetica').text(`${index + 1}`, 60, y)
+        .text(`${item.productId.name}`, 100, y)
+        .text(`${item.quantity}`, 250, y)
+        .text(`${item.productId.price}`, 400, y)
+        .text(`${item.productTotalPrice}`, 500, y);
+
+        y += 20;
+    });
+
+    generateHr(doc, doc.y + 10);
+    y+= 20;
+
+    doc.font('Helvetica').text(`subTotal : ${ order.totalPrice }`, 450, y );
+    doc.font('Helvetica').text(`Delivery : ${ 0 }`, 450, y + 20 );
+    doc.moveDown();
+
+    doc.strokeColor("#aaaaaa").lineWidth(1).moveTo(450, doc.y).lineTo(550, doc.y).stroke();
+
+    // generateHr(doc, doc.y + 10);
+    
+    doc.moveDown();
+    doc.font('Helvetica-Bold').text(`subTotal : ${ order.totalPrice }`);
+
+
+    return;
+};
+
+
+function generateHr(doc, y) {
+    doc
+      .strokeColor("#aaaaaa")
+      .lineWidth(1)
+      .moveTo(50, y)
+      .lineTo(550, y)
+      .stroke();
+  }

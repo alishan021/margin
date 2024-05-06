@@ -7,6 +7,7 @@
     <title>Signup</title>
     <link rel="stylesheet" href="/user/custom-css/signup.css">
     <link rel="stylesheet" href="/user/custom-css/msg-boxes.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
 
@@ -18,20 +19,32 @@
                     <p class="msg-para"></p>
                 </div>
                 <div class="input-field form-child">
-                    <label for="username">Username : </label>
+                    <label for="username">Username : *</label>
                     <input type="text" placeholder="your name" name="username" username >
                 </div>
                 <div class="input-field form-child">
-                    <label for="username">Email : </label>
+                    <label for="username">Email : *</label>
                     <input type="text" placeholder="abc@gmail.com" name="email" email >
                 </div>
                 <div class="input-field form-child">
-                    <label for="username">Password : </label>
+                    <label for="username">Password : *</label>
                     <input type="password" placeholder="password" name="password" password >
                 </div>
                 <div class="input-field form-child">
-                    <label for="username">Confirm Password : </label>
+                    <label for="username">Confirm Password : *</label>
                     <input type="password" placeholder="password again" name="passwordRe" passwordRe >
+                </div>
+                <div class="input-field form-child referal-code">
+                    <label for="referal_code" class="referal-status">Referal Code : </label>
+                    <div class="referal-code-div">
+                        <input type="text" placeholder="Referal code if any" name="referal_code" referalCode >
+                        <!-- <div class="referal-box-icons"> -->
+                            <!-- <i class="fa-regular fa-circle-check" ></i> -->
+                            <!-- <i class="fa-solid fa-circle-exclamation" ></i> -->
+                            <!-- </div> -->
+                            <button class="referal-button">Check</button>
+                    </div>
+                    <!-- <span class="referal-status"></span> -->
                 </div>
                 <div class="login-link form-child">
                     <p><a href="/login">Already have an Account? Login</a></p>

@@ -480,8 +480,6 @@ async function genSalesReportPDF(doc, ...parameters) {
         .fontSize(8).text(`Calicut, Kerala, 673020`)
         .fontSize(8).text(`1800-208-9898`)
         
-    let hr = 160;
-        
     generateHr(doc, doc.y + 10);
     
     // orders , revenue and number of users

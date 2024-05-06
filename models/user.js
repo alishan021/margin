@@ -91,6 +91,18 @@ var userSchema = new Schema({
     status: {
         type: Boolean,
         default: true
+    },
+    referalCode: {
+        type: String,
+        unique: true,
+        default: null,
+        set: function(value) {
+            if(!value || value === "" ){
+                return this.value;
+            }else {
+                return value;
+            }
+        }
     }
 }); 
 
