@@ -47,3 +47,28 @@
     width: 80%;
     margin-right: 5px;
 }
+
+
+.address-container {
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  
+  .address-list {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 40px;
+  }
+  
+  .card-dashboard {
+    flex: 0 0 auto;
+    margin-right: 1rem;
+    width: 350px;
+
+  }
+
+.address-container::-webkit-scrollbar {
+    width: 20px;
+  }
+  

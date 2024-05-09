@@ -1,6 +1,6 @@
 
-const fromDate = document.querySelector('#from-date');
-const toDate = document.querySelector('#to-date');
+let fromDate = document.querySelector('#from-date');
+let toDate = document.querySelector('#to-date');
 
 
 function findReportType() {
@@ -16,7 +16,7 @@ const filterButton = document.querySelector('.btn-apply');
 filterButton.addEventListener('click', async (event) => {
 
     console.log(fromDate.value, toDate.value);
-    if((formDate.value && !toDate.value) || (!formDate.value && toDate.value)) return displayError('error no date.');
+    if((fromDate.value && !toDate.value) || (!fromDate.value && toDate.value)) return displayError('error no date.');
     const reportType = findReportType();
     
     // Construct the URL with query parameters

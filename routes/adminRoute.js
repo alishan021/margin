@@ -42,7 +42,7 @@ router.post('/login',  adminController.adminLoginPost );
 
 // Home page
 router.get('/',  adminAuth.adminSessionNo, adminController.adminHomeGet );
-
+router.get('/dashboard/data', adminAuth.adminSessionNo, adminController.dashBoardDetails );
 
 
 // To get user list for admin;
@@ -68,7 +68,6 @@ router.get('/products/add', adminAuth.adminSessionNo,  admProductController.addP
 router.patch('/product', admProductController.productListEditPatch );
 router.delete('/product/:id', admProductController.productDelete );
 
-router.get('/logout', adminController.logout );
 
 router.post('/products/add', upload.array('images', 6 ), admProductController.productsAdd );
 router.get('/products/edit/:productId', admProductController.productEditGet );
@@ -89,6 +88,9 @@ router.get('/sales-report/:reportType', admSalesReportController.customSalesRepo
 router.get('/sales/pdf/:reportType', admSalesReportController.genPdfGet );
 router.get('/sales-report-total', admSalesReportController.salesReportTotalGet );
 router.get('/sales/excel/:reportType', admSalesReportController.salesReportExcelGet );
+
+router.get('/logout', adminController.logout );
+
 
 // // 404 Not Found handler
 // router.get('*', (req, res, next) => {

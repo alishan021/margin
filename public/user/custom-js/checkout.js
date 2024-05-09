@@ -179,7 +179,8 @@ $(document).ready(function() {
         var rzp1 = new Razorpay(options);
 
         rzp1.on('payment.failed', function(response) {
-          alert('payment failed');
+          // alert('payment failed');
+          showAlertError('Payment Failed');
           alertMessageError('Payment failed');
           console.log(response.error.code);
           console.log(response.error.description);

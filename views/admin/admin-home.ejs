@@ -21,16 +21,28 @@
             <!-- Sidebar ends -->
             
             <!-- Main body or dashboard starts -->
-            <main>
+            <main class="main">
                 <div class="sales-container">
+                    <div class="sales-box "><h4 class="box-items total-users"></h4></div>
+                    <div class="sales-box "><h4 class="box-items total-orders"></h4></div>
+                    <div class="sales-box "><h4 class="box-items total-revenue"></h4></div>
+                    <div class="sales-box "><h4 class="box-items total-products"></h4></div>
+                    <!-- <div class="sales-box"></div>
                     <div class="sales-box"></div>
                     <div class="sales-box"></div>
-                    <div class="sales-box"></div>
-                    <div class="sales-box"></div>
-                    <div class="sales-box"></div>
-                    <div class="sales-box"></div>
-                    <div class="sales-box"></div>
-                    <div class="sales-box"></div>
+                    <div class="sales-box"></div> -->
+                </div>
+
+                <div class="charts-container">
+                    <!-- <div class="category-chart-div">
+                        <canvas id="myChart-categories"></canvas>
+                    </div> -->
+                    <div class="line-chart-div">
+                        <canvas id="myChart-lines"></canvas>
+                    </div>
+                    <div class="product-chart-div">
+                        <canvas id="myChart-products"></canvas>
+                    </div>
                 </div>
             </main>
         </div>
@@ -38,6 +50,83 @@
         
 
     </div>
+
+
+    
+      
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      
+      <script>
+
+
+        let data = [];
+        let products;
+        document.addEventListener('DOMContentLoaded', async function() {
+
+          const response = await fetch('/admin/dashboard/data');
+          data = await response.json();
+          console.log(data);
+          products = data.topProducts.map( item => item.productName );
+          console.log(products);
+          console.log(data.topProducts);
+          console.log(data.topCategoryies);
+          // const products = data.topProducts.map( item => item.productName );
+          // const categories = data.topCategories.map( item => item.categoryName );
+          
+          const myChartProducts = document.getElementById('myChart-products');
+          
+          new Chart(myChartProducts, {
+          type: 'bar',
+          data: {
+            labels: [...data.topCategoryies.map( item => item.categoryName )],
+            datasets: [{
+              label: 'Most Selling Products',
+              data: [12, 19, 3, 5, 2, 3],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            },
+          }
+        });
+
+  
+
+        const myChartLines = document.getElementById('myChart-lines');
+      
+        new Chart(myChartLines, {
+          type: 'line',
+          data: {
+            labels: [...data.topProducts.map( item => item.productName )],
+            datasets: [{
+              label: 'Most Selled Category',
+              data: [12, 19, 3, 5, 2, 3],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+        });
+
+
+        document.querySelector('.total-users').innerHTML = `Users : ${data.totalUsers}`;
+        // document.querySelector('.total-users').innerHTML = data.totalUsers;
+        document.querySelector('.total-orders').innerHTML = `Orders : ${data.totalOrders}`
+        document.querySelector('.total-revenue').innerHTML = `Revenue : ${data.totalRevenue}`
+        document.querySelector('.total-products').innerHTML = `Products : ${data.totalProducts}`
+
+    })
+
+      </script>
 
 </body>
 </html>

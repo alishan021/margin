@@ -14,7 +14,10 @@ cartButtons.forEach( btnCart => {
             console.log('redirect me');
             window.location.href = `/${body.rdt}`;
         }
-        if(body.error){
+        if(body.redirect) {
+            showAlertError(body.error);
+            setTimeout(() => window.location.href = body.redirect, 1000)
+        } else if(body.error){
             console.log(body.error);
             showAlertError(body.error);
         }
@@ -28,20 +31,8 @@ let userSelectOption;
 document.querySelector('#sortby').addEventListener('change', async (event) => {
     userSelectOption = event.target.value;
     console.log(userSelectOption);
-
-    // window.location.href = `/product-list/${userSelectOption}`;
 })
 
-
-
-// const categorys = document.querySelectorAll('.filter-item');
-// let categorySelected = [];
-// categorys.forEach( category =>{
-//         category.addEventListener('click',(event) => {
-//             const productScript = document.getElementById('product-data');
-//             console.log(productScript);
-//         })
-// })
 
 
 const categories = document.querySelector('.filter-items');
@@ -145,7 +136,7 @@ wishlistButtons.forEach(( button ) => {
         const response = await fetch(`/wishlist/${productId}`, { method: 'POST' });
         const result = await response.json();
         console.log(result);
-        if(result.success) showAlertSuccess(result.message);
+        if(result.success) showAlertproductSuccess(result.message);
         else if(result.redirect) {
             showAlertError(result.error);
             setTimeout(() => window.location.href = result.redirect, 1000)

@@ -137,25 +137,24 @@
 
 
 								    <div class="tab-pane fade" id="tab-address" role="tabpanel" aria-labelledby="tab-address-link">
-								    	<p>The following addresses will be used on the checkout page by default.</p>
 										<a href="#tab-add-address" class="add-address-link"> Add address <i class="icon-edit"></i></a></p>
 
+										<div class="address-container">
+											<!-- d-flex gap-5  -->
 										<% if(user.address.length > 0 ){ %>
+
+											<div class="address-list">
+
 											<% user.address.forEach( (address, index ) => { %> 
 												
 												
 												<div class="row">
-													<div class="col-lg-6">
+													<div >
+														<!-- class="col-lg-6" -->
 														<div class="card card-dashboard">
-															
-															
-															
 
-															<div class="card-body">
-															<h3 class="card-title">
-																<!-- <input type="radio" name="address-radio" id="address-radio" checked> -->
-																  Billing Address <%= index + 1 %>
-															</h3><!-- End .card-title -->
+														<div class="card-body">
+															<h3 class="card-title">Billing Address <%= index + 1 %></h3><!-- End .card-title -->
 	
 															<p><%= address.name %><br>
 																<%= address.email %><br>
@@ -170,28 +169,15 @@
 																<div class="btn-delete d-inline" data-address-id="<%= address._id %>" data-index="<%= index %>" ><a href="#"  >Delete <i class="fa-solid fa-trash"></i></a></div></p>
 														</div><!-- End .card-body -->
 
-	
+														
 														
 													</div><!-- End .card-dashboard -->
 												</div><!-- End .col-lg-6 -->
-
-								    		<!-- <div class="col-lg-6"> -->
-								    			<!-- <div class="card card-dashboard"> -->
-								    				<!-- <div class="card-body"> -->
-								    					<!-- <h3 class="card-title">Shipping Address</h3> -->
-														<!-- End .card-title -->
-
-														<!-- <p>You have not set up this type of address yet.<br> -->
-														<!-- <a href="#">Edit <i class="icon-edit"></i></a></p> -->
-								    				<!-- </div> -->
-													<!-- End .card-body -->
-								    			<!-- </div> -->
-												<!-- End .card-dashboard -->
-												<!-- </div> -->
-												<!-- End .col-lg-6 -->
 											</div>
 											<!-- End .row -->
 											<% }) %>
+											</div>
+											
 										<% }else { %>
 
 
@@ -206,8 +192,9 @@
 											</div><!-- End .card-body -->
 
 
-
-										<% } %>
+											
+											<% } %>
+										</div>
 								    </div>
 									<!-- .End .tab-pane -->
 
@@ -218,49 +205,49 @@
 			                				<hr class="md-3">
 
 			                				<label>Name *</label>
-			                				<input type="text" name="name" class="form-control" value="<%= user.username %>" required>
+			                				<input type="text" name="name" class="form-control" value="<%= user.username %>" >
 
 			                				<label>Email *</label>
-			                				<input type="email" name="email" class="form-control" value="<%= user.email %>" required>
+			                				<input type="email" name="email" class="form-control" value="<%= user.email %>" >
 
 											<div class="row">
 			                					<div class="col-sm-6">
 			                						<label>Phone * </label>
-			                						<input type="text" name="phone" class="form-control" required>
+			                						<input type="text" name="phone" class="form-control" >
 			                					</div><!-- End .col-sm-6 -->
 
 			                					<div class="col-sm-6">
 			                						<label>Alt Phone </label>
-			                						<input type="text" name="altphone" class="form-control" required>
+			                						<input type="text" name="altphone" class="form-control" >
 			                					</div><!-- End .col-sm-6 -->
 			                				</div><!-- End .row -->
 
 											<div class="row">
 			                					<div class="col-sm-6">
 			                						<label>Pincode * </label>
-			                						<input type="text" name="pincode" class="form-control" required>
+			                						<input type="text" name="pincode" class="form-control" >
 			                					</div><!-- End .col-sm-6 -->
 
 			                					<div class="col-sm-6">
 			                						<label>City * </label>
-			                						<input type="text" name="city" class="form-control" required>
+			                						<input type="text" name="city" class="form-control" >
 			                					</div><!-- End .col-sm-6 -->
 			                				</div><!-- End .row -->
 
 											<div class="row">
 			                					<div class="col-sm-6">
 			                						<label>State * </label>
-			                						<input type="text" name="state" class="form-control" required>
+			                						<input type="text" name="state" class="form-control" >
 			                					</div><!-- End .col-sm-6 -->
 
 			                					<div class="col-sm-6">
 			                						<label>Country * </label>
-			                						<input type="text" name="country" class="form-control" required>
+			                						<input type="text" name="country" class="form-control" >
 			                					</div><!-- End .col-sm-6 -->
 			                				</div><!-- End .row -->
 
 		            						<label>landmark</label>
-		            						<textarea name="landmark" rows="6" class="form-control landmark" required></textarea>
+		            						<textarea name="landmark" rows="6" class="form-control landmark" ></textarea>
 		            						<!-- <input type="text" name="landmark" class="form-control mb-2"> -->
 
 
@@ -280,49 +267,49 @@
 			                				<hr class="md-3">
 			                				
 			                				<label>Name *</label>
-			                				<input type="text" name="name" id="name" class="form-control" required>
+			                				<input type="text" name="name" id="name" class="form-control">
 
 			                				<label>Email *</label>
-			                				<input type="email" name="email" id="email" class="form-control" required>
+			                				<input type="email" name="email" id="email" class="form-control" >
 
 											<div class="row">
 			                					<div class="col-sm-6">
 			                						<label>Phone * </label>
-			                						<input type="text" name="phone" id="phone" class="form-control" required>
+			                						<input type="text" name="phone" id="phone" class="form-control" >
 			                					</div><!-- End .col-sm-6 -->
 
 			                					<div class="col-sm-6">
 			                						<label>Alt Phone </label>
-			                						<input type="text" name="altphone" id="alt_phone" class="form-control" required>
+			                						<input type="text" name="altphone" id="alt_phone" class="form-control" >
 			                					</div><!-- End .col-sm-6 -->
 			                				</div><!-- End .row -->
 
 											<div class="row">
 			                					<div class="col-sm-6">
 			                						<label>Pincode * </label>
-			                						<input type="text" name="pincode" id="pincode" class="form-control" required>
+			                						<input type="text" name="pincode" id="pincode" class="form-control" >
 			                					</div><!-- End .col-sm-6 -->
 
 			                					<div class="col-sm-6">
 			                						<label>City * </label>
-			                						<input type="text" name="city" id="city" class="form-control" required>
+			                						<input type="text" name="city" id="city" class="form-control" >
 			                					</div><!-- End .col-sm-6 -->
 			                				</div><!-- End .row -->
 
 											<div class="row">
 			                					<div class="col-sm-6">
 			                						<label>State * </label>
-			                						<input type="text" name="state" id="state" class="form-control" required>
+			                						<input type="text" name="state" id="state" class="form-control" >
 			                					</div><!-- End .col-sm-6 -->
 
 			                					<div class="col-sm-6">
 			                						<label>Country * </label>
-			                						<input type="text" name="country" id="country" class="form-control" required>
+			                						<input type="text" name="country" id="country" class="form-control" >
 			                					</div><!-- End .col-sm-6 -->
 			                				</div><!-- End .row -->
 
 		            						<label>landmark</label>
-		            						<textarea name="landmark" rows="6" id="landmark" class="form-control landmark" required></textarea>
+		            						<textarea name="landmark" rows="6" id="landmark" class="form-control landmark" ></textarea>
 		            						<!-- <input type="text" name="landmark" class="form-control mb-2"> -->
 
 

@@ -56,9 +56,11 @@ addressForm.addEventListener('submit', async (event) => {
         const body = await response.json()
         console.log(body)
         if(body.error){
-            return showAlertError(data.error);
-        }else {
-            window.location.href = '/dashboard';
+            return showAlertError(body.error);
+        }else if(body.success){
+            showAlertSuccess(body.message)
+            console.log(body);
+            setTimeout(() => window.location.href = '/dashboard', 1000);
         }
     }catch(err){
         console.log(err);
@@ -81,8 +83,8 @@ deleteBtn.forEach( button => {
             const body = await response.json()
             console.log(body);
             if(body.success){
-                window.location.reload();
-                showAlertSuccess(body.success)
+                showAlertSuccess(body.message);
+                setTimeout(() => window.location.href = '/dashboard', 1000);
             }else {
                 console.log(body.error);
                 showAlertError(body.error);
@@ -136,6 +138,7 @@ editButtons.forEach(button => {
             landmark.value = body.landmark;
 
             editAddress.addEventListener('submit', async (event) => {
+                event.preventDefault();
                 try{
                     const formData = {};
                     const userId = event.target.dataset.userId;
@@ -159,8 +162,10 @@ editButtons.forEach(button => {
                         console.log(bodyupdate)
                         if(bodyupdate.error){
                             return showAlertError(bodyupdate.error);
-                        }else {
-                            window.location.href = '/dashboard#tab-address';
+                        }
+                        if(bodyupdate.success){
+                            showAlertSuccess(bodyupdate.message);
+                            setTimeout(() => window.location.href = '/dashboard', 1000);
                         }
                 }catch(err){
                     console.log(err);

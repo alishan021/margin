@@ -89,6 +89,10 @@ const orderSchema = new mongoose.Schema({
     deliveredAt: {
         type: Date,
         // default: Date.now
+     },
+     pending: {
+        type: Boolean,
+        default: false
      }
 });
 

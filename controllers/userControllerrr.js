@@ -179,7 +179,7 @@ exports.userSignupPost = async ( req, res, next ) => {
     
         const hashedPassword = await bcrypt.hash( password, parseInt(process.env.SALTROUNDS) );   
     
-        const userData = { username, email, password: hashedPassword, referalCode };
+        const userData = { username, email, password: hashedPassword };
         const result = await userModel.create(userData);
         if( result || referalCode ) {
             const user = await userModel.findOne({ referalCode: referalCode });
@@ -420,38 +420,6 @@ exports.productListGet = async ( req, res ) => {
 
 
 
-// exports.productListGetSortBy = async ( req, res ) => {
-//     const sortBy = req.params.sortBy;
-//     console.log('sortBy : ' + sortBy);
-//     const itemss = req.query;
-//     console.log(itemss);
-//     const search = req.query.search || "";
-//     let category = req.query.category ;
-//     const min = parseInt(req.query.min) || 0;
-//     const max = parseInt(req.query.max) || Infinity;
-
-//     (category)? category = category.split(','): {} ;
-
-//     console.log( search, category, min, max)
-
-//     try{
-//         let products = [];
-//         if(sortBy === undefined || !sortBy) products = await productModel.find({ status: { $ne: false } });
-//         if(sortBy === 'a-to-z' ) products = await productModel.find({ status: { $ne: false }}).sort({ name: 1 });
-//         if(sortBy === 'z-to-a' ) products = await productModel.find({ status: { $ne: false }}).sort({ name: -1 });
-//         if(sortBy === 'low-to-high' ) products = await productModel.find({ status: { $ne: false }}).sort({ price: 1 });
-//         if(sortBy === 'high-to-low' ) products = await productModel.find({ status: { $ne: false }}).sort({ price: -1 });
-//         if(sortBy === 'new-arrivals' ) products = await productModel.find({ status: { $ne: false }}).sort({ create_at: -1 });
-
-//         const totalDocs = products.length;
-//         const categorys = await categoryModel.find({});
-
-//         res.render('product-list.ejs', { products, totalDocs, userIn: req.session.userIn, categorys });
-
-//     }catch(err){
-//         console.log(err);
-//     }
-// }
 exports.productListGetSortBy = async (req, res) => {
     try {
         // Extracting query parameters with default values
@@ -459,8 +427,7 @@ exports.productListGetSortBy = async (req, res) => {
         const { search = "", category = "", min = 0, max = Infinity } = req.query;
 
         // Parsing category to array if provided
-        const categories = category ? category.split(",") : [];
-
+        let categories = category ? category.split(",") : [];
         // Aggregation pipeline stages
         const pipeline = [
             // Match stage for filtering
@@ -506,36 +473,6 @@ exports.productListGetSortBy = async (req, res) => {
 
 
 
-
-// exports.sortFilterGet = async ( req, res ) => {
-//     console.log(req.query);
-//     let sortBy = req.query.sortBy;
-//     const search = req.query.search || "";
-//     const category = req.query.category || "";
-//     const min = parseInt(req.query.min) || 0;
-//     const max = parseInt(req.query.max) || Infinity;
-//     console.log( sortBy, search, category, min, max);
-
-//     if (sortBy === "a-to-z") sortBy = { name: 1 }
-//     else if (sortBy === "z-to-a") sortBy = { name: -1 }
-//     else if (sortBy === "low-to-high") sortBy = { price: 1 }
-//     else if (sortBy === "high-to-low") sortBy = { price: -1 }
-//     else if (sortBy === "new-arrivals") sortBy = { create_at: -1 }
-
-//     try{
-//         const products = await productModel.find({ name: { $regex: search, $options: "i"}})
-//                                                 .where("category")
-//                                                 .eq()
-//                                                 .sort(sortBy)
-
-//         res.status(200).json({ success: true, message: 'response successfull'})
-//     }catch(err){
-//         console.log(err);
-//     }
-// }
-
-// const productModel = require('./models/productModel'); // Import your product model
-
 exports.sortFilterGet = async (req, res) => {
     try {
         // Extract query parameters
@@ -560,7 +497,7 @@ exports.sortFilterGet = async (req, res) => {
         // console.log(query)
 
         // Apply additional filters
-        if (category) {
+        if (category.length > 0) {
             let categories = category.split(',');
             console.log('categories : ');
             console.log(categories);
@@ -595,10 +532,6 @@ exports.sortFilterGet = async (req, res) => {
 
 
 
-
-exports.errorPageGet = ( req, res ) => {
-    res.render('404.ejs', { userIn: req.session.userIn });
-}
 
 
 
@@ -651,14 +584,19 @@ exports.dashboardGet = async (req, res) => {
 
 exports.cartGet = async ( req, res ) => {
     let cartProducts = await userModel.findOne({ email: req.session.user.email }, { cart: 1 }).populate('cart.product');
-    console.log
+    
     // cartProducts = cartProducts.filter( (product) => );
-    const user = await userModel.findById(req.session.user._id);
-    console.log(cartProducts)
-    if (!cartProducts || !user ) return res.status(404).send('User session expired, login again');
+    const user = await userModel.findById(req.session.user._id).populate('cart.product');
+    // let cartProducts = user.cart;
+    let totalPrice = user.cart.reduce(( prev, curr ) => ( curr.product.quantity > 0 ) ? prev + curr.product.price * curr.count : prev + 0, 0 );
+    console.log(user.cart)
+    let deliveryCharge = 0;
+    if( totalPrice < 500 )  deliveryCharge = 50;
+    console.log(totalPrice, deliveryCharge );
 
+    if (!cartProducts || !user ) return res.status(404).send('User session expired, login again');
     console.log(cartProducts)
-    res.render('cart.ejs', { userIn: req.session.userIn, user, cartProducts });
+    res.render('cart.ejs', { userIn: req.session.userIn, user, cartProducts, totalPrice, deliveryCharge });
 }
 
 
@@ -730,7 +668,12 @@ exports.preferredAddressGet = ( req, res ) => {
 exports.checkoutGet = async (req, res) => {
     try {
         const addressId = req.session.addressId;        
-        const user = await userModel.findById(req.session.user._id);
+        const user = await userModel.findById(req.session.user._id).populate('cart.product');
+        console.log(user.cart);
+        let totalPrice = user.cart.reduce(( prev, curr ) => ( curr.product.quantity > 0 ) ? prev + curr.product.price * curr.count : prev + 0, 0 );
+        let deliveryCharge = 0;
+        if( totalPrice < 500 )  deliveryCharge = 50;
+        console.log(totalPrice, deliveryCharge );;
         const coupons = await couponModel.find({});
         // if( addressId === 'new' )
         let address = user.address.find(item => item._id == addressId);
@@ -740,12 +683,15 @@ exports.checkoutGet = async (req, res) => {
 
         const productDetails = await getProductDetails(user.cart);
 
-        res.render('checkout.ejs', { userIn: req.session.userIn, products: productDetails, user, address, coupons });
+        res.render('checkout.ejs', { userIn: req.session.userIn, products: productDetails, user, address, coupons, totalPrice, deliveryCharge });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Internal server error' });
     }
 }
+
+
+
 
 // Function to fetch product details for each item in the user's cart
 async function getProductDetails(cart) {
@@ -819,6 +765,7 @@ exports.cartPatch = async ( req, res ) => {
         console.log('cart');
         const productId = req.params.productId;
         console.log(productId);
+        if(!req.session.user) return res.json({ redirect: '/login', error: "Can't find user, Login again"});
         const user = await userModel.findOne({ _id: req.session.user._id});
         const isProduct = user.cart.find( doc => { return doc.product == productId  });
         console.log('isProduct : ');
@@ -896,25 +843,60 @@ exports.cartCountPatch = async (req, res) => {
 
 
 
+function validateAddress(name, email, phone, pincode, state, country, altphone, city, landmark) {
+    if(!name || !email || !phone || !pincode || !state || !country || !altphone || !city || !landmark ) return { success: false, message: 'Fields with * mark are required'};
+    if(email){
+         const emailRegex =  /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/g
+        let isValidEmail = emailRegex.test(email)
+        if(!isValidEmail) return { success: false, message: 'Email is not in the correct format'};
+    } 
+    const numericRegex = /^[0-9]+$/;
+
+    if (!numericRegex.test(phone) || phone.length !== 10) {
+      return { success: false, message: 'Phone number should be 10 digits' };
+    }
+    
+    if (!numericRegex.test(altphone) || altphone.length !== 10) {
+      return { success: false, message: 'Alternate phone number should be 10 digits' };
+    }
+    
+    if (!numericRegex.test(pincode) || pincode.length !== 6) {
+      return { success: false, message: 'Pincode should be 6 digits' };
+    }
+    return { success: true };
+}
+
+
+
+
 exports.addAddressPatch = async ( req, res ) => {
     try{
         console.log('hai from addAddressPatch')
         const userId = req.params.userId;
         const { name, email, phone, pincode, state, country, altphone, city, landmark} = req.body;
+        const validationResult = validateAddress(name, email, phone, pincode, state, country, altphone, city, landmark); // Pass landmark as an argument
         console.log(name, email, phone, pincode, state, country, altphone, city, landmark);
-        const result = await userModel.findByIdAndUpdate( userId, { $push:{ address: { name, email, phone, alt_phone: altphone, city, landmark, state, country, pincode } }});
+        console.log(validationResult);
+        console.log(!validationResult.success);
+        if(!validationResult.success) {
+            return res.status(400).json({ success: false, error: validationResult.message, hai: 'hai' });
+        }
+        const result = await userModel.findByIdAndUpdate( userId, { $push:{ address: { name, email, phone, alt_phone: altphone, city, landmark, state, country, pincode } }}, { new: true });
+        console.log(result);
         if (result) {
             console.log('User address updated successfully:', result);
-            return res.status(200).json({ message: 'User address updated successfully', user: result });
+            return res.status(200).json({ success: true, message: 'User address added successfully', user: result });
         } else {
             // If the user was not found
             console.log('User not found');
             return res.status(404).json({ error: 'User not found' });
         }
     }catch(err){
-        console.log(err);
+        console.error(`Error at addAddressPath : ${err}`);
     }
 };
+
+
 
 
 
@@ -990,7 +972,10 @@ exports.addressUpdatePatch = async (req, res) => {
 
         // Update the fields of the found address
         const { name, email, phone, pincode, state, country, altphone, city, landmark } = req.body;
-        console.log(name, email, phone, pincode, state, country, altphone, city, landmark);
+        const validationResult = validateAddress(name, email, phone, pincode, state, country, altphone, city, landmark); // Pass landmark as an argument
+        if(!validationResult.success) {
+            return res.status(400).json({ success: false, error: validationResult.message, hai: 'hai' });
+        }
 
         // Update the specific address within the array
         user.address[addressIndex].name = name;
@@ -1007,7 +992,7 @@ exports.addressUpdatePatch = async (req, res) => {
         await user.save();
 
         console.log('User address updated successfully');
-        return res.status(200).json({ message: 'User address updated successfully', user: user });
+        return res.status(200).json({ success: true, message: 'User address updated successfully', user: user });
 
     } catch (err) {
         console.log(err);
@@ -1026,17 +1011,12 @@ exports.checkoutPost = async (req, res) => {
 
       console.log(req.body)
 
-      const address = {
-        name: req.body.name,
-        email: req.body.email,
-        phone: req.body.phone,
-        altphone: req.body.altphone,
-        pincode: req.body.pincode,
-        city: req.body.city,
-        state: req.body.state,
-        country: req.body.country,
-        landmark: req.body.landmark,
-      };
+      const address = { name, email, phone, pincode, state, country, altphone, city, landmark } = req.body;
+
+      const validationResult = validateAddress( name, email, phone, pincode, state, country, altphone, city, landmark);
+      if(!validationResult.success) {
+        return res.status(400).json({ success: false, error: validationResult.message, hai: 'hai' });
+      }
   
       const productDetails = await getProductDetails(user.cart);
   
@@ -1048,13 +1028,14 @@ exports.checkoutPost = async (req, res) => {
       let originalPrice = totalPrice;
       if(req.body.discountPrice) totalPrice -= req.body.discountPrice;
       console.log('.discountPrice : ' + req.body.discountPrice, 'totalPrice : ' + totalPrice );
+
+      if(totalPrice > 1000) return res.status(400).json({ success: false, error: 'Cash On Delivery is not available for products more than 1000Rs'});
   
       const products = [];
       for (const item of productDetails) {
         const dbProduct = await productModel.findById(item.product._id);
         if (dbProduct.quantity < item.count) {
             continue;
-        //   return res.status(400).json({ error: `${dbProduct.name} is out of stock` });
         }
         dbProduct.quantity -= item.count;
         await dbProduct.save();
@@ -1348,3 +1329,10 @@ function generateHr(doc, y) {
       .lineTo(550, y)
       .stroke();
   }
+
+
+
+
+exports.errorPageGet = ( req, res ) => {
+    res.render('404.ejs', { userIn: req.session.userIn });
+}

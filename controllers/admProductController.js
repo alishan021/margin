@@ -66,13 +66,12 @@ exports.addProductGet = async ( req, res ) => {
 exports.addProductPost =  async ( req, res ) => {
     try{
         const images = [];
-        const { name, price, quantity , size, color, description, category, details } = req.body;
-        console.log(name, price, quantity , size, color, description, category, details );
+        const { name, price, quantity, brand, size, color, description, category, details } = req.body;
+        console.log(name, price, quantity, brand, size, color, description, category, details );
         console.log('req.files : ' + req.files );
         const files = req.files.filename;
         console.log('after requiest files filename');
         console.log('files : ' + files );
-        //  console.log('req img : ' + req.images );
         if (!files || files.length === 0) {
            console.log('No files uploaded');
         } else {
@@ -80,7 +79,7 @@ exports.addProductPost =  async ( req, res ) => {
                 images.push(files.filename);
             }
         }
-        const body = { name, price, quantity , size, color, description, details, images: images };
+        const body = { name, price, quantity, brand, size, color, description, details, images: images };
         console.log('body : ' + body);
         const productResult = await productModel.create(body);
         if(!productResult){
@@ -112,7 +111,7 @@ exports.productDelete = async ( req, res ) => {
 exports.productsAdd = async ( req, res ) => {
     try{
          console.log('inside admin/products/add');
-         const { name, price,quantity, size, color, description, category, details } = req.body;
+         const { name, price,quantity, brand, size, color, description, category, details } = req.body;
          const colorsArray = color.split(',').map(c => c.trim());
          console.log( name, price )
  
@@ -136,6 +135,7 @@ exports.productsAdd = async ( req, res ) => {
              name,
              price,
              quantity,
+             brand,
              size,
              images,
              color: colorsArray,
@@ -185,7 +185,7 @@ exports.productEditPost = async ( req, res ) => {
         const dbProduct = await productModel.findById(productId);
         console.log(dbProduct);
         console.log('inside admin/products/edit');
-        const { name, price,quantity, size, color, description, category, details } = req.body;
+        const { name, price,quantity, brand, size, color, description, category, details } = req.body;
         const colorsArray = color.split(',').map(c => c.trim());
         console.log( name, price )
 
@@ -211,6 +211,7 @@ exports.productEditPost = async ( req, res ) => {
             name,
             price,
             quantity,
+            brand,
             size,
             images: imagesArray,
             color: colorsArray,

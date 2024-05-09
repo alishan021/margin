@@ -3,12 +3,25 @@ const adminModel = require('../models/admin');
 const categoryModel = require('../models/category');
 const userModel = require('../models/user');
 const productModel = require('../models/products');
-
+const orderModel = require('../models/order');
+// const { usersCount, orderCount, getRevenueAmount, getTopProductsSale, getTopCategoryies, getNoOfPayments, getProductStatus } = require('./admSalesReport');
 
 
 
 exports.adminLoginGet = ( req, res ) => {
     res.render('admin-login.ejs');
+}
+
+
+
+exports.dashBoardDetails = async ( req, res ) => {
+    const topProducts = await getTopProductsSale();
+    const topCategoryies = await getTopCategoryies();
+    const totalUsers = await usersCount();
+    const totalOrders = await orderCount();
+    const totalRevenue = await getRevenueAmount();
+    const totalProducts = await productModel.find({}).countDocuments();
+    return res.status(200).json({ topProducts, topCategoryies, totalUsers, totalOrders, totalRevenue, totalProducts });
 }
 
 
@@ -56,4 +69,280 @@ exports.adminHomeGet = ( req, res ) => {
 exports.logout = ( req, res ) => {
     delete req.session.admin;
     res.redirect('login');
+}
+
+
+
+
+async function usersCount(fromDate, toDate) {
+    let noOfUsers;
+    if(fromDate && toDate){
+        noOfUsers = await userModel.find({ created_at: { $gte: new Date(fromDate), $lte: new Date(toDate) }}).countDocuments();
+    }else {
+        noOfUsers = await userModel.find({}).countDocuments();
+    }
+    return noOfUsers;
+}
+
+async function orderCount(fromDate, toDate) {
+    let noOfOrders;
+    if(fromDate && toDate){
+        noOfOrders = await orderModel.find({ deliveredAt: { $gte: new Date(fromDate), $lte: new Date(toDate) }}).countDocuments();
+    }else {
+        noOfOrders = await orderModel.find({}).countDocuments();
+    }
+    return noOfOrders;
+}
+
+
+async function getRevenueAmount(fromDate, toDate) {
+    let revenueAmount = 0;
+
+    if (fromDate && toDate) {
+        revenueAmount = await orderModel.aggregate([
+            {
+                $match: {
+                    deliveredAt: {
+                        $gte: new Date(fromDate),
+                        $lte: new Date(toDate)
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalPrice: { $sum: "$totalPrice" }
+                }
+            }
+        ]);
+    } else {
+        revenueAmount = await orderModel.aggregate([
+            {
+                $group: {
+                    _id: null,
+                    totalPrice: { $sum: "$totalPrice" }
+                }
+            }
+        ]);
+    }
+    return revenueAmount.length > 0 ? revenueAmount[0].totalPrice : 0;
+}
+
+
+async function getTopProductsSale(fromDate, toDate) {
+    try {
+        let pipeline = [];
+
+        if (fromDate && toDate) {
+            pipeline = [
+                {
+                    $match: {
+                        deliveredAt: {
+                            $gte: new Date(fromDate),
+                            $lte: new Date(toDate)
+                        }
+                    }
+                }
+            ];
+        }
+
+        pipeline.push(
+            {
+                $unwind: '$products'
+            },
+            {
+                $group: {
+                    _id: '$products.productId', // Corrected field reference
+                    count: { $sum: 1 }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'productInfo'
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    count: 1,
+                    productName: { $arrayElemAt: ['$productInfo.name', 0] }
+                }
+            }
+        );
+
+        const productsSale = await orderModel.aggregate(pipeline);
+        return productsSale;
+    } catch (error) {
+        console.error('Error getting top products sale:', error);
+        throw error;
+    }
+}
+
+
+async function getTopCategoryies(fromDate, toDate) {
+    try {
+        let pipeline = [];
+
+        if (fromDate && toDate) {
+            pipeline = [
+                {
+                    $match: {
+                        deliveredAt: {
+                            $gte: new Date(fromDate),
+                            $lte: new Date(toDate)
+                        }
+                    }
+                }
+            ];
+        }
+
+        pipeline.push(
+            {
+                $unwind: '$products'
+            },
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: 'products.productId',
+                    foreignField: '_id',
+                    as: 'productInfo'
+                }
+            },
+            {
+                $unwind: '$productInfo'
+            },
+            {
+                $lookup: {
+                    from: 'categories',
+                    localField: 'productInfo.category',
+                    foreignField: '_id',
+                    as: 'categoryInfo'
+                }
+            },
+            {
+                $unwind: '$categoryInfo'
+            },
+            {
+                $group: {
+                    _id: '$categoryInfo.categoryName',
+                    count: { $sum: 1 }
+                }
+            },
+            {
+                $project: {
+                    categoryName: '$_id',
+                    count: 1,
+                    _id: 0
+                }
+            }
+        );
+
+        const categoriesSale = await orderModel.aggregate(pipeline);
+        return categoriesSale;
+    } catch (error) {
+        console.error('Error getting top categories sale:', error);
+        throw error;
+    }
+}
+
+
+async function getNoOfPayments(fromDate, toDate) {
+    try {
+        const pipeline = [];
+
+        // Match orders within the specified date range
+        if (fromDate && toDate) {
+            pipeline.push({
+                $match: {
+                    deliveredAt: {
+                        $gte: new Date(fromDate),
+                        $lte: new Date(toDate)
+                    }
+                }
+            });
+        }
+
+        // Group by payment method
+        pipeline.push({
+            $group: {
+                _id: "$paymentMethod",
+                count: { $sum: 1 }
+            }
+        });
+
+        const noOfPayment = await orderModel.aggregate(pipeline);
+        return noOfPayment;
+    } catch (err) {
+        console.log(`Error on getNoOfPayments ${err}`);
+        throw err; // Rethrow the error to be handled by the caller
+    }
+}
+
+
+async function getProductStatus(fromDate, toDate) {
+    try {
+        const pipeline = [];
+
+        // Match orders within the specified date range
+        if (fromDate && toDate) {
+            pipeline.push({
+                $match: {
+                    "products.deliveredAt": {
+                        $gte: new Date(fromDate),
+                        $lte: new Date(toDate)
+                    }
+                }
+            });
+        }
+        
+        // Unwind the products array to work with each product separately
+        pipeline.push({ $unwind: "$products" });
+
+        // Project fields and define status based on product fields
+        pipeline.push({
+            $project: {
+                _id: "$products._id",
+                productId: "$products.productId",
+                orderStatus: "$products.orderStatus",
+                returned: "$products.returned",
+                orderValid: "$products.orderValid",
+                status: {
+                    $cond: {
+                        if: { $eq: ["$products.orderStatus", true] },
+                        then: "Delivered",
+                        else: {
+                            $cond: {
+                                if: { $eq: ["$products.orderValid", true] },
+                                then: "Arriving",
+                                else: {
+                                    $cond: {
+                                        if: { $eq: ["$products.returned", true] },
+                                        then: "Returned",
+                                        else: "Cancelled"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Group by status and count the number of products in each status group
+        pipeline.push({
+            $group: {
+                _id: "$status",
+                count: { $sum: 1 }
+            }
+        });
+
+        const productStatus = await orderModel.aggregate(pipeline);
+        return productStatus;
+    } catch (err) {
+        console.log(`Error on getProductStatus: ${err}`);
+        throw err;
+    }
 }

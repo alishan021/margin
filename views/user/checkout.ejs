@@ -130,7 +130,7 @@
 		                						<% products.forEach( item => { %>
 													<% if(item.product.quantity <= 0) return; %>
 													
-													<% productTotal += item.product.price * item.count  %>
+													<% productTotal += item.product.price * item.count %>
 													<tr>
 														<td><a ><%= item.product.name %></a></td>
 														<td>$<%= item.product.price * item.count %></td>
@@ -143,15 +143,15 @@
 
 		                						<tr class="summary-subtotal">
 		                							<td>Subtotal:</td>
-		                							<td>$<%= productTotal %></td>
+		                							<td>$<%= totalPrice %></td>
 		                						</tr><!-- End .summary-subtotal -->
 		                						<tr>
 		                							<td>Shipping:</td>
-		                							<td>Free shipping</td>
+		                							<td>$<%= deliveryCharge %></td>
 		                						</tr>
 		                						<tr class="summary-total">
 		                							<td>Total:</td>
-		                							<td>$<%= productTotal %></td>
+		                							<td>$<%= totalPrice + deliveryCharge %></td>
 		                						</tr><!-- End .summary-total -->
 		                					</tbody>
 		                				</table><!-- End .table table-summary -->
