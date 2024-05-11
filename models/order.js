@@ -84,7 +84,6 @@ const orderSchema = new mongoose.Schema({
     },
     couponUsed: {
         type: String,
-        default: '',
     },
     deliveredAt: {
         type: Date,
@@ -98,3 +97,5 @@ const orderSchema = new mongoose.Schema({
 
 const orderModel = new mongoose.model( 'Order', orderSchema );
 module.exports = orderModel;
+
+        // default: '',

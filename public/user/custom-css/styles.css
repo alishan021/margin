@@ -3,3 +3,12 @@
 .no-underline {
     text-decoration: none;
 }
+
+
+
+.custom-actions-class {
+    /* box-sizing: border-box; */
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 20px;
+}

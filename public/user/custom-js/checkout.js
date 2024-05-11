@@ -19,11 +19,11 @@ checkoutForm.addEventListener('submit', async (event) => {
       const responseCoupon = await fetch(`/coupon/check/${couponCode}/${productTotal}`);
       const bodyCoupon = await responseCoupon.json();
       if(!bodyCoupon.status) {
-        showAlertError('Coupon code is wrong');
-        setTimeout(() => {
-          confi = confirm('The coupon you enter is wrong, Do you like to proceed with out coupon');
+        failureMessage('Coupon code is wrong');
+        setTimeout(async () => {
+          confi = await confirmIt('The coupon you enter is wrong, Do you like to proceed with out coupon', 'Yes');
         }, 1000);
-        if(!confi) return;
+        if(!confi.isConfirmed) return;
       }
       if(bodyCoupon.status){
         couponApplied = true;
@@ -32,9 +32,9 @@ checkoutForm.addEventListener('submit', async (event) => {
         formData.couponApplied = true;
         formData.couponCode = couponCode;
         productTotal = bodyCoupon.discountPrice;
-        const confi = confirm(`You got a discount of ${originalPrice - productTotal}, do you like to continue with out coupon`);
-        if(!confi) return;
-        showAlertSuccess(`you got a discount of ${originalPrice - productTotal}`);
+        const confi = await confirmIt(`You got a discount of ${originalPrice - productTotal}, do you like to continue with out coupon`, 'Yes');
+        if(!confi.isConfirmed) return;
+        successMessage(`you got a discount of ${originalPrice - productTotal}`);
       } 
     }
 
@@ -57,14 +57,14 @@ checkoutForm.addEventListener('submit', async (event) => {
         }else if(selectPaymentMethod === 'payment-2'){
             console.log('Inside payment method 2');
             formData.paymentMethod = 'razorpay';
-            const result = razorpay();
+            const result = await razorpay();
         }else if(selectPaymentMethod === 'payment-3'){
             console.log('Inside payment method 3');
             formData.paymentMethod = 'wallet';
             checkoutSend(userId, formData);
         }else {
             console.log('some problems here');
-            showAlertError('select a payment method to continue');
+            failureMessage('select a payment method to continue');
         }
     }catch(err){
         console.log(err);
@@ -81,7 +81,7 @@ async function checkoutSend(userId, formData) {
     });
     const body = await response.json();
     if (body.error) {
-      return showAlertError(body.error);
+      return (body.error);
     } else {
       window.location.href = '/dashboard';
     }
@@ -132,10 +132,58 @@ function showAlertSuccess(message) {
         alertMessageSuccess.style.display = 'none';
     }, 3000); 
 }
+
+
+
+function confirmIt( message ) {
+  const result = Swal.fire({
+    text: message,
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "OK",
+    position: "top",
+    customClass: {
+      actions: 'custom-actions-class'
+    }
+  });
+  return result;
+}
+
+
+
+
+function successMessage(message) {
+  Swal.fire({
+    text: message,
+    position: 'top',
+    timer: 2000,
+    background: 'green',
+    color: 'white',
+    showConfirmButton: false
+  });
+  return;
+}
+
+
+function failureMessage(message) {
+  Swal.fire({
+    text: message,
+    position: 'top',
+    timer: 2000,
+    background: 'red',
+    color: 'white',
+    showConfirmButton: false
+  });
+  return;
+}
+
+
+
   
 
 
-function razorpay(){
+async function razorpay(){
 
 $(document).ready(function() {
     $.ajax({
@@ -180,7 +228,7 @@ $(document).ready(function() {
 
         rzp1.on('payment.failed', function(response) {
           // alert('payment failed');
-          showAlertError('Payment Failed');
+          failureMessage('Payment Failed');
           alertMessageError('Payment failed');
           console.log(response.error.code);
           console.log(response.error.description);

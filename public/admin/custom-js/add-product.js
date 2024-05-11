@@ -20,14 +20,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const responseData = await response.json();
             if (response.ok) {
                 console.log(responseData); // Log server response
-                return displaySuccess({ message: responseData.message });
+                return successMessage(responseData.message);
             }
             console.error('Error adding product');
-            displayError({ error: responseData.error });
+            failureMessage(responseData.error);
         
         } catch (error) {
             console.error('Error adding product:', error);
-            displayError({ error: error })
+            failureMessage(error)
         }
     });
 
@@ -75,14 +75,42 @@ document.addEventListener('DOMContentLoaded', function() {
 
 const msgPara = document.querySelector('.msg-para'); 
 
-const displayError = (result) => {
+const displayError = (message) => {
     msgPara.parentElement.className = 'msg-box-error';
-    msgPara.innerHTML = result.error;
+    msgPara.innerHTML = message;
 }
 
-const displaySuccess = (result) => {
+const displaySuccess = (message) => {
     msgPara.parentElement.className = 'msg-box-success';
-    msgPara.innerHTML = result.message;
+    msgPara.innerHTML = message;
 }
 
 });
+
+
+
+
+function successMessage(message) {
+    Swal.fire({
+      text: message,
+      position: 'top',
+      timer: 2000,
+      background: 'green',
+      color: 'white',
+      showConfirmButton: false
+    });
+    return;
+  }
+  
+  
+  function failureMessage(message) {
+    Swal.fire({
+      text: message,
+      position: 'top',
+      timer: 2000,
+      background: 'red',
+      color: 'white',
+      showConfirmButton: false
+    });
+    return;
+  }

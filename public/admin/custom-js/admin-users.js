@@ -32,3 +32,32 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+
+
+
+
+function successMessage(message) {
+    Swal.fire({
+      text: message,
+      position: 'top',
+      timer: 2000,
+      background: 'green',
+      color: 'white',
+      showConfirmButton: false
+    });
+    return;
+  }
+  
+  
+  function failureMessage(message) {
+    Swal.fire({
+      text: message,
+      position: 'top',
+      timer: 2000,
+      background: 'red',
+      color: 'white',
+      showConfirmButton: false
+    });
+    return;
+  }

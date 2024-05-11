@@ -77,7 +77,12 @@
                                 <div>payment method : <%= order.paymentMethod %></div>
                                 <div>order date : <%= new Date(order.orderDate).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) %></div>
                                 <div><b>$total price : <%= order.totalPrice %></b></div>
-                                <div><button id="btn-invoice" type="button" class="btn btn-primary" data-order-id="<%= order._id %>">Invoice</button></div>
+                                <% if( order.couponUsed && order.couponUsed != false ){ %>
+                                    <div>$Coupon Used : <%= order.couponUsed %></div>
+                                    <div class="mb-1"><button id="btn-remove-coupon" type="button" class="btn btn-warning" data-order-id="<%= order._id %>">Remove coupon</button></div>
+                                    <!-- <br> -->
+                                <% } %>
+                                <div><button id="btn-invoice" type="button" class="btn btn-primary" data-order-id="<%= order._id %>">Download Invoice</button></div>
                             </div>
                         </div>
 

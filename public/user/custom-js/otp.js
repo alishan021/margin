@@ -82,7 +82,7 @@ function timerFunc(remaining) {
   }
   
   // Do timeout stuff here
-  const confi = confirm('Timeout for otp, resend the otp');
+  const confi = confirmIt('Timeout for otp, resend the otp');
   if(confi){
     window.location.href = '/signup/otp'
   }

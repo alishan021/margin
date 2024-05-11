@@ -7,10 +7,10 @@ document.querySelectorAll('.btn-remove').forEach( button => {
         const result = await response.json();
         console.log(result);
         if(result.success){
-            showAlertSuccess(result.message)
+            successMessage(result.message)
             setTimeout(() => window.location.reload(), 3000);
         } 
-        else showAlertError(result.error);
+        else failureMessage(result.error);
     })
 })
 
@@ -40,4 +40,32 @@ function showAlertSuccess(message) {
         alertMessageSuccess.style.display = 'none';
     }, 3000); 
 }
+  
+
+
+
+function successMessage(message) {
+    Swal.fire({
+      text: message,
+      position: 'top',
+      timer: 2000,
+      background: 'green',
+      color: 'white',
+      showConfirmButton: false
+    });
+    return;
+  }
+  
+  
+  function failureMessage(message) {
+    Swal.fire({
+      text: message,
+      position: 'top',
+      timer: 2000,
+      background: 'red',
+      color: 'white',
+      showConfirmButton: false
+    });
+    return;
+  }
   

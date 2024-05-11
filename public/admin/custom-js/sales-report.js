@@ -16,7 +16,7 @@ const filterButton = document.querySelector('.btn-apply');
 filterButton.addEventListener('click', async (event) => {
 
     console.log(fromDate.value, toDate.value);
-    if((fromDate.value && !toDate.value) || (!fromDate.value && toDate.value)) return displayError('error no date.');
+    if((fromDate.value && !toDate.value) || (!fromDate.value && toDate.value)) return failureMessage('error no date.');
     const reportType = findReportType();
     
     // Construct the URL with query parameters
@@ -26,7 +26,7 @@ filterButton.addEventListener('click', async (event) => {
     const body = await response.json();
     console.log(body);
     if(body.error){
-        displayError(body.error);
+        failureMessage(body.error);
     }else {
 
         document.querySelector('.noOfOrders').innerHTML = body.data.noOfOrders;
@@ -51,7 +51,7 @@ generateReportButton.addEventListener('click', async (event) => {
     console.log('inside the button pdf');
     const reportType = findReportType();
     console.log(reportType);
-    if(reportType === 'custom' && (!fromDate.value || !toDate.value )) return displayError('select date if or change custom');
+    if(reportType === 'custom' && (!fromDate.value || !toDate.value )) return failureMessage('select date if or change custom');
 
     const response = await fetch(`/admin/sales/pdf/${reportType}?fromDate=${fromDate.value}&toDate=${toDate.value}`);
 
@@ -80,7 +80,7 @@ generateExcelButton.addEventListener('click', async (event) => {
     console.log('inside print excel');
     const reportType = findReportType();
     console.log('reportType: ' + reportType);
-    if(reportType === 'custom' && (!fromDate.value || !toDate.value )) return displayError('select date if or change custom');
+    if(reportType === 'custom' && (!fromDate.value || !toDate.value )) return failureMessage('select date if or change custom');
 
     const response = await fetch(`/admin/sales/excel/${reportType}?fromDate=${fromDate.value}&toDate=${toDate.value}`);
 
@@ -245,3 +245,31 @@ function displayOrderStatusSummary(orderStatusSummary, orderStatusDiv) {
 
     orderStatusDiv.appendChild(orderStatusContainerDiv); // Append the container div to the specified orderStatusDiv
 }
+
+
+
+
+function successMessage(message) {
+    Swal.fire({
+      text: message,
+      position: 'top',
+      timer: 2000,
+      background: 'green',
+      color: 'white',
+      showConfirmButton: false
+    });
+    return;
+  }
+  
+  
+  function failureMessage(message) {
+    Swal.fire({
+      text: message,
+      position: 'top',
+      timer: 2000,
+      background: 'red',
+      color: 'white',
+      showConfirmButton: false
+    });
+    return;
+  }

@@ -828,8 +828,6 @@ exports.cartCountPatch = async (req, res) => {
 
         // Save the updated user document
         await user.save();
-        // const product = await productModel.findByIdAndUpdate(productId, { $set: { $inc: -nums }});
-        // console.log(product)
 
         console.log('User updated successfully:', user);
 
@@ -1029,7 +1027,7 @@ exports.checkoutPost = async (req, res) => {
       if(req.body.discountPrice) totalPrice -= req.body.discountPrice;
       console.log('.discountPrice : ' + req.body.discountPrice, 'totalPrice : ' + totalPrice );
 
-      if(totalPrice > 1000) return res.status(400).json({ success: false, error: 'Cash On Delivery is not available for products more than 1000Rs'});
+      if(totalPrice > 1000 && req.body.paymentMethod === 'COD' ) return res.status(400).json({ success: false, error: 'Cash On Delivery is not available for products more than 1000Rs'});
   
       const products = [];
       for (const item of productDetails) {
@@ -1060,7 +1058,7 @@ exports.checkoutPost = async (req, res) => {
         originalPrice,
         totalPrice,
         paymentMethod: req.body.paymentMethod || 'COD',
-        couponUsed: req.body.couponCode || 'false',
+        couponUsed: req.body.couponCode || '',
         orderValid: true,
       });
   
@@ -1128,6 +1126,7 @@ exports.orderSingleGet  = async ( req, res )  => {
         else if(!order.orderValid && !order.orderStatus && !order.returned ) order.orderMessage = 'Cancelled';
         else if(!order.orderValid && !order.orderStatus && order.returned ) order.orderMessage = 'Delivered';
         else orderStatus = '.....';
+        console.log(order)
         res.render('order-details.ejs', { order, userIn: req.session.user });
         // if(!orderId) return res.status(400).json({ error: 'orderId not found', redirectUrl: false});
         // if(!dbOrder) return res.status(400).json({ error: 'order not found', redirectUrl: false});
@@ -1243,6 +1242,35 @@ exports.couponCheck = async ( req, res ) => {
     }catch(error){
         console.log(error);
         return res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+
+
+exports.removeCoupon = async ( req, res ) => {
+    const orderId = req.query.orderId;
+    try{
+        const order = await orderModel.findById(orderId);
+        const coupon_used = order.couponUsed;
+        console.log(coupon_used);
+        if(!req.session.user) return res.status(400).json({ success: false, error: 'User not found, Login Again'});
+        console.log(coupon_used);
+        const user = await userModel.findById(req.session.user._id);
+        const couponPrice = await couponModel.findOne({ couponCode: order.couponUsed }, { discountAmount: 1 });
+        console.log(couponPrice.discountAmount);
+        if( user.wallet.amount < couponPrice.discountAmount ) return res.status(400).json({ success: false, error: `${couponPrice} is needed in wallet.`});
+        const coupnRemoveResult = await orderModel.updateOne({ _id: orderId }, { $unset: { couponUsed: "" }});
+        console.log(coupnRemoveResult);
+        if( coupnRemoveResult ) {
+            user.wallet.amount -= couponPrice.discountAmount;
+            order.totalPrice = order.totalPrice + couponPrice.discountAmount;
+            await user.save();
+            await order.save();
+            return res.status(200).json({ success: true, message: 'Coupon removed' });
+        }
+
+    }catch(err){
+        console.log(`Error at removeCoupon \n${err}`);
     }
 }
 

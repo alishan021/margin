@@ -28,9 +28,9 @@
          body: JSON.stringify(formData),
      });
      const body = await response.json();
-     if(body.error){ displayError(body.error) }
+     if(body.error){ failureMessage(body.error) }
      if(body.success){
-         displaySuccess(body.message);
+        successMessage(body.message);
          setTimeout(() => { window.location.href = '/admin/coupon' } , 1000 );
      } 
      console.log(body);
@@ -50,3 +50,30 @@ const displaySuccess = (result) => {
     msgPara.parentElement.className = 'msg-box-success';
     msgPara.innerHTML = result;
 }
+
+
+
+function successMessage(message) {
+    Swal.fire({
+      text: message,
+      position: 'top',
+      timer: 2000,
+      background: 'green',
+      color: 'white',
+      showConfirmButton: false
+    });
+    return;
+  }
+  
+  
+  function failureMessage(message) {
+    Swal.fire({
+      text: message,
+      position: 'top',
+      timer: 2000,
+      background: 'red',
+      color: 'white',
+      showConfirmButton: false
+    });
+    return;
+  }

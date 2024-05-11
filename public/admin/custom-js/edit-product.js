@@ -56,16 +56,16 @@ form.addEventListener('submit', async function(event) {
         const responseData = await response.json();
         if (response.ok) {
             console.log(responseData); // Log server response
-            displaySuccess({ message: responseData.message });
+            successMessage({ message: responseData.message });
             window.location.href = '/admin/products';
             return
         }
         console.error('Error adding product');
-        displayError({ error: responseData.error });
+        failureMessage(responseData.error);
     
     } catch (error) {
         console.error('Error adding product:', error);
-        displayError({ error: error })
+        failureMessage(error)
     }
 });
 
@@ -74,8 +74,8 @@ form.addEventListener('submit', async function(event) {
 const imgDeleteButtons = document.querySelectorAll('.img-delete-btn');
 imgDeleteButtons.forEach( button => {
     button.addEventListener('click', async (e) => {
-        const confi = confirm('Do you want to delete the image');
-        if(!confi) return ;
+        const confi = confirm('Do you want to delete the image', "YES");
+        if(!confi.isConfirmed) return ;
         const imageUrl = button.getAttribute('data-image-url');
         const productId = button.getAttribute('data-product-id');
         console.log(imageUrl)
@@ -88,10 +88,10 @@ imgDeleteButtons.forEach( button => {
             const imagePreviewDiv = button.closest('.image-preview-div');
             if (imagePreviewDiv) {
                 imagePreviewDiv.remove();
-                displaySuccess(result);
+                successMessage(result.message);
             }
         } else {
-            displayError(result);
+            failureMessage(result.error);
         }
         // console.log(response);
     })
@@ -104,16 +104,60 @@ document.querySelector('#image').addEventListener('click', () => console.log('im
 
 const msgPara = document.querySelector('.msg-para');
 
-const displayError = (result) => {
+const displayError = (message) => {
     const msgPara = document.querySelector('.msg-para');
     msgPara.parentElement.className = 'msg-box-error';
-    msgPara.innerHTML = result.error;
+    msgPara.innerHTML = message;
 }
 
 
 
-const displaySuccess = (result) => {
+const displaySuccess = (message) => {
     const msgPara = document.querySelector('.msg-para');
     msgPara.parentElement.className = 'msg-box-success';
-    msgPara.innerHTML = result.message;
+    msgPara.innerHTML = message;
 }
+
+
+
+function successMessage(message) {
+    Swal.fire({
+      text: message,
+      position: 'top',
+      timer: 2000,
+      background: 'green',
+      color: 'white',
+      showConfirmButton: false
+    });
+    return;
+  }
+  
+  
+  function failureMessage(message) {
+    Swal.fire({
+      text: message,
+      position: 'top',
+      timer: 2000,
+      background: 'red',
+      color: 'white',
+      showConfirmButton: false
+    });
+    return;
+  }
+
+
+
+  function confirmIt( message, confirmText ) {
+    const result = Swal.fire({
+      text: message,
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: confirmText || "OK",
+      position: "top",
+      customClass: {
+        actions: 'custom-actions-class'
+      }
+    });
+    return result;
+  };

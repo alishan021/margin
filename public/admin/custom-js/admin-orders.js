@@ -48,9 +48,9 @@ orderStatusAll.forEach((orderStatus) => {
     });
 
     const body = await response.json();
-    // if(body.error) {
-    //   displayError(body.error);
-    // }
+    if(body.error) {
+      successMessage(body.error);
+    }
     console.log(body);
     window.location.reload();
   });
@@ -72,4 +72,31 @@ const displaySuccess = (result) => {
     const msgPara = document.querySelector('.msg-para');
     msgPara.parentElement.className = 'msg-box-success';
     msgPara.innerHTML = result;
+}
+
+
+
+function successMessage(message) {
+  Swal.fire({
+    text: message,
+    position: 'top',
+    timer: 2000,
+    background: 'green',
+    color: 'white',
+    showConfirmButton: false
+  });
+  return;
+}
+
+
+function failureMessage(message) {
+  Swal.fire({
+    text: message,
+    position: 'top',
+    timer: 2000,
+    background: 'red',
+    color: 'white',
+    showConfirmButton: false
+  });
+  return;
 }

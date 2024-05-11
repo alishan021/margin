@@ -15,10 +15,10 @@ form.addEventListener('submit', async (event) => {
        if(sendBodyResult.success){
         window.location.href = '/admin/'
        }else{
-        return displayError({ success: false, message: sendBodyResult.message })
+        return failureMessage(sendBodyResult.message)
        }
     }else{
-        return displayError({ success: false, message: validateBodyResult.message })
+        return failureMessage(validateBodyResult.message)
     }
 
     
@@ -35,9 +35,9 @@ const isEmailValid = (email) => {
 
 
 
-const displayError = (result) => {
+const displayError = (message) => {
     msgPara.parentElement.className = 'msg-box-error';
-    msgPara.innerHTML = result.message;
+    msgPara.innerHTML = message;
 }
 
 
@@ -47,10 +47,10 @@ const validatebody = (body) => {
     const { email, password } = body;
 
     if( !email || !password ){
-        return displayError({ success: false, message: 'email and password is required '});
+        return failureMessage('email and password is required ');
     }
     if(!isEmailValid(email)){
-        return displayError({ success: false, message: 'email format is wrong'})
+        return failureMessage('email format is wrong')
     }
     return { success: true, message: `evertying is alright in validateBody `};
 }
@@ -71,7 +71,7 @@ const sendBody = async (body) => {
     console.log('data : ' + data );
     if(data.error){
         console.log('data.error : ' + data.error );
-        displayError({ success: false, message: data.error})
+        failureMessage(data.error)
     }
     if(data.success){
         return { success: true, message: 'allright in data.success' }
@@ -81,6 +81,32 @@ const sendBody = async (body) => {
    }
    catch(err){
     console.log('error : ' + err );
-    displayError(err);
+    failureMessage(err);
    }
 }
+
+
+function successMessage(message) {
+    Swal.fire({
+      text: message,
+      position: 'top',
+      timer: 2000,
+      background: 'green',
+      color: 'white',
+      showConfirmButton: false
+    });
+    return;
+  }
+  
+  
+  function failureMessage(message) {
+    Swal.fire({
+      text: message,
+      position: 'top',
+      timer: 2000,
+      background: 'red',
+      color: 'white',
+      showConfirmButton: false
+    });
+    return;
+  }

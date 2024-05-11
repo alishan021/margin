@@ -12,17 +12,20 @@ cancelOrderAll.forEach( cancelOrder => {
     cancelOrder.addEventListener('click', async ( event ) => {
         const productId = cancelOrder.parentElement.getAttribute('data-product-id');
         const orderId = cancelOrder.parentElement.getAttribute('data-order-id');
-        const confi = confirm('Are you sure that you want to cancel the order?');
+        const confi = await confirmIt('Are you sure that you want to cancel the order?', 'Yes');
+        console.log(confi);
+        console.log(confi.isConfirmed);
+
         console.log(productId);
-        if(confi){
+        if(confi.isConfirmed){
             const response = await fetch(`/order/cancel/${orderId}/${productId}`, {
                 method: 'PATCH',
                 })
             const body = await response.json();
             console.log(body);
-            if(body.error) showAlertError(body.error);
+            if(body.error) failureMessage(body.error);
             else if(body.success) {
-                showAlertSuccess(body.success);
+              successMessage(body.success);
                 window.location.reload();
             } 
             if(!body.error){
@@ -41,9 +44,9 @@ returnOrderAll.forEach((returnOrder) => {
       const parentDiv = returnOrder.closest('.item-order-status');
       const productId = parentDiv.getAttribute('data-product-id');
       const orderId = parentDiv.getAttribute('data-order-id');
-      const confi = confirm('Are you sure that you want to return the product? \nThen your money will added to your wallet');
-
-      if (confi) {
+      const confi = await confirmIt('Are you sure that you want to return the product? \nThen your money will added to your wallet');
+      console.log(confi.isConfirmed);
+      if (confi.isConfirmed) {
         const response = await fetch(`/order/return/${orderId}/${productId}`, {
           method: 'PATCH',
         });
@@ -51,9 +54,9 @@ returnOrderAll.forEach((returnOrder) => {
         console.log(body);
 
         if (body.error) {
-          showAlertError(body.error);
+          failureMessage(body.error);
         } else if (body.message) {
-          showAlertSuccess(body.message);
+          successMessage(body.message);
           returnOrder.style.display = 'none';
           window.location.reload();
         }
@@ -85,8 +88,21 @@ btnInvoice.addEventListener('click', async (event) => {
     const body = await response.json();
     console.log(body);
   }
-  
- 
+});
+
+
+const removeCouponBtn = document.querySelector('#btn-remove-coupon');
+removeCouponBtn.addEventListener('click', async (event) => {
+  console.log('inside remove coupon');
+  const orderId = event.target.getAttribute('data-order-id');
+  const response = await fetch(`/remove-coupon?orderId=${orderId}`);
+  const body = await response.json();
+  console.log(body);
+  if(body.error) failureMessage(body.error);
+  if(body.success) {
+    successMessage(body.message);
+    setTimeout(() => window.location.reload() , 1000);
+  }
 })
 
 
@@ -111,3 +127,47 @@ function showAlertSuccess(message) {
     }, 3000); 
 }
   
+
+
+
+function confirmIt( message ) {
+  const result = Swal.fire({
+    text: message,
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "OK",
+    position: "top",
+    customClass: {
+      actions: 'custom-actions-class'
+    }
+  });
+  return result;
+}
+
+
+
+function successMessage(message) {
+  Swal.fire({
+    text: message,
+    position: 'top',
+    timer: 2000,
+    background: 'green',
+    color: 'white',
+    showConfirmButton: false
+  });
+  return;
+}
+
+
+function failureMessage(message) {
+  Swal.fire({
+    text: message,
+    position: 'top',
+    timer: 2000,
+    background: 'red',
+    color: 'white',
+    showConfirmButton: false
+  });
+  return;
+}

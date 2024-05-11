@@ -13,9 +13,9 @@ cartItemNum.forEach( item => {
         })
         const body = await response.json();
         console.log(body);
-        if(body.success) showAlertSuccess(body.message);
+        if(body.success) successMessage(body.message);
         else if(body.error){
-            showAlertError(body.error);
+            failureMessage(body.error);
             event.target.max = body.productQuantity;
         } 
     });
@@ -35,9 +35,9 @@ document.querySelectorAll('.remove-col').forEach(tdElement => {
         const body = await response.json();
         console.log(body);
         if(body.success){
-            showAlertSuccess(body.message);
+            successMessage(body.message);
             setTimeout(() => window.location.reload() , 2000);
-        }else if(body.error) showAlertError(body.error);
+        }else if(body.error) failureMessage(body.error);
     });
 });
 
@@ -56,8 +56,8 @@ radioButtons.forEach(radio => {
             fetch(`/address/preffered/${addressId}`)
                 .then((response) => response.json())
                 .then(body => {
-                    if(body.success) showAlertSuccess(body.success);
-                    else if(body.error) showAlertError(body.error);
+                    if(body.success) successMessage(body.success);
+                    else if(body.error) failureMessage(body.error);
                 })
                 .catch( err => console.log(err))
         }
@@ -90,4 +90,31 @@ function showAlertSuccess(message) {
         alertMessageSuccess.style.display = 'none';
     }, 3000); 
 }
+  
+
+
+function successMessage(message) {
+    Swal.fire({
+      text: message,
+      position: 'top',
+      timer: 2000,
+      background: 'green',
+      color: 'white',
+      showConfirmButton: false
+    });
+    return;
+  }
+  
+  
+  function failureMessage(message) {
+    Swal.fire({
+      text: message,
+      position: 'top',
+      timer: 2000,
+      background: 'red',
+      color: 'white',
+      showConfirmButton: false
+    });
+    return;
+  }
   

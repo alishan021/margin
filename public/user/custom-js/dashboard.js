@@ -19,10 +19,10 @@ userDetailsForm.addEventListener('submit', async (event) => {
     const data = await response.json();
     console.log(data.message);
     if(data.error){
-        return showAlertError(data.error);
+        return failureMessage(data.error);
     }else if(data.success){
         // window.location.href = '/dashboard';
-        return showAlertSuccess(data.message);
+        return successMessage(data.message);
     }
 });
 
@@ -56,9 +56,9 @@ addressForm.addEventListener('submit', async (event) => {
         const body = await response.json()
         console.log(body)
         if(body.error){
-            return showAlertError(body.error);
+            return failureMessage(body.error);
         }else if(body.success){
-            showAlertSuccess(body.message)
+            successMessage(body.message)
             console.log(body);
             setTimeout(() => window.location.href = '/dashboard', 1000);
         }
@@ -76,18 +76,19 @@ deleteBtn.forEach( button => {
             // event.Propagation();
             const addressId = button.getAttribute('data-address-id');
             if(addressId){
-                const confi = confirm('are you sure, you want to delete the address');
-                if(!confi) return;
+                const confi = await confirmIt('are you sure, you want to delete the address', 'Delete');
+                console.log(confi.isConfirmed);
+                if(!confi.isConfirmed) return;
             }
             const response = await fetch(`/address/${addressId}`,{ method: 'DELETE'})
             const body = await response.json()
             console.log(body);
             if(body.success){
-                showAlertSuccess(body.message);
+                successMessage(body.message);
                 setTimeout(() => window.location.href = '/dashboard', 1000);
             }else {
                 console.log(body.error);
-                showAlertError(body.error);
+                failureMessage(body.error);
             }
         }catch(err){
             console.error(err);
@@ -111,8 +112,9 @@ editButtons.forEach(button => {
             const index = button.getAttribute('data-index');
             console.log(addressId);
             
-            const confi = confirm('Are you sure you want to edit this address?');
-            if (!confi) return;
+            const confi = await confirmIt('Are you sure you want to edit this address?', 'Edit');
+            console.log(confi.isConfirmed);
+            if (!confi.isConfirmed) return;
 
             tabPane.forEach( item => item.classList.remove('show', 'active'));
             editDiv.classList.add('show', 'active');
@@ -161,10 +163,10 @@ editButtons.forEach(button => {
                         const bodyupdate = await responseUpdate.json()
                         console.log(bodyupdate)
                         if(bodyupdate.error){
-                            return showAlertError(bodyupdate.error);
+                            return failureMessage(bodyupdate.error);
                         }
                         if(bodyupdate.success){
-                            showAlertSuccess(bodyupdate.message);
+                            successMessage(bodyupdate.message);
                             setTimeout(() => window.location.href = '/dashboard', 1000);
                         }
                 }catch(err){
@@ -241,11 +243,57 @@ function showAlertSuccess(message) {
     alertMessageSuccess.innerText = message;
     alertMessageSuccess.style.display = 'block';
     setTimeout(() => {
-        alertMessageSuccess.style.display = 'none';
+        alertMessageSuccess.styleshow.display = 'none';
     }, 3000); 
 }
-  
 
+
+
+
+
+function confirmIt( message, confirmText ) {
+    const result = Swal.fire({
+      text: message,
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: confirmText,
+      position: "top",
+      customClass: {
+        actions: 'custom-actions-class'
+      }
+    });
+    return result;
+  };
+
+
+
+function successMessage(message) {
+  Swal.fire({
+    text: message,
+    position: 'top',
+    timer: 2000,
+    background: 'green',
+    color: 'white',
+    showConfirmButton: false
+  });
+  return;
+}
+
+
+function failureMessage(message) {
+  Swal.fire({
+    text: message,
+    position: 'top',
+    timer: 2000,
+    background: 'red',
+    color: 'white',
+    showConfirmButton: false
+  });
+  return;
+}
+
+  
 
 
 
@@ -254,7 +302,7 @@ const btnWallet = document.querySelector('.btn-wallet');
 btnWallet.addEventListener('click', (event) => {
     console.log('your wallet')
     const amount = document.querySelector('#wallet-amount').value;
-    if(amount <= 0 ) showAlertError('Amount must be greater than zero');
+    if(amount <= 0 ) failureMessage('Amount must be greater than zero');
     const userId = event.target.getAttribute('data-user-id');
     razorpay( userId, +amount);
 })
@@ -282,9 +330,9 @@ function razorpay( userId, amount){
               "image": "https://example.com/your_logo",
               "order_id": orderId,
               "handler": function(response) {
-                alert(response.razorpay_payment_id);
-                alert(response.razorpay_order_id);
-                alert(response.razorpay_signature);
+                console.log(response.razorpay_payment_id);
+                console.log(response.razorpay_order_id);
+                console.log(response.razorpay_signature);
                 addWalletAmount( userId, amount);
               },
               "prefill": {
@@ -303,8 +351,8 @@ function razorpay( userId, amount){
             var rzp1 = new Razorpay(options);
     
             rzp1.on('payment.failed', function(response) {
-              alert('payment failed');
-              showAlertError('Payment Failed');
+              console.log('payment failed');
+              failureMessage('Payment Failed');
               console.log(response.error.code);
               console.log(response.error.description);
               console.log(response.error.source);
@@ -341,7 +389,7 @@ async function addWalletAmount(userId, amount) {
       });
       const body = await response.json();
       if (body.error) {
-        return showAlertError(body.error);
+        return failureMessage(body.error);
       } else {
         window.location.href = '/dashboard';
       }

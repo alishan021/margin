@@ -92,6 +92,7 @@ router.patch('/order/cancel/:orderId/:productId', userController.orderCancellati
 router.patch('/order/return/:orderId/:productId', userController.orderReturnPatch );
 
 router.get('/coupon/check/:couponCode/:productTotal', userController.couponCheck );
+router.get('/remove-coupon', userController.removeCoupon );
 
 // Error page
 // router.get('/*', userController.errorPageGet );

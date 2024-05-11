@@ -26,13 +26,13 @@ btnCart.forEach(aElement => {
 
         console.log(body);
         if(body.redirect){
-            showAlertError(body.error);
+            failureMessage(body.error);
             setTimeout(() => window.location.href = body.redirect, 1000)
         }else if(body.success){
-            showAlertSuccess(body.message)
+            successMessage(body.message)
         }else if(body.error){
             console.log(body);
-            showAlertError(body.error);
+            failureMessage(body.error);
         }
     });
 });
@@ -50,12 +50,12 @@ document.querySelectorAll('.btn-wishlist').forEach( item => {
         const response = await fetch(`/wishlist/${productId}`, { method: 'POST' });
             const result = await response.json();
             console.log(result);
-            if(result.success) showAlertSuccess(result.message)
+            if(result.success) successMessage(result.message)
             else if(result.redirect) {
-                showAlertError(result.error);
+                failureMessage(result.error);
                 setTimeout(() => window.location.href = result.redirect, 1000)
             }
-            else showAlertError(result.error);
+            else failureMessage(result.error);
     });   
 })
 
@@ -85,4 +85,32 @@ function showAlertSuccess(message) {
         alertMessageSuccess.style.display = 'none';
     }, 3000); 
 }
+  
+
+
+
+function successMessage(message) {
+    Swal.fire({
+      text: message,
+      position: 'top',
+      timer: 2000,
+      background: 'green',
+      color: 'white',
+      showConfirmButton: false
+    });
+    return;
+  }
+  
+  
+  function failureMessage(message) {
+    Swal.fire({
+      text: message,
+      position: 'top',
+      timer: 2000,
+      background: 'red',
+      color: 'white',
+      showConfirmButton: false
+    });
+    return;
+  }
   
