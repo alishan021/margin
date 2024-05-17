@@ -20,8 +20,10 @@ exports.dashBoardDetails = async ( req, res ) => {
     const totalUsers = await usersCount();
     const totalOrders = await orderCount();
     const totalRevenue = await getRevenueAmount();
+    const topBrands = await topSaledBrands();
+    console.log(topBrands);
     const totalProducts = await productModel.find({}).countDocuments();
-    return res.status(200).json({ topProducts, topCategoryies, totalUsers, totalOrders, totalRevenue, totalProducts });
+    return res.status(200).json({ topProducts, topCategoryies, totalUsers, totalOrders, totalRevenue, totalProducts, topBrands });
 }
 
 
@@ -59,6 +61,47 @@ exports.adminLoginPost = async ( req, res ) => {
 
 exports.adminHomeGet = ( req, res ) => {
     res.render('admin-home.ejs');
+}
+
+
+
+
+exports.customDetails = async ( req, res ) => {
+    let { fromDate, toDate, filterType } = req.query;
+    console.log(`FromDate : ${fromDate}, toDate : ${toDate}, filterType: ${filterType}`);
+    try{
+        if(filterType === 'custom') {
+            if(new Date(fromDate) >= new Date(toDate)) return res.status(200).json({ error: 'from Date should be before the to Date'});
+            if(!fromDate || !toDate) return res.status(404).json({ error: 'Change the filter or choose the Date'});
+        }else if(filterType === 'daily'){
+            toDate = new Date();
+            fromDate = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate() - 1);
+        }else if(filterType === 'weekly'){
+            toDate = new Date();
+            fromDate = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate() - 7);
+        }else if(filterType ==='monthly'){
+            toDate = new Date();
+            fromDate = new Date(toDate.getFullYear(), toDate.getMonth() - 1, toDate.getDate());
+        }else if( filterType === 'yearly') {
+            toDate = new Date();
+            fromDate = new Date(toDate.getFullYear() -1 , toDate.getMonth(), toDate.getDate());
+        }else {
+            return res.status(400).json({ message: 'wrong filter type'});
+        }
+        console.log(fromDate, '\n', toDate)
+        const topProducts = await getTopProductsSale(fromDate, toDate);
+        const topCategoryies = await getTopCategoryies(fromDate, toDate);
+        const totalUsers = await usersCount(fromDate, toDate);
+        const totalOrders = await orderCount(fromDate, toDate);
+        const totalRevenue = await getRevenueAmount(fromDate, toDate);
+        const topBrands = await topSaledBrands(fromDate, toDate);
+        const totalProducts = await productModel.find({}).countDocuments();
+        console.log(topBrands);
+        console.log(topProducts, topCategoryies, totalUsers, totalOrders, totalRevenue, totalProducts, topBrands);
+        return res.status(200).json({ topProducts, topCategoryies, totalUsers, totalOrders, totalRevenue, totalProducts, topBrands });
+    }catch(err){
+        console.log(`Error inside customDetails : \n${err}`);
+    }
 }
 
 
@@ -346,3 +389,50 @@ async function getProductStatus(fromDate, toDate) {
         throw err;
     }
 }
+
+
+async function topSaledBrands(fromDate, toDate) {
+    try {
+      const pipeline = [];
+  
+      // Filter by date range (if provided)
+      if (fromDate && toDate) {
+        pipeline.push({
+          $match: {
+            deliveredAt: {
+              $gte: new Date(fromDate),
+              $lte: new Date(toDate),
+            },
+          },
+        });
+      }
+  
+      // Group by brand and count documents
+      pipeline.push({
+        $group: {
+          _id: "$brand",
+          count: { $sum: 1 },
+        },
+      });
+  
+      // Sort by count in descending order
+      pipeline.push({
+        $sort: {
+          count: -1,
+        },
+      });
+  
+      const brands = await productModel.aggregate(pipeline);
+      return brands
+    //   console.log(brands);
+    } catch (err) {
+      console.log(`Error at topSaledBrands: ${err}`);
+    }
+  }
+  
+  // Example usage
+//   const toDate = new Date();
+//   topSaledBrands(
+//     new Date(toDate.getFullYear(), toDate.getMonth() - 1, toDate.getDate()),
+//     new Date()
+//   );

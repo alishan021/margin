@@ -85,14 +85,20 @@ router.delete('/wishlist/remove/:productId', userController.wishlistDelete );
 // User checkout
 router.get('/checkout', userAuth.userSessionNo, userController.checkoutGet );
 router.post('/checkout/:userId', userController.checkoutPost );
+router.post('/checkout-error/:userId', userController.checkoutErrorPost );
+router.get('/checkout-validation', userController.validateCheckoutAddress );
+// router.get('/checkout/apply-coupon', userController.applyCoupon );
+router.get('/coupon/check/:couponCode/:productTotal', userController.couponCheck );
+router.get('/remove-coupon/:couponCode', userController.removeCoupon );
+router.get('/failed-payment', userController.failedPayment );
 
 
 router.get('/order/:orderId', userController.orderSingleGet );
 router.patch('/order/cancel/:orderId/:productId', userController.orderCancellationPath );
 router.patch('/order/return/:orderId/:productId', userController.orderReturnPatch );
+router.post('/order-details/checkout', userController.orderFromOrderDetails );
+router.post('/payment-pending', userController.paymentPendingPost )
 
-router.get('/coupon/check/:couponCode/:productTotal', userController.couponCheck );
-router.get('/remove-coupon', userController.removeCoupon );
 
 // Error page
 // router.get('/*', userController.errorPageGet );
@@ -119,6 +125,7 @@ router.post('/create/orderId', (req, res) => {
   instance.orders.create(options, (err, order) => {
     if (err) {
       console.error('Error creating Razorpay order:', err);
+      console.log('Complete Error Object:', err);
       return res.status(500).json({ error: 'Error creating order' });
     }
 

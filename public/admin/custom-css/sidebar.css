@@ -1,7 +1,8 @@
 
 :root
 {
-    --primary:  hsl(195, 53%, 79%);
+    --primary-backgroud: #2c2c2c;
+    --primary-color: #ffffff;;
 }
 
 *{
@@ -23,12 +24,13 @@
     height: 100%;
     width: 300px;
     bottom: 0;
-    background-color: var(--primary);
+    background-color: var(--primary-backgroud);
     display: flex;
     flex-direction: column;
     gap: 2px;
     align-items: center;
-
+    font-family: Arial, Helvetica, sans-serif;
+    border-right: 4px solid aquamarine;
 }
 
 
@@ -36,7 +38,7 @@
 {
     width: 100%;
     height: 100px;
-    background-color: aquamarine;
+    /* background-color: aquamarine; */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -46,13 +48,18 @@
 
 .admin-profile-box
 {
-    width: 90%;
+    width: 100%;
     height: 100px;
     /* background-color: lightcoral; */
     display: flex;
     align-items: center;
     gap: 10px;
+    color: var(--primary-color);
+    background-color: #333333;
 }
+
+
+
 
 
 .profile-circle
@@ -61,12 +68,15 @@
     height: 70px;
     border: 1px solid black;
     border-radius: 50%;
+    background-color: #ffffff;
+    margin: 0 10px;
 }
 
 
 .admin-name
 {
     font-size: large;
+    font-weight: bold;
 }
 
 
@@ -74,15 +84,20 @@
 {
     width: 98%;
     height: 50px;
-    background-color: white;
+    background-color: var(--primary-backgroud);
     border: 1px solid black;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 5px;
+    border: 1px solid #535353b5;
 }
 
 
+.side-options:hover
+{
+    background-color: rgba(128, 128, 128, 0.233);
+}
 
 
 aside
@@ -94,29 +109,26 @@ aside
 
 
 
-.sales-container
+/* .sales-container
 {
     display: flex;
-    /* gap: 30px; */
     flex-wrap: wrap;
     padding: 10px;
     position: sticky;
     top: 0;
-}
+} */
 
 
 
-.sales-box
+/* .sales-box
 {
     flex: 1 0 calc(25% - 20px);
     min-width: 150px;
-    height: 200px;
-    box-sizing: border-box; /* Include padding and borders in the height calculation */
+    box-sizing: border-box;
     min-height: 100px;
-    border: 1px solid black;
     margin: 5px;
     box-sizing: border-box;
-}
+} */
 
 
 
@@ -139,7 +151,7 @@ main {
     text-decoration: none;
     font-weight: bold;
     font-family: 'Courier New', Courier, monospace;
-    color: green;
+    color: var(--primary-color)
 }
 
 

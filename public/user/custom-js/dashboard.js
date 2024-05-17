@@ -216,12 +216,6 @@ orderBoxs.forEach(orderBox => {
 
 
 
-// const hellowAsk = document.querySelector('.hellow-ask');
-// hellowAsk.addEventListener('click', (e) => {
-//     console.log('hellow');
-// })
-
-
 
 
 
@@ -323,7 +317,7 @@ function razorpay( userId, amount){
       
             var options = {
               "key": "rzp_test_ODVEghJRjenb9A",
-              "amount": "200000",
+              "amount": amount*100,
               "currency": "INR",
               "name": "Margin",
               "description": "Test Transaction",

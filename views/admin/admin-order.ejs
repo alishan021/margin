@@ -92,6 +92,7 @@
                                         <option value="deliver" <% if (product.orderMessage === 'Delivered') { %> selected <% } %>>Delivered</option>
                                         <option value="cancel" <% if (product.orderMessage === 'Cancelled') { %> selected <% } %>>Cancelled</option>
                                         <option value="return" <% if (product.orderMessage === 'Return') { %> selected <% } %>>Return</option>
+                                        <option value="pending" <% if (order.pending) { %> selected <% } %>>Pending</option>
                                       </select>
                                     <% }) %>
                                   </td>

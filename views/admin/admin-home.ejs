@@ -1,135 +1,263 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/admin/custom-css/admin-home.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/admin/custom-css/admin-home.css" />
+    <link rel="stylesheet" href="/admin/custom-css/sidebar.css" />
     <title>Admin</title>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
-
-</head>
-<body>
-    
+  </head>
+  <body>
     <div class="page-wrapper">
+      <!-- navbar starts -->
+      <%- include('./layouts/navbar.ejs') %>
+      <!-- navbar ends -->
 
-        <!-- navbar starts -->
-       <%- include('./layouts/navbar.ejs') %>
-        <!-- navbar ends -->
+      <div class="page-body">
+        <!-- Sidebar starts -->
+        <%- include('./layouts/sidebar.ejs') %>
+        <!-- Sidebar ends -->
 
-        <div class="page-body">
-            
-            <!-- Sidebar starts -->
-            <%- include('./layouts/sidebar.ejs') %>
-            <!-- Sidebar ends -->
-            
-            <!-- Main body or dashboard starts -->
-            <main class="main">
-                <div class="sales-container">
-                    <div class="sales-box "><h4 class="box-items total-users"></h4></div>
-                    <div class="sales-box "><h4 class="box-items total-orders"></h4></div>
-                    <div class="sales-box "><h4 class="box-items total-revenue"></h4></div>
-                    <div class="sales-box "><h4 class="box-items total-products"></h4></div>
-                    <!-- <div class="sales-box"></div>
+        <!-- Main body or dashboard starts -->
+        <main class="main">
+          <div class="form-container container-divs">
+            <form action="#" id="filter-from">
+              <div class="filter-container">
+                <div class="filter-item-div filter-dates">
+                  <div class="from-date date-div">
+                    <input
+                      type="date"
+                      name="from-date"
+                      class="from-date date-item input-item"
+                    />
+                  </div>
+                  <div class="to-date date-div">
+                    <input
+                      type="date"
+                      name="to-date"
+                      class="to-date date-item input-item"
+                    />
+                  </div>
+                </div>
+                <div class="filter-item-div">
+                  <select
+                    name="filter-type"
+                    id="filter-type"
+                    class="input-item input-select"
+                  >
+                    <option value="custom">Custom</option>
+                    <option value="daily" selected>Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                    <option value="yearly">Yearly</option>
+                  </select>
+                </div>
+                <div class="filter-item-div">
+                  <button type="submit" class="input-item btn-apply">
+                    Apply
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="sales-container container-divs">
+            <div class="sales-box"><h4 class="box-items total-users"></h4></div>
+            <div class="sales-box">
+              <h4 class="box-items total-orders"></h4>
+            </div>
+            <div class="sales-box">
+              <h4 class="box-items total-revenue"></h4>
+            </div>
+            <div class="sales-box">
+              <h4 class="box-items total-products"></h4>
+            </div>
+            <!-- <div class="sales-box"></div>
                     <div class="sales-box"></div>
                     <div class="sales-box"></div>
                     <div class="sales-box"></div> -->
-                </div>
+          </div>
 
-                <div class="charts-container">
-                    <!-- <div class="category-chart-div">
+          <div class="container-divs">
+            <div class="charts-container">
+              <!-- <div class="category-chart-div">
                         <canvas id="myChart-categories"></canvas>
                     </div> -->
-                    <div class="line-chart-div">
-                        <canvas id="myChart-lines"></canvas>
-                    </div>
-                    <div class="product-chart-div">
-                        <canvas id="myChart-products"></canvas>
-                    </div>
-                </div>
-            </main>
-        </div>
-
-        
-
+              <div class="line-chart-div">
+                <canvas id="myChart-lines"></canvas>
+              </div>
+              <div class="product-chart-div">
+                <canvas id="myChart-products"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="container-divs table-container">
+            <div class="table-div">
+              <table class="product-table" >
+                <thead>
+                  <tr>
+                    <th>Products</th>
+                    <th>Count</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div class="table-div category">
+              <table class="category-table">
+                <thead>
+                  <tr>
+                    <th>Categories</th>
+                    <th>Count</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div class="table-div">
+              <table class="brand-table">
+                <thead>
+                  <tr>
+                    <th>Brands</th>
+                    <th>Count</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </main>
+      </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    
-      
-      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-      
-      <script>
+    <script>
+      let myChartProducts, myChartLines, productsChart, categoryChart;
 
+      let data = [];
+      let products;
+      document.addEventListener("DOMContentLoaded", async function () {
+        const response = await fetch("/admin/dashboard/data");
+        data = await response.json();
+        console.log(data);
+        products = data.topProducts.map((item) => item.productName);
 
-        let data = [];
-        let products;
-        document.addEventListener('DOMContentLoaded', async function() {
+        await dashBaordData(data);
+      });
 
-          const response = await fetch('/admin/dashboard/data');
-          data = await response.json();
-          console.log(data);
-          products = data.topProducts.map( item => item.productName );
-          console.log(products);
-          console.log(data.topProducts);
-          console.log(data.topCategoryies);
-          // const products = data.topProducts.map( item => item.productName );
-          // const categories = data.topCategories.map( item => item.categoryName );
-          
-          const myChartProducts = document.getElementById('myChart-products');
-          
-          new Chart(myChartProducts, {
-          type: 'bar',
+      async function dashBaordData(data) {
+        myChartProducts = document.getElementById("myChart-products");
+
+        categoryChart = new Chart(myChartProducts, {
+          type: "bar",
           data: {
-            labels: [...data.topCategoryies.map( item => item.categoryName )],
-            datasets: [{
-              label: 'Most Selling Products',
-              data: [12, 19, 3, 5, 2, 3],
-              borderWidth: 1
-            }]
+            labels: [...data.topCategoryies.map((item) => item.categoryName)],
+            datasets: [
+              {
+                label: "Most Selling Category",
+                data: [...data.topCategoryies.map((item) => item.count)],
+                // data: [100, 200, 269, 244, 100],
+                borderWidth: 1,
+              },
+            ],
           },
           options: {
             scales: {
               y: {
-                beginAtZero: true
-              }
+                beginAtZero: true,
+              },
             },
-          }
+          },
         });
 
-  
-
-        const myChartLines = document.getElementById('myChart-lines');
-      
-        new Chart(myChartLines, {
-          type: 'line',
+        myChartLines = document.getElementById("myChart-lines");
+        productsChart = new Chart(myChartLines, {
+          type: "line",
           data: {
-            labels: [...data.topProducts.map( item => item.productName )],
-            datasets: [{
-              label: 'Most Selled Category',
-              data: [12, 19, 3, 5, 2, 3],
-              borderWidth: 1
-            }]
+            labels: [...data.topProducts.map((item) => item.productName)],
+            datasets: [
+              {
+                label: "Most Selled Products",
+                data: [...data.topProducts.map((item) => item.count)],
+                // data: [39, 24, 64, 24, 56, 93, 93],
+                borderWidth: 1,
+              },
+            ],
           },
           options: {
             scales: {
               y: {
-                beginAtZero: true
-              }
-            }
-          }
+                beginAtZero: true,
+              },
+            },
+          },
         });
 
+        document.querySelector(".total-users").innerHTML = `Users : ${data.totalUsers}`;
+        document.querySelector(".total-orders").innerHTML = `Orders : ${data.totalOrders}`;
+        document.querySelector(".total-revenue").innerHTML = `Revenue : ${data.totalRevenue}`;
+        document.querySelector(".total-products").innerHTML = `Products : ${data.totalProducts}`;
 
-        document.querySelector('.total-users').innerHTML = `Users : ${data.totalUsers}`;
-        // document.querySelector('.total-users').innerHTML = data.totalUsers;
-        document.querySelector('.total-orders').innerHTML = `Orders : ${data.totalOrders}`
-        document.querySelector('.total-revenue').innerHTML = `Revenue : ${data.totalRevenue}`
-        document.querySelector('.total-products').innerHTML = `Products : ${data.totalProducts}`
+        function populateTable(data) {
+        const productBody = document.querySelector('.product-table tbody');
+        const categoryBody = document.querySelector('.category-table tbody');
+        const brandBody = document.querySelector('.brand-table tbody');
+        productBody.innerHTML = data.topProducts.map(item => `<tr><td>${item.productName || 'Unknown'}</td><td>${item.count || 'Unknown'}</td></tr>`).join('');
+        categoryBody.innerHTML = data.topCategoryies.map(item => `<tr><td>${item.categoryName || 'Unknown'}</td><td>${item.count || 'Unknown'}</td></tr>`).join('');
+        brandBody.innerHTML = data.topBrands.map(item => `<tr><td>${item._id || 'Unknown'}</td><td>${item.count || 'Unknown'}</td></tr>`).join('');
+        }
 
-    })
+        populateTable(data);
 
-      </script>
+      }
 
-</body>
+      const filterFrom = document.querySelector("#filter-from");
+      filterFrom.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        let fromDate = filterFrom.elements["from-date"].value;
+        let toDate = filterFrom.elements["to-date"].value;
+        const filterType = document.querySelector("#filter-type").value;
+        console.log(filterType);
+        console.log(fromDate, toDate);
+
+        const response = await fetch(
+          `/admin/dashboard/data/custom?filterType=${filterType}&fromDate=${fromDate}&toDate=${toDate}`
+        );
+        const body = await response.json();
+        console.log(body);
+        if (body.error) return failureMessage;
+        data = body;
+
+        if (productsChart) productsChart.destroy();
+        if (categoryChart) categoryChart.destroy();
+        dashBaordData(data);
+      });
+
+      function successMessage(message) {
+        Swal.fire({
+          text: message,
+          position: "top",
+          timer: 2000,
+          background: "green",
+          color: "white",
+          showConfirmButton: false,
+        });
+        return;
+      }
+
+      function failureMessage(message) {
+        Swal.fire({
+          text: message,
+          position: "top",
+          timer: 2000,
+          background: "red",
+          color: "white",
+          showConfirmButton: false,
+        });
+        return;
+      }
+    </script>
+  </body>
 </html>

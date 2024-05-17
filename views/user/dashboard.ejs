@@ -124,7 +124,11 @@
 													</div>
 													<div class="order-items flex-grow-1" style="width: 25%;"><%= order.totalPrice %></div>
 													<div class="order-items flex-grow-1" style="width: 25%;"><%= order.orderMessage %></div>
-													<div class="order-items flex-grow-1" style="width: 25%;"><%= order.paymentMethod %></div>
+													<% if(order.paymentMethod === "Pending"){ %>
+														<div class="order-items flex-grow-1" style="width: 25%;">Razorpay</div>
+													<% }else { %>
+														<div class="order-items flex-grow-1" style="width: 25%;"><%= order.paymentMethod %></div>
+													<% } %>
 												</div>
 												
 											<%}) %>
@@ -332,7 +336,25 @@
 												<button class="btn btn-primary btn-wallet" data-user-id="<%= user._id %>">Add money</button>
 											</div>
 										</div>
+										<div class="my-5">
+											<h4>Wallet History</h4>
+											<div class="row border py-3 color-c96">
+											  <div class="col"><b>Date</b></div>
+											  <div class="col"><b>Amount</b></div>
+											  <div class="col"><b>Balance</b></div>
+											  <div class="col"><b>TransactionalType</b></div>
+											</div>
+											<% user.wallet.walletHistory.forEach((item, index) => { %>
+											  <div class="row border py-3">
+												<div class="col"><%= item.createdAt.toLocaleDateString() %></div>
+												<div class="col"><%= item.amount %></div>
+												<div class="col"><%= item.balance %></div>
+												<div class="col"><%= item.transactionType %></div>
+											  </div>
+											<% }) %>
+										</div>
 									</div>
+									
 
 								</div>
 	                		</div><!-- End .col-lg-9 -->

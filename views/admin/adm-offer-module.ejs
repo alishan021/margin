@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit product</title>
+    <link rel="stylesheet" href="/admin/custom-css/navbar.css">
+    <link rel="stylesheet" href="/admin/custom-css/sidebar.css">
+    <link rel="stylesheet" href="/admin/custom-css/msg-box.css">
+    <link rel="stylesheet" href="/admin/custom-css/admin-offer.css">
+    <script src="/admin/custom-js/admin-offer.js" defer ></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+
+</head>
+<body>
+
+    <div class="page-wrapper">
+        <%- include('./layouts/navbar.ejs') %>
+        <div class="page-body">
+            <%- include('./layouts/sidebar.ejs') %> 
+
+            <main>
+                <div class="offer-item-container">
+                  <div class="offer-items-head">
+                    <div class="offer-items offer-item-heading active">Product</div>
+                    <div class="offer-items offer-item-heading">Category</div>
+                    <div class="offer-items offer-item-heading">Referal</div>
+                    <div class="offer-items offer-item-heading">Other Offers</div>
+                  </div>
+                </div>
+                <div class="offer-item-content">
+                  <div class="offer-item-section">
+                    <h2>Product</h2>
+                    <form action="#" id="product-offer-form">
+                      <div class="add-product-offer">
+                        <div class="input-rows">
+                          <div class="input-item">
+                            <label for="product-name">Product Name : &nbsp;</label>
+                            <select name="product" id="product-select" class="offer-input">
+                              <!-- <option value="Product Id">Select product</option> -->
+                              <% products.forEach(( product ) => { %>
+                                <option value="<%= product._id %>"><%= product.name %> - <%= product.price %>Rs</option>
+                                <% }) %>
+                              </select>
+                            </div>
+                            <div class="input-item">
+                              <label for="offer-type">Offer Type : &nbsp;</label>
+                              <select name="offer-type" class="product-offer-type offer-input" >
+                                <option value="price" selected>Price</option>
+                                <option value="percentage">Percentage</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="input-rows">
+                            <div class="input-item">
+                              <!-- <label for="value">Amount or Percentage : &nbsp;</label> -->
+                              <input type="number" id="value" placeholder="Amount or Percentage" name="value" class="offer-input" required>
+                            </div>
+                          </div>
+                          <div class="input-rows">
+                            <div class="input-item">
+                              <label for="startDate">Offer Start Date : &nbsp;</label>
+                              <input type="date" id="startDate" name="startDate" class="offer-input" required>
+                            </div>
+                            <div class="input-item">
+                              <label for="endDate">Offer End Date : &nbsp;</label>
+                              <input type="date" id="endDate" name="endDate" class="offer-input" required>
+                            </div>
+                          </div>
+                          <div class="input-rows">
+                            <div class="input-item">
+                              <!-- <label for="description">Offer Description : &nbsp;</label> -->
+                              <textarea id="description" placeholder="Offer Description" name="description" rows="4" class="offer-input" required></textarea>
+                            </div>
+                          </div>
+                          <div class="btn-div">
+                            <button type="submit" class="btn-submit btn-product-offer">Create Offer</button>
+                          </div>
+                        </div>
+                      </form>
+                      <div class="table-div">
+                        <table class="product-table">
+                          <thead>
+                            <tr>
+                              <th>No</th>
+                              <th>Product</th>
+                              <th>Description</th>
+                              <th>OfferType</th>
+                              <th>OfferValue</th>
+                              <th>StartDate</th>
+                              <th>EndDate</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+
+                            <% offerProducts.forEach(( offer, index ) => { %>
+                              <tr>
+                                <td><%= index + 1 %></td>
+                                <td><%= offer.product.name %></td>
+                                <td><%= offer.description %></td>
+                                <td><%= offer.offerType %></td>
+                                <td><%= offer.offerValue %></td>
+                                <td><%= offer.startDate.toLocaleDateString() %></td>
+                                <td><%= offer.endDate.toLocaleDateString() %></td>
+                              </tr>
+                              <% }) %>
+
+                          </tbody>
+                        </table>
+                      </div>
+                  </div>
+                  <div class="offer-item-section hidden">
+                    <h2>Category</h2>
+                    <form action="#" id="category-offer-form">
+                      <div class="add-category-offer">
+                        <div class="input-rows">
+                        <div class="input-item">
+                          <label for="category-name">Category Name : &nbsp;</label>
+                          <select name="category" id="product-select" class="offer-input">
+                            <!-- <option value="Product Id">Select product</option> -->
+                            <% categories.forEach(( category ) => { %>
+                              <option value="<%= category._id %>"><%= category.categoryName %></option>
+                              <% }) %>
+                            </select>
+                          </div>
+                          <div class="input-item">
+                            <label for="offer-type">Offer Type : &nbsp;</label>
+                            <select name="offer-type" class="product-offer-type offer-input" >
+                              <option value="price" selected>Price</option>
+                              <option value="percentage">Percentage</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="input-rows">
+                          <div class="input-item">
+                            <!-- <label for="value">Amount or Percentage : &nbsp;</label> -->
+                            <input type="number" id="value" placeholder="Amount or Percentage" name="value" class="offer-input" required>
+                          </div>
+                        </div>
+                        <div class="input-rows">
+                          <div class="input-item">
+                            <label for="startDate">Offer Start Date : &nbsp;</label>
+                            <input type="date" id="startDate" name="startDate" class="offer-input" required>
+                          </div>
+                          <div class="input-item">
+                            <label for="endDate">Offer End Date : &nbsp;</label>
+                            <input type="date" id="endDate" name="endDate" class="offer-input" required>
+                          </div>
+                        </div>
+                        <div class="input-rows">
+                          <div class="input-item">
+                            <!-- <label for="description">Offer Description : &nbsp;</label> -->
+                            <textarea id="description" placeholder="Offer Description" name="description" rows="4" class="offer-input" required></textarea>
+                          </div>
+                        </div>
+                        <div class="btn-div">
+                          <button type="submit" class="btn-submit">Create Offer</button>
+                        </div>
+                      </div>
+                    </form>
+                    <div class="table-div">
+                      <table class="product-table">
+                        <thead>
+                          <tr>
+                            <th>No</th>
+                            <th>Category</th>
+                            <th>Description</th>
+                            <th>OfferType</th>
+                            <th>OfferValue</th>
+                            <th>StartDate</th>
+                            <th>EndDate</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+
+                          <% offerCategory.forEach(( offer, index ) => { %>
+                            <tr>
+                              <td><%= index + 1 %></td>
+                              <td><%= offer.category.categoryName %></td>
+                              <td><%= offer.description %></td>
+                              <td><%= offer.offerType %></td>
+                              <td><%= offer.offerValue %></td>
+                              <td><%= offer.startDate.toLocaleDateString() %></td>
+                              <td><%= offer.endDate.toLocaleDateString() %></td>
+                            </tr>
+                            <% }) %>
+
+                        </tbody>
+                      </table>
+                    </div>
+                </div>
+                  <div class="offer-item-section hidden">
+                    <h2>Referal</h2>
+                    <!-- Add your referal content here -->
+                  </div>
+                  <div class="offer-item-section hidden">
+                    <h2>Other Offers : </h2>
+                    <!-- Add your referal content here -->
+                  </div>
+                </div>
+              </main>
+
+    
+</div>
+</div>
+
+
+</body>
+</html>

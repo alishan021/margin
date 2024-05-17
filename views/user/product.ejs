@@ -79,6 +79,7 @@
                                     <!-- </div> -->
                                     <!-- End .rating-container -->
 
+                                    <!-- <div ><s>$<= product.price %></s></div> -->
                                     <div class="product-price">
                                         $<%= product.price %>
                                     </div><!-- End .product-price -->
@@ -241,8 +242,9 @@
                 </div><!-- End .col-6 -->
 
                 <div class="col-6 justify-content-end">
+                    <div class="product-price"><s>$<%= product.price %></s></div>
                     <div class="product-price">
-                        $<%= product.price %>
+                        $<%= product.discountedPrice %>
                     </div><!-- End .product-price -->
                     <div class="product-details-quantity">
                         <input type="number" id="sticky-cart-qty" class="form-control" value="1" min="1" max="10" step="1" data-decimals="0" required>

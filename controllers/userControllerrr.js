@@ -394,6 +394,7 @@ exports.productGet = async ( req, res ) => {
         const productId = req.params.productId;
         const product = await productModel.findById( productId );
         const category = await categoryModel.findOne({ _id: product.category });
+        console.log(product.discountedPrice + 200);
         res.render('product.ejs', { product, category, userIn: req.session.userIn } );
     }
     catch(error){
@@ -563,7 +564,9 @@ exports.dashboardGet = async (req, res) => {
         }
       }
   
-      if (isArriving) {
+      if(order.pending) {
+        order.orderMessage = "Pending"
+      } else if (isArriving) {
         order.orderMessage = 'Arriving';
       } else if (isDelivered) {
         order.orderMessage = 'Delivered';
@@ -591,7 +594,7 @@ exports.cartGet = async ( req, res ) => {
     let totalPrice = user.cart.reduce(( prev, curr ) => ( curr.product.quantity > 0 ) ? prev + curr.product.price * curr.count : prev + 0, 0 );
     console.log(user.cart)
     let deliveryCharge = 0;
-    if( totalPrice < 500 )  deliveryCharge = 50;
+    if( totalPrice < 500 )  deliveryCharge = parseInt(process.env.DELIVERY_CHARGE);
     console.log(totalPrice, deliveryCharge );
 
     if (!cartProducts || !user ) return res.status(404).send('User session expired, login again');
@@ -672,7 +675,7 @@ exports.checkoutGet = async (req, res) => {
         console.log(user.cart);
         let totalPrice = user.cart.reduce(( prev, curr ) => ( curr.product.quantity > 0 ) ? prev + curr.product.price * curr.count : prev + 0, 0 );
         let deliveryCharge = 0;
-        if( totalPrice < 500 )  deliveryCharge = 50;
+        if( totalPrice < 500 )  deliveryCharge = (process.env.DELIVERY_CHARGE)*1;
         console.log(totalPrice, deliveryCharge );;
         const coupons = await couponModel.find({});
         // if( addressId === 'new' )
@@ -688,6 +691,12 @@ exports.checkoutGet = async (req, res) => {
         console.error(err);
         res.status(500).json({ error: 'Internal server error' });
     }
+}
+
+
+
+const applyCoupon = async ( req, res ) => {
+    
 }
 
 
@@ -842,6 +851,7 @@ exports.cartCountPatch = async (req, res) => {
 
 
 function validateAddress(name, email, phone, pincode, state, country, altphone, city, landmark) {
+    console.log( name, email, phone, pincode, state, country, altphone, city, landmark );
     if(!name || !email || !phone || !pincode || !state || !country || !altphone || !city || !landmark ) return { success: false, message: 'Fields with * mark are required'};
     if(email){
          const emailRegex =  /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/g
@@ -1005,7 +1015,7 @@ exports.checkoutPost = async (req, res) => {
     try {
       const user = await userModel.findById(req.session.user._id);
       if(!user) return res.status(400).json({ error: 'User not found, Login again'});
-      if(typeof Number(req.body.pincode) !== 'number' ) return res.status(400).json({ error: 'pincode must be number'});
+    //   if(typeof Number(req.body.pincode) !== 'number' ) return res.status(400).json({ error: 'pincode must be number'});
 
       console.log(req.body)
 
@@ -1028,6 +1038,7 @@ exports.checkoutPost = async (req, res) => {
       console.log('.discountPrice : ' + req.body.discountPrice, 'totalPrice : ' + totalPrice );
 
       if(totalPrice > 1000 && req.body.paymentMethod === 'COD' ) return res.status(400).json({ success: false, error: 'Cash On Delivery is not available for products more than 1000Rs'});
+      if(totalPrice < 500 ) totalPrice += parseInt(process.env.DELIVERY_CHARGE);
   
       const products = [];
       for (const item of productDetails) {
@@ -1059,11 +1070,12 @@ exports.checkoutPost = async (req, res) => {
         totalPrice,
         paymentMethod: req.body.paymentMethod || 'COD',
         couponUsed: req.body.couponCode || '',
+        status: "Processing",
         orderValid: true,
+        rzr_orderId: req.body.orderId
       });
   
       const savedOrder = await order.save();
-    //   console.log(savedOrder);
       if (savedOrder) {
         user.cart = [];
         await user.save();
@@ -1074,6 +1086,142 @@ exports.checkoutPost = async (req, res) => {
       console.error(err);
     }
   };
+
+
+
+exports.failedPayment = async ( req, res ) => {
+    const orderId = req.query.orderId;
+    console.log(orderId);
+    try{
+        const order = await orderModel.findById(orderId);
+        console.log(order);
+        res.status(200).json({ order});
+    }catch(err){
+        console.log(err);
+    }
+}
+
+
+exports.paymentPendingPost = async ( req, res ) => {
+    const { userId, rzr_orderId } = req.body;
+    console.log(userId, rzr_orderId);
+    try{
+        const order = await orderModel.findOne({ rzr_orderId: rzr_orderId });
+        console.log(order);
+        if(!order) return res.status(404).json({ error: "Order not found" });
+        order.pending = false;
+        order.paymentMethod = "razorpay";
+        const result = await order.save();
+        console.log(result)
+        if(!result) return res.status(404).json({ error: "Order failed" });
+        res.status(200).json({ success: true, message: 'Order Payment was successful.' });
+    }catch(err){
+        console.error(`Error at paymentPendingPost ${err}`)
+    }
+}
+
+
+
+
+exports.validateCheckoutAddress = async ( req, res ) => {
+    const address = { name, email, phone, pincode, state, country, altphone, city, landmark } = req.query;
+    console.log(address);
+  
+    const validationResult = validateAddress( name, email, phone, pincode, state, country, altphone, city, landmark);
+    if(!validationResult.success) {
+      return res.status(400).json({ success: false, error: validationResult.message });
+    }
+    res.status(200).json({ success: true, message:'checkout Address validated.' });
+}
+
+
+
+exports.checkoutErrorPost = async ( req, res ) => {
+    console.log('Inisde checkErrorPost');
+    try {
+        const user = await userModel.findById(req.session.user._id);
+        if(!user) return res.status(400).json({ error: 'User not found, Login again'});
+        // if(typeof Number(req.body.pincode) !== 'number' ) return res.status(400).json({ error: 'pincode must be number'});
+  
+        console.log(req.body)
+  
+        const address = { name, email, phone, pincode, state, country, altphone, city, landmark } = req.body;
+        console.log( name, email, phone, pincode, state, country, altphone, city, landmark )
+  
+        const validationResult = validateAddress( name, email, phone, pincode, state, country, altphone, city, landmark);
+        if(!validationResult.success) {
+          return res.status(400).json({ success: false, error: validationResult.message });
+        }
+    
+        const productDetails = await getProductDetails(user.cart);
+    
+        let totalPrice = 0;
+        productDetails.forEach((item, index) => {
+          const itemPrice = item.product ? (item.product.price || 1) : 0;
+          totalPrice += itemPrice * item.count;
+        });
+        let originalPrice = totalPrice;
+        if(req.body.discountPrice) totalPrice -= req.body.discountPrice;
+        console.log('.discountPrice : ' + req.body.discountPrice, 'totalPrice : ' + totalPrice );
+      
+        const products = [];
+        for (const item of productDetails) {
+          const dbProduct = await productModel.findById(item.product._id);
+          if (dbProduct.quantity < item.count) {
+              continue;
+          }
+          dbProduct.quantity -= item.count;
+          await dbProduct.save();
+          products.push({
+            productId: item.product._id,
+            quantity: item.count,
+            productTotalPrice: item.product.price * item.count,
+          });
+        }
+    
+        if (!user) return res.status(400).json({ error: 'login again, session expired' });
+        if(req.body.paymentMethod === "wallet"){
+          if( user.wallet.amount < totalPrice ) return res.status(400).json({ error: `balance in wallet : ${user.wallet.amount}` });
+          user.wallet.amount -= totalPrice;
+        }
+    
+        const order = await new orderModel({
+          userId: req.session.user._id,
+          products,
+          address,
+          orderNotes: req.body.ordernotes,
+          originalPrice,
+          totalPrice,
+          paymentMethod: "Pending",
+          couponUsed: req.body.couponCode || '',
+          pending: true,
+          status: "Pending",
+          orderValid: true,
+          rzr_orderId: req.body.orderId
+        });
+    
+        const savedOrder = await order.save();
+      //   console.log(savedOrder);
+        if (savedOrder) {
+          user.cart = [];
+          await user.save();
+          if (req.body.couponCode) await couponModel.updateOne({ couponCode: req.body.couponCode }, { $push: { usedUsers: user._id } });
+          return res.json({ success: true, message: 'Order created successfully' });
+        }
+      } catch (err) {
+        console.error(err);
+      }
+}
+
+
+
+
+exports.orderFromOrderDetails = async ( req, res ) => {
+
+}
+
+
+
 
 
 exports.productCartPatch = async ( req, res ) => {
@@ -1121,10 +1269,11 @@ exports.orderSingleGet  = async ( req, res )  => {
         const order = await orderModel.findById(orderId).populate('products.productId');
         // console.log('dbOrder : ' + order);
         let orderStatus = "...";
-        if(order.orderValid && !order.orderStatus && !order.returned ) order.orderMessage = 'Arriving';
+        if(order.pending) order.orderMessage = 'Pending';
+        else if(order.orderValid && !order.orderStatus && !order.returned ) order.orderMessage = 'Arriving';
         else if(!order.orderValid && order.orderStatus && !order.returned ) order.orderMessage = 'Delivered';
         else if(!order.orderValid && !order.orderStatus && !order.returned ) order.orderMessage = 'Cancelled';
-        else if(!order.orderValid && !order.orderStatus && order.returned ) order.orderMessage = 'Delivered';
+        else if(!order.orderValid && !order.orderStatus && order.returned ) order.orderMessage = 'Returned';
         else orderStatus = '.....';
         console.log(order)
         res.render('order-details.ejs', { order, userIn: req.session.user });
@@ -1229,16 +1378,16 @@ exports.couponCheck = async ( req, res ) => {
     const productTotal = req.params.productTotal;
     console.log(couponCode);
     try{
-        if(!couponCode) return res.status(300).json({ status: false });
+        if(!couponCode) return res.status(300).json({ status: false, error: 'No coupon'});
         const coupon = await couponModel.findOne({ couponCode });
-        if(!coupon) return res.status(300).json({ status: false });
+        if(!coupon) return res.status(300).json({ status: false, error: 'No coupon found' });
         if( productTotal >= coupon.purchaseAmount ) {
             let discountPrice = productTotal - coupon.discountAmount;
-            // const couponresult = await couponModel.updateOne({ couponCode: req.params.couponCode }, { $push: { usedUsers: req.session.user._id }});
-            // console.log(couponresult);
+            const couponresult = await couponModel.updateOne({ couponCode: req.params.couponCode }, { $push: { usedUsers: req.session.user._id }});
         
-            return res.status(200).json({ status: true, discountPrice });
-        } 
+            return res.status(200).json({ status: true, discountPrice, couponOffer: coupon.discountAmount, couponCode : coupon.couponCode });
+        } else return res.status(403).json({ error: `You need to order above ${coupon.purchaseAmount}, to use this coupon` });
+
     }catch(error){
         console.log(error);
         return res.status(500).json({ error: 'Internal server error' });
@@ -1247,28 +1396,16 @@ exports.couponCheck = async ( req, res ) => {
 
 
 
-exports.removeCoupon = async ( req, res ) => {
-    const orderId = req.query.orderId;
-    try{
-        const order = await orderModel.findById(orderId);
-        const coupon_used = order.couponUsed;
-        console.log(coupon_used);
-        if(!req.session.user) return res.status(400).json({ success: false, error: 'User not found, Login Again'});
-        console.log(coupon_used);
-        const user = await userModel.findById(req.session.user._id);
-        const couponPrice = await couponModel.findOne({ couponCode: order.couponUsed }, { discountAmount: 1 });
-        console.log(couponPrice.discountAmount);
-        if( user.wallet.amount < couponPrice.discountAmount ) return res.status(400).json({ success: false, error: `${couponPrice} is needed in wallet.`});
-        const coupnRemoveResult = await orderModel.updateOne({ _id: orderId }, { $unset: { couponUsed: "" }});
-        console.log(coupnRemoveResult);
-        if( coupnRemoveResult ) {
-            user.wallet.amount -= couponPrice.discountAmount;
-            order.totalPrice = order.totalPrice + couponPrice.discountAmount;
-            await user.save();
-            await order.save();
-            return res.status(200).json({ success: true, message: 'Coupon removed' });
-        }
 
+exports.removeCoupon = async ( req, res ) => {
+    const couponCode = req.params.couponCode;
+    console.log(couponCode)
+    try{
+        if(!req.session.user) return res.status(400).json({ error: "user not found, login again" });
+        const coupon = await couponModel.updateOne({ couponCode: couponCode }, { $pull: { usedUsers: req.session.user._id }});
+        console.log(coupon);
+        if(!coupon) return res.status(400).json({ error: "coupon not found"});
+        res.status(200).json({ message: "Coupon removed successfully" });
     }catch(err){
         console.log(`Error at removeCoupon \n${err}`);
     }

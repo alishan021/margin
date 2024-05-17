@@ -140,10 +140,7 @@ aside
     width: 500px;
     flex: 1 0 calc(25% - 20px);
     min-width: 150px;
-    /* height: 200px; */
-    box-sizing: border-box; /* Include padding and borders in the height calculation */
-    /* min-height: 100px; */
-    /* border: 1px solid black; */
+    box-sizing: border-box;
     margin: 5px;
     box-sizing: border-box;
     background-color: #9ad0f5;
@@ -160,7 +157,7 @@ main {
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 100px;
+    /* gap: 50px; */
     /* flex: 0 0 2 ; */
     flex-wrap: wrap;
 }
@@ -223,13 +220,101 @@ main {
 
 
 
+.filter-container {
+    display: flex;
+    border-bottom: 1px solid black;
+    padding-bottom: 10px;
+    margin-top: 20px ;
+}
+
+
+.filter-dates {
+    display: flex;
+    gap: 10px;
+}
+
+
+.filter-item-div {
+    padding: 5px 5px;
+}
+
+
+.input-item {
+    padding: 10px;
+}
+
+
+.btn-apply {
+    background-color: black;
+    color: white;
+    border: 2px solid black;
+    width: 100px;
+    /* border-radius: 5px; */
+    cursor: pointer;
+}
+
+
+.container-divs {
+    margin: 20px 0;
+}
 
 
 
+.table-container {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    /* justify-content: space-between; */
+  }
+  
+  table {
+    width: 100%;
+    min-width: 200px;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background-color: #f2f2f2;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .table-div {
+    flex: 1 1 200px;
+  }
+  
+  thead {
+    background-color: #007bff;
+    color: #fff;
+  }
+  
+  th, td {
+    padding: 10px;
+    text-align: left;  /* flex-grow: 1; */
+  
+  }
+  
+  th {
+    font-weight: bold;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #e6e6e6;
+  }
+  
+  tr:hover {
+    background-color: #d9d9d9;
+  }
+  
 
-
-/*  Media Queries  */
-
+  
+  
+  /*  Media Queries  */
+@media (max-width: 768px) {
+  table {
+    width: 100%;
+    margin-right: 0;
+  }
+}
+  
 @media screen and (max-width: 1250px) {
     .sidebar {
         width: 200px; /* Reduce the width of the sidebar for smaller screens */
@@ -242,3 +327,5 @@ main {
         display: none; /* Further reduce the width of the sidebar for even smaller screens */
     }
 }
+
+

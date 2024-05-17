@@ -34,7 +34,7 @@ const orderSchema = new mongoose.Schema({
          },
          status: {
             type: String,
-            enum: [ "Pending", "Shipped", "Delivered", "Processing", "Canceled", "Rejected"]
+            enum: [ "Pending", "Shipped", "Delivered", "Processing", "Canceled", "Returned" ]
          }
     }],
     address: {
@@ -66,7 +66,8 @@ const orderSchema = new mongoose.Schema({
             type: String, 
     }},
     paymentMethod: {
-        type: String
+        type: String,
+        enum: [ "COD", "wallet", "razorpay", "Pending" ],
     },
     orderNotes: {
         type: String
@@ -92,6 +93,10 @@ const orderSchema = new mongoose.Schema({
      pending: {
         type: Boolean,
         default: false
+     },
+     rzr_orderId: {
+        type: String,
+        default: "",
      }
 });
 

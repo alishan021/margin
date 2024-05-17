@@ -91,42 +91,104 @@ btnInvoice.addEventListener('click', async (event) => {
 });
 
 
-const removeCouponBtn = document.querySelector('#btn-remove-coupon');
-removeCouponBtn.addEventListener('click', async (event) => {
-  console.log('inside remove coupon');
-  const orderId = event.target.getAttribute('data-order-id');
-  const response = await fetch(`/remove-coupon?orderId=${orderId}`);
+async function payAgain(event) {
+  console.log('hai');
+  const orderId = event.target.dataset.orderId;
+  console.log(orderId);
+  const response = await fetch(`/failed-payment?orderId=${orderId}`);
   const body = await response.json();
   console.log(body);
-  if(body.error) failureMessage(body.error);
-  if(body.success) {
-    successMessage(body.message);
-    setTimeout(() => window.location.reload() , 1000);
-  }
-})
-
-
-
-const alertMessageError = document.getElementById('alertMessageError');
-const alertMessageSuccess = document.getElementById('alertMessageSuccess');
-
-function showAlertError(message) {
-    alertMessageError.innerText = message;
-    alertMessageError.style.display = 'block';
-  setTimeout(() => {
-    alertMessageError.style.display = 'none';
-  }, 3000); 
+  const { rzr_orderId, totalPrice } = body.order;
+  console.log(rzr_orderId, totalPrice );
+  await razorpay(rzr_orderId, totalPrice, body.order.userId );
 }
 
 
-function showAlertSuccess(message) {
-    alertMessageSuccess.innerText = message;
-    alertMessageSuccess.style.display = 'block';
-    setTimeout(() => {
-        alertMessageSuccess.style.display = 'none';
-    }, 3000); 
-}
+
+
+
+async function razorpay(orderId, productTotal, userId){
+  console.log(productTotal)
+  $(document).ready(function() {
+    
+          var options = {
+            "key": "rzp_test_sHq1xf34I99z5x",
+            "amount": productTotal*100,
+            "currency": "INR",
+            "name": "Margin",
+            "description": "Test Transaction",
+            "image": "https://example.com/your_logo",
+            "order_id": orderId,
+            "handler": function(response) {
+              console.log(response.razorpay_payment_id);
+              console.log(response.razorpay_order_id);
+              console.log(response.razorpay_signature);
+              const result = rzrPaymentAgain( userId, orderId );
+              console.log('result : ' + result);
+              if(result) setTimeout(() => window.location.reload(), 1000);
+              else return false;
+            },
+            "prefill": {
+              "name": "Muhammed Alishan",
+              "email": "alishan.example@gmail.com",
+              "contact": "0000000000"
+            },
+            "notes": {
+              "address": "Razorpay Corporate Office"
+            },
+            "theme": {
+              "color": "#3399cc"
+            }
+          };
+    
+          var rzp1 = new Razorpay(options);
   
+          rzp1.on('payment.failed', async function(response) {
+            console.log('payment failed');
+            console.log(response.error.code);
+            console.log(response.error.description);
+            console.log(response.error.source);
+            console.log(response.error.step);
+            console.log(response.error.reason);
+            console.log(response.error.metadata.order_id);
+            console.log(response.error.metadata.payment_id);
+            failureMessage('Payment failed, try Again');
+          });
+  
+          rzp1.on('payment.error', function (response) {
+            console.log('Payment error:', response.error);
+          });
+  
+          rzp1.open();
+    });
+  }
+
+
+  
+  
+async function rzrPaymentAgain( userId, rzr_orderId ) {
+  console.log( userId, rzr_orderId );
+  const response = await fetch('/payment-pending', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ userId, rzr_orderId })
+  });
+  const body = await response.json();
+  console.log(body);
+  if(body.error) {
+    failureMessage(body.error);
+    return false;
+  }
+  else successMessage(body.message);
+  return true;
+}
+
+
+  
+
+
 
 
 
@@ -171,3 +233,4 @@ function failureMessage(message) {
   });
   return;
 }
+

@@ -7,6 +7,7 @@ const admCategoryController = require('../controllers/admCategoryController');
 const admOrdersController = require('../controllers/admOrdersController');
 const admCouponController = require('../controllers/admCouponController');
 const admSalesReportController = require('../controllers/admSalesReport');
+const admOfferModule = require('../controllers/admOfferModule');
 const adminModel = require('../models/admin');
 const adminAuth = require('../middlewares/authAdmin');
 const userModel = require('../models/user');
@@ -41,8 +42,9 @@ router.get('/login', adminAuth.adminSessionYes, adminController.adminLoginGet );
 router.post('/login',  adminController.adminLoginPost );
 
 // Home page
-router.get('/',  adminAuth.adminSessionNo, adminController.adminHomeGet );
-router.get('/dashboard/data', adminAuth.adminSessionNo, adminController.dashBoardDetails );
+router.get('/',  adminController.adminHomeGet );
+router.get('/dashboard/data', adminController.dashBoardDetails );
+router.get('/dashboard/data/custom', adminController.customDetails );
 
 
 // To get user list for admin;
@@ -88,6 +90,10 @@ router.get('/sales-report/:reportType', admSalesReportController.customSalesRepo
 router.get('/sales/pdf/:reportType', admSalesReportController.genPdfGet );
 router.get('/sales-report-total', admSalesReportController.salesReportTotalGet );
 router.get('/sales/excel/:reportType', admSalesReportController.salesReportExcelGet );
+
+router.get('/offer-module', admOfferModule.offerModuleGet );
+router.post('/offer-module', admOfferModule.offerModulePost );
+// router.post('/category-offer', admOfferModule.categoryOfferPost );
 
 router.get('/logout', adminController.logout );
 

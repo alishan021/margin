@@ -10,7 +10,7 @@ orderStatusAll.forEach((orderStatus) => {
     console.log(orderId, productId);
     console.log(newStatus);
 
-    let orderStatusValue = false, returnedValue = false, orderValidValue = true;
+    let orderStatusValue = false, returnedValue = false, orderValidValue = true, pending = false;
 
     switch (newStatus) {
       case 'arrive':
@@ -33,9 +33,15 @@ orderStatusAll.forEach((orderStatus) => {
         returnedValue = true;
         orderValidValue = false;
         break;
+      case 'pending':
+        orderStatusValue = false;
+        returnedValue = true;
+        orderValidValue = false;
+        pending: true;
+        break;
     }
 
-    const data = { orderStatus: orderStatusValue, returned: returnedValue, orderValid: orderValidValue, orderId, productId };
+    const data = { orderStatus: orderStatusValue, returned: returnedValue, orderValid: orderValidValue, pending, orderId, productId };
 
     console.log(data);
 

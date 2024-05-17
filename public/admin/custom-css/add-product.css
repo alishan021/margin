@@ -78,7 +78,8 @@ input
 .btn-submit
 {
     width: 50%;
-    background-color: rgb(4, 102, 158);
+    background-color: #0097c9;
+    border: none;
     padding: 10px 20px;
     color: white;
     border-radius: 10px;
@@ -86,7 +87,8 @@ input
 }
 
 .btn-submit:hover {
-    background-color: darkblue;
+    /* background-color: darkblue; */
+    background-color: #04669e;
     cursor: pointer;
 }
 

@@ -8,7 +8,9 @@ exports.orderGet = async (req, res) => {
 
     for (let order of orders) {
       for (let product of order.products) {
-        if (product.orderValid && !product.orderStatus && !product.returned) {
+        if( order.pending ) {
+          product.orderMessage = "Pending";
+        } else if (product.orderValid && !product.orderStatus && !product.returned) {
           product.orderMessage = 'Arriving';
         } else if (!product.orderValid && product.orderStatus && !product.returned) {
           product.orderMessage = 'Delivered';
@@ -30,8 +32,8 @@ exports.orderGet = async (req, res) => {
 
 exports.orderStatusPatch = async (req, res) => {
   try {
-    const { orderStatus, returned, orderValid, orderId, productId } = req.body;
-    console.log(orderStatus, returned, orderValid, orderId, productId);
+    const { orderStatus, returned, orderValid, pending, orderId, productId } = req.body;
+    console.log(orderStatus, returned, orderValid, pending, orderId, productId);
     if (!orderId || !productId) {
       return res.status(400).json({ error: 'orderId or productId, is not available, login again' });
     }
@@ -46,6 +48,7 @@ exports.orderStatusPatch = async (req, res) => {
     order.deliveredAt = Date.now()
     if(product.orderStatus) product.deliveredAt = Date.now();
 
+    if(pending) order.pending = pending;
 
     if (product) {
       product.orderStatus = orderStatus;
