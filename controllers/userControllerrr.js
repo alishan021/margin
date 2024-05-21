@@ -1,6 +1,5 @@
 
 
-const middleware = require('../middlewares/functions');
 const otpModel = require('../models/db-otp');
 const userModel = require('../models/user')
 const productModel = require('../models/products')
@@ -14,9 +13,16 @@ const PDFDocument = require('pdfkit');
 
 
 
-exports.userHomeGet = ( req, res) => {
-    console.log('userin : ' + req.session.userIn);
-    res.render('index.ejs', { userIn: req.session.userIn });
+exports.userHomeGet = async ( req, res) => {
+    try{
+        const products = await productModel.find({ status: true }, { }).limit(8).populate('category');
+        const featuredProducts = await productModel.find({ status: true }, { }).limit(7).populate('category').sort({ price: -1 });
+        const featuredProduct = featuredProducts.splice(0 , 1);
+        console.log(featuredProduct)
+        res.render('index.ejs', { userIn: req.session.userIn, products, featuredProducts, featuredProduct: featuredProduct[0] });
+    }catch(err){
+        console.error(`Error at userHomeGet : ${err}`);
+    }
 }
 
 
@@ -29,42 +35,23 @@ exports.userSignupGet = ( req, res ) => {
 
 exports.validateSignupBody = async (req, res, next ) => {
 
-    console.log('enter in to validatesignupbody');
 
     const body = { username, email, password, passwordRe, referalCode } = req.body;
     req.session.userEmail = email;
     req.session.signupBody = body;
-    console.log(req.session);
-    console.log(req.body);
 
     const isEmailValid = (email) => {
       const emailRegex =  /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/g
       return emailRegex.test(email)
     }
 
-
-    if(!username || !email || !password || !passwordRe ){
-      console.log('error 1');
-      return res.status(400).json({ error: 'All fields are required'});
-    }
-
-    if(!isEmailValid(email)){
-      console.log('error 2');
-      return res.status(400).json({ error: 'email structure is not right'});
-    }
-    
-    if(password !== passwordRe){
-      console.log('error 3');
-      return res.status(400).json({ error: 'password is not matching'});
-    }
+    if(!username || !email || !password || !passwordRe ) return res.status(400).json({ error: 'All fields are required'});
+    if(!isEmailValid(email)) return res.status(400).json({ error: 'email structure is not right'});
+    if(password !== passwordRe) return res.status(400).json({ error: 'password is not matching'});
     
     const isUnique = await userModel.findOne({ email });
-    if(isUnique){
-      console.log('not unique, error 4');
-      return res.status(400).json({ error: 'email is already registered'});
-    }
+    if(isUnique) return res.status(400).json({ error: 'email is already registered'});
 
-    console.log('validateSingupbody is finished');
     res.json({ message: 'validation is alright'});
 }
 
@@ -73,12 +60,10 @@ exports.validateSignupBody = async (req, res, next ) => {
 
 exports.sendOtp = async ( req, res , next ) => {
 
-    console.log('send otp');
     if(req.body.email){
         req.session.userEmail = req.body.email;
     }
     const email = req.session.userEmail
-    console.log('email : ' + email );
     const otpGen = require('otp-generator');
 
     const otp = otpGen.generate( 6, { 
@@ -87,10 +72,8 @@ exports.sendOtp = async ( req, res , next ) => {
          specialChars: false,
     })
 
-    console.log('otp : ' + otp );
 
     const newDoc = { user: req.session.userEmail, otp };
-    console.log('newDoc : ' + newDoc.user, newDoc.otp);
     const docRes = await new otpModel(newDoc)
             .save();
 
@@ -114,13 +97,13 @@ exports.sendOtp = async ( req, res , next ) => {
     }
 
 
-    // transport.sendMail( mailOptions, async ( err, info ) => {
-    //     if(err) console.log('error : ' + err);
-    //     else{
+    transport.sendMail( mailOptions, async ( err, info ) => {
+        if(err) console.log('error : ' + err);
+        else{
             
-    //         console.log('success : ' + info.response );
-    //     }
-    // })
+            console.log('success : ' + info.response );
+        }
+    })
 
     next();
 }
@@ -138,26 +121,12 @@ exports.signupOtpGet = ( req, res) => {
 exports.signupOtpPost = async (req, res) => {
     const { otp } = req.body;
     try {
-        // Use await with exec() to execute the query and await the result
         const dbOtp = await otpModel.findOne({ otp }).exec();
 
-        console.log(`otp : ${otp}, dbOtp :, ${dbOtp}, email : ${req.session.userEmail}`);
-
-        if(!otp){
-            return res.status(400).json({ success: false, error: 'OTP is required' });
-        }
-
-        if (!dbOtp || !dbOtp.otp ) {
-            return res.status(400).json({ success: false, error: 'OTP is wrong' });
-        }
-
-        if (dbOtp.otp !== otp ) {
-            return res.status(400).json({ success: false, error: 'OTP is not correct' });
-        }
-
-        if (dbOtp.user !== req.session.userEmail ) {
-            return res.status(400).json({ success: false, error: 'email is not matching' });
-        }
+        if(!otp) return res.status(400).json({ success: false, error: 'OTP is required' });
+        if (!dbOtp || !dbOtp.otp ) return res.status(400).json({ success: false, error: 'OTP is wrong' });
+        if (dbOtp.otp !== otp ) return res.status(400).json({ success: false, error: 'OTP is not correct' });
+        if (dbOtp.user !== req.session.userEmail ) return res.status(400).json({ success: false, error: 'email is not matching' });
 
         // If OTP matches, return success response
         return res.status(200).json({ success: true, message: 'OTP verification successful' });
@@ -173,41 +142,33 @@ exports.signupOtpPost = async (req, res) => {
 exports.userSignupPost = async ( req, res, next ) => {
     try{
         const { username, email, password, referalCode } = req.session.signupBody;
-        console.log(  username, email, password, referalCode );
-
-        // req.session.userEmail = email;
     
         const hashedPassword = await bcrypt.hash( password, parseInt(process.env.SALTROUNDS) );   
     
         const userData = { username, email, password: hashedPassword };
         const result = await userModel.create(userData);
         if( result || referalCode ) {
+            if(!referalCode || referalCode === "" || referalCode == null ) return res.redirect('/login'); 
             const user = await userModel.findOne({ referalCode: referalCode });
             if(user) {
                 user.wallet.amount += 100;
                 await user.save();
             }
-            console.log('user : ' + user );
         }
     
-        console.log(result);    
         res.redirect('/login');
-        // res.json({ success: true });
        }
     catch(error) {
         console.error('userSignupPost Error : ' + error );
     }
-    next();
 }
 
 
 
 exports.checkReferalcode = async ( req, res ) => {
     const referalCode = req.params.referalCode;
-    console.log(referalCode);
     try{
         const findReferalCode = await userModel.findOne({ referalCode: referalCode });
-        console.log(findReferalCode);
         if(findReferalCode) return res.json({ success: true, message: 'Referal code is valid'});
         else return res.json({ success: false, message: "can't find the referal code, try again."});
     }catch(err){
@@ -225,7 +186,6 @@ exports.redirecToOtp = ( req, res) => {
 
 
 exports.loginGet = ( req, res ) => {
-    console.log('login');
     res.render('login.ejs');
 }
 
@@ -258,11 +218,9 @@ exports.loginPost = async (req, res) => {
         }
 
         const match = await bcrypt.compare(password, userDetails.password);
-        console.log('match : ' + match );
         if (match) {
             req.session.userIn = true;
             req.session.user = userDetails;
-            console.log('userIn : ' + req.session.userIn );
             return res.status(200).json({ success: true, message: 'Authentication successful' });
         } else {
             return res.status(400).json({ success: false, error: 'Incorrect password' });
@@ -319,26 +277,13 @@ exports.validateOtpPost = async (req, res) => {
         // Use await with exec() to execute the query and await the result
         const dbOtp = await otpModel.findOne({ otp }).exec();
 
-        console.log(`otp : ${otp}, dbOtp :, ${dbOtp}, email : ${req.session.userEmail}`);
-
-        if (!dbOtp || !otp ) {
-            return res.status(400).json({ success: false, error: 'otp is not recieved, try resend otp' });
-        }
-
-        if (dbOtp.otp !== otp ) {
-            return res.status(400).json({ success: false, error: 'OTP is Invalid' });
-        }
-
-        if (dbOtp.user !== req.session.userEmail ) {
-            return res.status(400).json({ success: false, error: 'email is not matching' });
-        }
-
+        if (!dbOtp || !otp ) return res.status(400).json({ success: false, error: 'otp is not recieved, try resend otp' });
+        if (dbOtp.otp !== otp ) return res.status(400).json({ success: false, error: 'OTP is Invalid' });
+        if (dbOtp.user !== req.session.userEmail ) return res.status(400).json({ success: false, error: 'email is not matching' });
         // If OTP matches, return success response
-        if(otp === dbOtp.otp){
-            return res.status(200).json({ success: true, message: 'OTP verification successful' });
-        }
+        if(otp === dbOtp.otp) return res.status(200).json({ success: true, message: 'OTP verification successful' });
 
-        return res.json({ message: "something wrong or server side"})
+        return res.json({ error: "something wrong on server side"})
     } catch (error) {
         console.error('Error retrieving OTP:', error);
         return res.status(500).json({ success: false, error: 'Internal server error' });
@@ -356,7 +301,6 @@ exports.newPasswordGet = ( req, res ) => {
 
 exports.newPasswordPost = async ( req, res ) =>{
     try{
-        console.log('inside new password');
         const { password, passwordre } = req.body;
         if(!password || !passwordre ){
             return res.status(400).json({ error: 'all fields are required!'});
@@ -368,17 +312,10 @@ exports.newPasswordPost = async ( req, res ) =>{
             return res.status(400).json({ error: 'password is not matching!'});
         }
 
-        console.log(process.env.SALTROUNDS);
         const hashedPassword = await bcrypt.hash( password, process.env.SALTROUNDS * 1 );   
-        console.log(process.env.SALTROUNDS);
         req.session.some = 'hai';
-        console.log(req.session.some);
-        console.log(req.session);
-        console.log(req.session.userEmail);
         const result = await userModel.findOneAndUpdate({ email: req.session.userEmail}, { password: hashedPassword });
-        console.log('result : ' +  result );
 
-        console.log('backend is allright');
         return res.status(201).json({ message: 'everything is allright'});
     }
     catch(err){
@@ -394,7 +331,6 @@ exports.productGet = async ( req, res ) => {
         const productId = req.params.productId;
         const product = await productModel.findById( productId );
         const category = await categoryModel.findOne({ _id: product.category });
-        console.log(product.discountedPrice + 200);
         res.render('product.ejs', { product, category, userIn: req.session.userIn } );
     }
     catch(error){
@@ -483,8 +419,6 @@ exports.sortFilterGet = async (req, res) => {
         const min = parseInt(req.query.min) || 0;
         const max = parseInt(req.query.max) || Infinity;
 
-        console.log(sortBy, search, category, min, max);
-
         // Define sort criteria based on sortBy parameter
         let sortCriteria;
         if (sortBy === "a-to-z") sortCriteria = { name: 1 };
@@ -495,31 +429,22 @@ exports.sortFilterGet = async (req, res) => {
 
         // Build query for filtering products
         let query = productModel.find({ name: { $regex: search, $options: "i" } });
-        // console.log(query)
 
         // Apply additional filters
         if (category.length > 0) {
             let categories = category.split(',');
-            console.log('categories : ');
-            console.log(categories);
             query.where('category').in(categories);
         }
-        // if (category.length > 0) {
-        //     console.log(category);
-        //     query = query.where('category').in(category);
-        // }
+       
         query.where('price').gte(min).lte(max);
 
         // Apply sorting criteria
         if (sortCriteria) {
             query.sort(sortCriteria);
-            // console.log(sortCriteria)
         }
 
         // Execute the query
         const products = await query.exec();
-
-        // console.log(products);
 
         // Return the filtered and sorted products
         return res.status(200).json({ success: true, data: products });
@@ -578,8 +503,9 @@ exports.dashboardGet = async (req, res) => {
         order.orderMessage = '...';
       }
     }
-  
-    res.render('dashboard.ejs', { userIn: req.session.userIn, user, orders });
+    
+    const referalCodeMessage = `If a user Register with this code you will get ${process.env.REFERRAL_CODE_MONEY}Rs`
+    res.render('dashboard.ejs', { userIn: req.session.userIn, user, orders, referalCodeMessage });
   };
 
 
@@ -588,17 +514,12 @@ exports.dashboardGet = async (req, res) => {
 exports.cartGet = async ( req, res ) => {
     let cartProducts = await userModel.findOne({ email: req.session.user.email }, { cart: 1 }).populate('cart.product');
     
-    // cartProducts = cartProducts.filter( (product) => );
     const user = await userModel.findById(req.session.user._id).populate('cart.product');
-    // let cartProducts = user.cart;
-    let totalPrice = user.cart.reduce(( prev, curr ) => ( curr.product.quantity > 0 ) ? prev + curr.product.price * curr.count : prev + 0, 0 );
-    console.log(user.cart)
+    let totalPrice = user.cart.reduce(( prev, curr ) => ( curr.product.quantity > 0 ) ? prev + curr.product.discountPrice * curr.count : prev + 0, 0 );
     let deliveryCharge = 0;
     if( totalPrice < 500 )  deliveryCharge = parseInt(process.env.DELIVERY_CHARGE);
-    console.log(totalPrice, deliveryCharge );
 
     if (!cartProducts || !user ) return res.status(404).send('User session expired, login again');
-    console.log(cartProducts)
     res.render('cart.ejs', { userIn: req.session.userIn, user, cartProducts, totalPrice, deliveryCharge });
 }
 
@@ -607,7 +528,6 @@ exports.cartGet = async ( req, res ) => {
 
 exports.wishlistGet =  async ( req, res ) => {
     const user = await userModel.findById(req.session.user._id).populate('wishlist.product_id');
-    console.log(user);
     res.render('wishlist.ejs', { userIn: req.session.userIn, user });
 }
 
@@ -615,7 +535,6 @@ exports.wishlistGet =  async ( req, res ) => {
 
 exports.wishlistPost = async ( req, res ) => {
     const productId = req.params.productId;
-    console.log(productId);
     try{
         if(!productId || productId === undefined ) return res.status(400).json({ error: 'product Id not found' });
         if(!req.session.user) return res.status(400).json({ redirect: '/login', error: 'User Not found, login again'});
@@ -628,7 +547,6 @@ exports.wishlistPost = async ( req, res ) => {
 
         user.wishlist.push({ product_id: productId });
         user.save();
-        console.log(user);
         if(user) return res.status(200).json({ success: true, message: 'product added to wishlist' })
         else return res.status(400).json({ error: `can't add product into wishlist`});
     }catch(err){
@@ -657,7 +575,6 @@ exports.wishlistDelete = async ( req, res) => {
 
 exports.preferredAddressGet = ( req, res ) => {
     const addressId = req.params.addressId;
-    console.log('addressId : ' + addressId );
     req.session.addressId = addressId;
     if(!addressId || addressId === '' ) {
         return res.json({ message: 'address update as nothinge'});
@@ -672,13 +589,10 @@ exports.checkoutGet = async (req, res) => {
     try {
         const addressId = req.session.addressId;        
         const user = await userModel.findById(req.session.user._id).populate('cart.product');
-        console.log(user.cart);
-        let totalPrice = user.cart.reduce(( prev, curr ) => ( curr.product.quantity > 0 ) ? prev + curr.product.price * curr.count : prev + 0, 0 );
+        let totalPrice = user.cart.reduce(( prev, curr ) => ( curr.product.quantity > 0 ) ? prev + curr.product.discountPrice * curr.count : prev + 0, 0 );
         let deliveryCharge = 0;
         if( totalPrice < 500 )  deliveryCharge = (process.env.DELIVERY_CHARGE)*1;
-        console.log(totalPrice, deliveryCharge );;
         const coupons = await couponModel.find({});
-        // if( addressId === 'new' )
         let address = user.address.find(item => item._id == addressId);
         if(!address) address = "";
 
@@ -692,13 +606,6 @@ exports.checkoutGet = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 }
-
-
-
-const applyCoupon = async ( req, res ) => {
-    
-}
-
 
 
 
@@ -727,12 +634,10 @@ async function getProductDetails(cart) {
 exports.DashboardUserDetailsPatch = async ( req, res ) => {
     const { username, email, oldpassword, password, passwordre, referal_code } = req.body;
     const userSessionEmail = req.session.user.email; 
-    console.log(username, email )
     if(!username || !email){
         return res.status(400).json({ error: 'username and email is required'});
     }
     if(email !== userSessionEmail){
-        console.log(userSessionEmail);
         return res.status(400).json({ error: `please signin through ${userSessionEmail}`})
     }
     if(( password && passwordre ) && (password !== passwordre) ){
@@ -748,7 +653,6 @@ exports.DashboardUserDetailsPatch = async ( req, res ) => {
         }
         if(!oldpassword || oldpassword == ''){
             const result = await userModel.updateOne({ email: userSessionEmail}, { $set: { username: username, referalCode: referal_code }});
-            console.log(result);
             return res.status(200).json({ success: true, message: 'userDetails updated successfully'});
         } else{
             const passwordMatch = await bcrypt.compare( oldpassword, req.session.user.password );
@@ -756,7 +660,6 @@ exports.DashboardUserDetailsPatch = async ( req, res ) => {
 
             const hashedPassword = await bcrypt.hash( password , parseInt(process.env.SALTROUNDS ));
             const result = await userModel.findOneAndUpdate({ email: userSessionEmail }, { $set: { username, password: hashedPassword, referalCode: referal_code }}, { new: true } );
-            console.log(result);
             req.session.user.username = username;
             return res.status(200).json({ success: true, message: 'userDetails updated successfully'});
         }
@@ -771,19 +674,14 @@ exports.DashboardUserDetailsPatch = async ( req, res ) => {
 // Add prdocuts to cart
 exports.cartPatch = async ( req, res ) => {
     try{
-        console.log('cart');
         const productId = req.params.productId;
-        console.log(productId);
         if(!req.session.user) return res.json({ redirect: '/login', error: "Can't find user, Login again"});
         const user = await userModel.findOne({ _id: req.session.user._id});
         const isProduct = user.cart.find( doc => { return doc.product == productId  });
-        console.log('isProduct : ');
-        console.log(isProduct);
         if(isProduct){
             return res.status(400).json({ error: 'Product is already existed in the cart' });
         }
         if(!req.session.userIn){
-            console.log(req.session.userIn);
             res.status(400).json({ error: 'user is not logged in'});
         }
         const product = await productModel.findById(productId);
@@ -793,7 +691,6 @@ exports.cartPatch = async ( req, res ) => {
         if(!user || !user._id) return res.status(401).json({ error: 'User not authenticated' });
 
         const result = await userModel.findByIdAndUpdate(user._id , { $push: { cart: { product: productId } }});
-        console.log(result);
         res.status(200).json({ message: 'product successfully added to cart'})
     }catch(err){
         console.error(err);
@@ -807,7 +704,6 @@ exports.cartCountPatch = async (req, res) => {
     const productId = req.params.productId;
     const nums = req.params.nums;
     const userId = req.params.userId;
-    console.log(productId, nums, userId );
 
     try {
         const user = await userModel.findById(userId);
@@ -819,26 +715,15 @@ exports.cartCountPatch = async (req, res) => {
         // Find the index of the product in the cart array
         const productIndex = user.cart.findIndex(item => item.product.toString() === productId);
 
-        console.log( 'productIndex : ' + productIndex );
-        console.log(user.cart);
-        console.log(user.cart[productIndex].count*1);
-        if(nums > 10 || nums <= 0 ){
-            return res.status(404).json({ error: 'maximum cart items 10' });
-        }
-        // If the product is not found in the cart, return an error
-        if (productIndex == -1) {
-            return res.status(404).json({ error: 'Product not found in the cart' });
-        }
+        if(nums > 10 || nums <= 0 ) return res.status(404).json({ error: 'maximum cart items 10' });
+        if (productIndex == -1) return res.status(404).json({ error: 'Product not found in the cart' });
         const product = await productModel.findById(productId);
-        console.log(product)
         if(nums >= product.quantity) return res.status(400).json({  error: 'no more products available', productQuantity: product.quantity});
 
         user.cart[productIndex].count = parseInt(nums);
 
         // Save the updated user document
         await user.save();
-
-        console.log('User updated successfully:', user);
 
         return res.status(200).json({ success: true, message: 'Cart updated successfully'}); // user 
     } catch (error) {
@@ -851,7 +736,6 @@ exports.cartCountPatch = async (req, res) => {
 
 
 function validateAddress(name, email, phone, pincode, state, country, altphone, city, landmark) {
-    console.log( name, email, phone, pincode, state, country, altphone, city, landmark );
     if(!name || !email || !phone || !pincode || !state || !country || !altphone || !city || !landmark ) return { success: false, message: 'Fields with * mark are required'};
     if(email){
          const emailRegex =  /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/g
@@ -879,24 +763,16 @@ function validateAddress(name, email, phone, pincode, state, country, altphone, 
 
 exports.addAddressPatch = async ( req, res ) => {
     try{
-        console.log('hai from addAddressPatch')
         const userId = req.params.userId;
         const { name, email, phone, pincode, state, country, altphone, city, landmark} = req.body;
         const validationResult = validateAddress(name, email, phone, pincode, state, country, altphone, city, landmark); // Pass landmark as an argument
-        console.log(name, email, phone, pincode, state, country, altphone, city, landmark);
-        console.log(validationResult);
-        console.log(!validationResult.success);
         if(!validationResult.success) {
             return res.status(400).json({ success: false, error: validationResult.message, hai: 'hai' });
         }
         const result = await userModel.findByIdAndUpdate( userId, { $push:{ address: { name, email, phone, alt_phone: altphone, city, landmark, state, country, pincode } }}, { new: true });
-        console.log(result);
         if (result) {
-            console.log('User address updated successfully:', result);
             return res.status(200).json({ success: true, message: 'User address added successfully', user: result });
         } else {
-            // If the user was not found
-            console.log('User not found');
             return res.status(404).json({ error: 'User not found' });
         }
     }catch(err){
@@ -913,7 +789,6 @@ exports.cartProductDelete = async (req, res) => {
     try {
         const productId = req.params.productId;
         const userId = req.session.user._id;
-        console.log(productId, userId );
         const user = await userModel.findById(userId);
 
         const productIndex = user.cart.findIndex(item => item.product == productId);
@@ -952,12 +827,10 @@ exports.deleteAddress = async ( req, res ) => {
 
 exports.addressEditGet =  async ( req, res ) => {
     try{
-        console.log('hellow enter')
         const addressId = req.params.addressId;
         const user = await userModel.findById(req.session.user._id);
         if(!user) return res.status(400).json({ error: 'user session expired, login again'});
         const selectedAddress = user.address.find( address => address._id.toString() === addressId );
-        console.log('selectedAddress : ' + selectedAddress );
         return res.status(200).json(selectedAddress);
     }catch(err){
         console.log(err);
@@ -999,7 +872,6 @@ exports.addressUpdatePatch = async (req, res) => {
         // Save the updated user document
         await user.save();
 
-        console.log('User address updated successfully');
         return res.status(200).json({ success: true, message: 'User address updated successfully', user: user });
 
     } catch (err) {
@@ -1017,8 +889,6 @@ exports.checkoutPost = async (req, res) => {
       if(!user) return res.status(400).json({ error: 'User not found, Login again'});
     //   if(typeof Number(req.body.pincode) !== 'number' ) return res.status(400).json({ error: 'pincode must be number'});
 
-      console.log(req.body)
-
       const address = { name, email, phone, pincode, state, country, altphone, city, landmark } = req.body;
 
       const validationResult = validateAddress( name, email, phone, pincode, state, country, altphone, city, landmark);
@@ -1030,12 +900,11 @@ exports.checkoutPost = async (req, res) => {
   
       let totalPrice = 0;
       productDetails.forEach((item, index) => {
-        const itemPrice = item.product ? (item.product.price || 1) : 0;
+        const itemPrice = item.product ? (item.product.discountPrice || 1) : 0;
         totalPrice += itemPrice * item.count;
       });
       let originalPrice = totalPrice;
       if(req.body.discountPrice) totalPrice -= req.body.discountPrice;
-      console.log('.discountPrice : ' + req.body.discountPrice, 'totalPrice : ' + totalPrice );
 
       if(totalPrice > 1000 && req.body.paymentMethod === 'COD' ) return res.status(400).json({ success: false, error: 'Cash On Delivery is not available for products more than 1000Rs'});
       if(totalPrice < 500 ) totalPrice += parseInt(process.env.DELIVERY_CHARGE);
@@ -1051,7 +920,7 @@ exports.checkoutPost = async (req, res) => {
         products.push({
           productId: item.product._id,
           quantity: item.count,
-          productTotalPrice: item.product.price * item.count,
+          productTotalPrice: item.product.discountPrice * item.count,
         });
       }
   
@@ -1091,10 +960,8 @@ exports.checkoutPost = async (req, res) => {
 
 exports.failedPayment = async ( req, res ) => {
     const orderId = req.query.orderId;
-    console.log(orderId);
     try{
         const order = await orderModel.findById(orderId);
-        console.log(order);
         res.status(200).json({ order});
     }catch(err){
         console.log(err);
@@ -1104,15 +971,12 @@ exports.failedPayment = async ( req, res ) => {
 
 exports.paymentPendingPost = async ( req, res ) => {
     const { userId, rzr_orderId } = req.body;
-    console.log(userId, rzr_orderId);
     try{
         const order = await orderModel.findOne({ rzr_orderId: rzr_orderId });
-        console.log(order);
         if(!order) return res.status(404).json({ error: "Order not found" });
         order.pending = false;
         order.paymentMethod = "razorpay";
         const result = await order.save();
-        console.log(result)
         if(!result) return res.status(404).json({ error: "Order failed" });
         res.status(200).json({ success: true, message: 'Order Payment was successful.' });
     }catch(err){
@@ -1125,7 +989,6 @@ exports.paymentPendingPost = async ( req, res ) => {
 
 exports.validateCheckoutAddress = async ( req, res ) => {
     const address = { name, email, phone, pincode, state, country, altphone, city, landmark } = req.query;
-    console.log(address);
   
     const validationResult = validateAddress( name, email, phone, pincode, state, country, altphone, city, landmark);
     if(!validationResult.success) {
@@ -1137,16 +1000,12 @@ exports.validateCheckoutAddress = async ( req, res ) => {
 
 
 exports.checkoutErrorPost = async ( req, res ) => {
-    console.log('Inisde checkErrorPost');
     try {
         const user = await userModel.findById(req.session.user._id);
         if(!user) return res.status(400).json({ error: 'User not found, Login again'});
         // if(typeof Number(req.body.pincode) !== 'number' ) return res.status(400).json({ error: 'pincode must be number'});
   
-        console.log(req.body)
-  
         const address = { name, email, phone, pincode, state, country, altphone, city, landmark } = req.body;
-        console.log( name, email, phone, pincode, state, country, altphone, city, landmark )
   
         const validationResult = validateAddress( name, email, phone, pincode, state, country, altphone, city, landmark);
         if(!validationResult.success) {
@@ -1157,12 +1016,11 @@ exports.checkoutErrorPost = async ( req, res ) => {
     
         let totalPrice = 0;
         productDetails.forEach((item, index) => {
-          const itemPrice = item.product ? (item.product.price || 1) : 0;
+          const itemPrice = item.product ? (item.product.discountPrice || 1) : 0;
           totalPrice += itemPrice * item.count;
         });
         let originalPrice = totalPrice;
         if(req.body.discountPrice) totalPrice -= req.body.discountPrice;
-        console.log('.discountPrice : ' + req.body.discountPrice, 'totalPrice : ' + totalPrice );
       
         const products = [];
         for (const item of productDetails) {
@@ -1175,7 +1033,7 @@ exports.checkoutErrorPost = async ( req, res ) => {
           products.push({
             productId: item.product._id,
             quantity: item.count,
-            productTotalPrice: item.product.price * item.count,
+            productTotalPrice: item.product.discountPrice * item.count,
           });
         }
     
@@ -1201,7 +1059,6 @@ exports.checkoutErrorPost = async ( req, res ) => {
         });
     
         const savedOrder = await order.save();
-      //   console.log(savedOrder);
         if (savedOrder) {
           user.cart = [];
           await user.save();
@@ -1212,14 +1069,6 @@ exports.checkoutErrorPost = async ( req, res ) => {
         console.error(err);
       }
 }
-
-
-
-
-exports.orderFromOrderDetails = async ( req, res ) => {
-
-}
-
 
 
 
@@ -1253,8 +1102,6 @@ exports.productCartPatch = async ( req, res ) => {
 
         await user.save();
 
-        console.log('User updated successfully:', user);
-
         return res.status(200).json({ message: 'Cart updated successfully', user, success: true });
     }catch(err){
         console.error(err);
@@ -1267,7 +1114,6 @@ exports.orderSingleGet  = async ( req, res )  => {
     try{
         const orderId = req.params.orderId;
         const order = await orderModel.findById(orderId).populate('products.productId');
-        // console.log('dbOrder : ' + order);
         let orderStatus = "...";
         if(order.pending) order.orderMessage = 'Pending';
         else if(order.orderValid && !order.orderStatus && !order.returned ) order.orderMessage = 'Arriving';
@@ -1275,7 +1121,6 @@ exports.orderSingleGet  = async ( req, res )  => {
         else if(!order.orderValid && !order.orderStatus && !order.returned ) order.orderMessage = 'Cancelled';
         else if(!order.orderValid && !order.orderStatus && order.returned ) order.orderMessage = 'Returned';
         else orderStatus = '.....';
-        console.log(order)
         res.render('order-details.ejs', { order, userIn: req.session.user });
         // if(!orderId) return res.status(400).json({ error: 'orderId not found', redirectUrl: false});
         // if(!dbOrder) return res.status(400).json({ error: 'order not found', redirectUrl: false});
@@ -1290,11 +1135,9 @@ exports.orderSingleGet  = async ( req, res )  => {
 exports.orderCancellationPath = async ( req, res ) => {
     const orderId = req.params.orderId;
     const productId = req.params.productId;
-    console.log( orderId, productId);
     let user;
     try{
         const dbOrder = await orderModel.findById(orderId).populate('products.productId');
-        // console.log(dbOrder);
         if(dbOrder.paymentMethod !== 'COD'){
             user = await userModel.findById(dbOrder.userId);
             if(!user) return res.status(404).json({ error: 'user not found, login again'});
@@ -1302,15 +1145,10 @@ exports.orderCancellationPath = async ( req, res ) => {
             await user.save();
         }
         const index = dbOrder.products.findIndex( product => product.productId._id.toString() === productId );
-        console.log(index);
         dbOrder.products[index].orderStatus = false;
         dbOrder.products[index].orderValid = false;
         dbOrder.products[index].returned = false;
-        // const orderCancel = dbOrder.products.some(( product ) => product.orderStatus );
-        // dbOrder.orderStatus = orderCancel;
-        // console.log(orderCancel);
         await dbOrder.save();
-        // console.log(user);
         return res.status(200).json({ success: true, message: 'order cancelled'});
     }catch(err){
         console.error(err);
@@ -1324,20 +1162,11 @@ exports.orderReturnPatch = async (req, res) => {
   
     try {
       const dbOrder = await orderModel.findById(orderId).populate('products.productId');
-  
-      if (!dbOrder) {
-        return res.status(404).json({ error: 'Order not found' });
-      }
+      if (!dbOrder) return res.status(404).json({ error: 'Order not found' });
   
       const product = dbOrder.products.find((p) => p.productId._id.toString() === productId);
-      if (!product) {
-        return res.status(404).json({ error: 'Product not found' });
-      }
-  
-     
-        // user.wallet.amount += dbOrder.totalPrice;
-        // await user.save();
-  
+      if (!product) return res.status(404).json({ error: 'Product not found' });
+    
       product.returned = true;
       product.orderStatus = false;
       product.orderValid = false;
@@ -1357,7 +1186,6 @@ exports.orderReturnPatch = async (req, res) => {
 exports.addWalletAmount = async ( req, res ) => {
     const userId = req.params.userId;
     const amount = req.params.amount;
-    console.log(userId, amount);
     try{
         if(!userId) return res.status(403).json({ error: 'user not found, login again' });
         if(!amount) return res.status(403).json({ error: 'Please enter an amount' });
@@ -1376,7 +1204,6 @@ exports.addWalletAmount = async ( req, res ) => {
 exports.couponCheck = async ( req, res ) => {
     const couponCode = req.params.couponCode;
     const productTotal = req.params.productTotal;
-    console.log(couponCode);
     try{
         if(!couponCode) return res.status(300).json({ status: false, error: 'No coupon'});
         const coupon = await couponModel.findOne({ couponCode });
@@ -1399,11 +1226,9 @@ exports.couponCheck = async ( req, res ) => {
 
 exports.removeCoupon = async ( req, res ) => {
     const couponCode = req.params.couponCode;
-    console.log(couponCode)
     try{
         if(!req.session.user) return res.status(400).json({ error: "user not found, login again" });
         const coupon = await couponModel.updateOne({ couponCode: couponCode }, { $pull: { usedUsers: req.session.user._id }});
-        console.log(coupon);
         if(!coupon) return res.status(400).json({ error: "coupon not found"});
         res.status(200).json({ message: "Coupon removed successfully" });
     }catch(err){
@@ -1415,13 +1240,11 @@ exports.removeCoupon = async ( req, res ) => {
 
 exports.genInvoice = async ( req, res ) => {
     const orderId = req.params.orderId;
-    console.log(orderId);
 
     const doc = new PDFDocument({ font: 'Helvetica', margin: 50});
     doc.pipe(res);
 
     const order = await orderModel.findById(orderId).populate('products.productId');
-    console.log(order);
     
     genInvoicePdf(doc, orderId, order );
 
@@ -1461,7 +1284,7 @@ function genInvoicePdf(doc, orderId, order ) {
         doc.font('Helvetica').text(`${index + 1}`, 60, y)
         .text(`${item.productId.name}`, 100, y)
         .text(`${item.quantity}`, 250, y)
-        .text(`${item.productId.price}`, 400, y)
+        .text(`${item.productId.discountPrice}`, 400, y)
         .text(`${item.productTotalPrice}`, 500, y);
 
         y += 20;
@@ -1475,8 +1298,6 @@ function genInvoicePdf(doc, orderId, order ) {
     doc.moveDown();
 
     doc.strokeColor("#aaaaaa").lineWidth(1).moveTo(450, doc.y).lineTo(550, doc.y).stroke();
-
-    // generateHr(doc, doc.y + 10);
     
     doc.moveDown();
     doc.font('Helvetica-Bold').text(`subTotal : ${ order.totalPrice }`);

@@ -6,8 +6,6 @@ userDetailsForm.addEventListener('submit', async (event) => {
     
     const formDetils = $('.user-details-form').serialize();
 
-    console.log(formDetils)
-
     const response = await fetch('/dashboard/user-details', {
         method: 'PATCH',
         headers: {
@@ -17,7 +15,6 @@ userDetailsForm.addEventListener('submit', async (event) => {
         body: formDetils
     })
     const data = await response.json();
-    console.log(data.message);
     if(data.error){
         return failureMessage(data.error);
     }else if(data.success){
@@ -45,7 +42,6 @@ addressForm.addEventListener('submit', async (event) => {
     }
     formData[landmark.name] = landmark.value;
     try{
-        console.log('haii diidi didiid diid')
         const response = await fetch(`/address/${userId}`, {
             method: 'PATCH',
             headers: {
@@ -54,12 +50,10 @@ addressForm.addEventListener('submit', async (event) => {
             body: JSON.stringify(formData)
         })
         const body = await response.json()
-        console.log(body)
         if(body.error){
             return failureMessage(body.error);
         }else if(body.success){
             successMessage(body.message)
-            console.log(body);
             setTimeout(() => window.location.href = '/dashboard', 1000);
         }
     }catch(err){
@@ -77,17 +71,14 @@ deleteBtn.forEach( button => {
             const addressId = button.getAttribute('data-address-id');
             if(addressId){
                 const confi = await confirmIt('are you sure, you want to delete the address', 'Delete');
-                console.log(confi.isConfirmed);
                 if(!confi.isConfirmed) return;
             }
             const response = await fetch(`/address/${addressId}`,{ method: 'DELETE'})
             const body = await response.json()
-            console.log(body);
             if(body.success){
                 successMessage(body.message);
                 setTimeout(() => window.location.href = '/dashboard', 1000);
             }else {
-                console.log(body.error);
                 failureMessage(body.error);
             }
         }catch(err){
@@ -110,10 +101,8 @@ editButtons.forEach(button => {
         try {
             const addressId = button.getAttribute('data-address-id');
             const index = button.getAttribute('data-index');
-            console.log(addressId);
             
             const confi = await confirmIt('Are you sure you want to edit this address?', 'Edit');
-            console.log(confi.isConfirmed);
             if (!confi.isConfirmed) return;
 
             tabPane.forEach( item => item.classList.remove('show', 'active'));
@@ -126,7 +115,6 @@ editButtons.forEach(button => {
             
             // Parse JSON response
             const body = await response.json();
-            console.log(body);
             for (const key in body) {
                 if (body.hasOwnProperty(key)) {
                     const value = body[key];
@@ -161,7 +149,6 @@ editButtons.forEach(button => {
                             body: JSON.stringify(formData)
                         })
                         const bodyupdate = await responseUpdate.json()
-                        console.log(bodyupdate)
                         if(bodyupdate.error){
                             return failureMessage(bodyupdate.error);
                         }
@@ -203,43 +190,9 @@ const orderBoxs = document.querySelectorAll('.order-box');
 orderBoxs.forEach(orderBox => {
     orderBox.addEventListener('click', async (event) => {
         const orderId = orderBox.getAttribute('data-order-id');
-        console.log(orderId);        
-        console.log("Order box clicked");
-        // const response = await fetch(`/order/${orderId}`);
-        // const data = await response.json();
-        // console.log(data);
-        // if(data.redirectUrl){
         window.location.href = `/order/${orderId}`;
-        // }
     });
 });
-
-
-
-
-
-
-
-
-const alertMessageError = document.getElementById('alertMessageError');
-const alertMessageSuccess = document.getElementById('alertMessageSuccess');
-
-function showAlertError(message) {
-    alertMessageError.innerText = message;
-    alertMessageError.style.display = 'block';
-  setTimeout(() => {
-    alertMessageError.style.display = 'none';
-  }, 3000); 
-}
-
-
-function showAlertSuccess(message) {
-    alertMessageSuccess.innerText = message;
-    alertMessageSuccess.style.display = 'block';
-    setTimeout(() => {
-        alertMessageSuccess.styleshow.display = 'none';
-    }, 3000); 
-}
 
 
 
@@ -294,7 +247,6 @@ function failureMessage(message) {
 
 const btnWallet = document.querySelector('.btn-wallet');
 btnWallet.addEventListener('click', (event) => {
-    console.log('your wallet')
     const amount = document.querySelector('#wallet-amount').value;
     if(amount <= 0 ) failureMessage('Amount must be greater than zero');
     const userId = event.target.getAttribute('data-user-id');
@@ -312,7 +264,6 @@ function razorpay( userId, amount){
           contentType: "application/json",
           success: function(response) {
             orderId = response.orderId;
-            console.log(orderId);
             $("button").show();
       
             var options = {
@@ -324,9 +275,6 @@ function razorpay( userId, amount){
               "image": "https://example.com/your_logo",
               "order_id": orderId,
               "handler": function(response) {
-                console.log(response.razorpay_payment_id);
-                console.log(response.razorpay_order_id);
-                console.log(response.razorpay_signature);
                 addWalletAmount( userId, amount);
               },
               "prefill": {
@@ -345,15 +293,7 @@ function razorpay( userId, amount){
             var rzp1 = new Razorpay(options);
     
             rzp1.on('payment.failed', function(response) {
-              console.log('payment failed');
               failureMessage('Payment Failed');
-              console.log(response.error.code);
-              console.log(response.error.description);
-              console.log(response.error.source);
-              console.log(response.error.step);
-              console.log(response.error.reason);
-              console.log(response.error.metadata.order_id);
-              console.log(response.error.metadata.payment_id);
             });
     
             rzp1.on('payment.error', function (response) {

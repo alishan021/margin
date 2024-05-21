@@ -17,32 +17,22 @@ const router = express.Router();
 
 // Home 
 router.get('/', userController.userHomeGet );
+
 // Signup page
 router.get('/signup', userController.userSignupGet );
 router.post('/signup', userController.validateSignupBody );
-// Send signup otp
 router.get('/signup/otp', userController.sendOtp, userController.signupOtpGet );
-// Validate body
 router.post('/signup/otp/validate', userController.signupOtpPost );
-// Saving user singup data into database
 router.get('/post-user', userController.userSignupPost );
 router.get('/check-referal/:referalCode', userController.checkReferalcode );
 
 // Login
 router.get('/login', userAuth.userSessionYes ,userController.loginGet );
-// router.patch('/login', (req, res ) => {
-//     res.redirect('/login')
-// });
-// Get user Data
 router.post('/login', userController.loginPost );
-// Login user Forgot password
 router.get('/login/forgot-password', userController.forgotPasswordGet );
 router.post('/login/forgot-password', userController.loginForgotPasswordOtp, userController.sendOtp, userController.successMessage );
-
 router.get('/resend-otp', userController.sendOtp );
-
 router.post('/login/validate-otp', userController.validateOtpPost );
-
 router.get('/login/new-password', userController.newPasswordGet );
 router.post('/login/new-password', userController.newPasswordPost );
 
@@ -87,7 +77,6 @@ router.get('/checkout', userAuth.userSessionNo, userController.checkoutGet );
 router.post('/checkout/:userId', userController.checkoutPost );
 router.post('/checkout-error/:userId', userController.checkoutErrorPost );
 router.get('/checkout-validation', userController.validateCheckoutAddress );
-// router.get('/checkout/apply-coupon', userController.applyCoupon );
 router.get('/coupon/check/:couponCode/:productTotal', userController.couponCheck );
 router.get('/remove-coupon/:couponCode', userController.removeCoupon );
 router.get('/failed-payment', userController.failedPayment );
@@ -96,12 +85,10 @@ router.get('/failed-payment', userController.failedPayment );
 router.get('/order/:orderId', userController.orderSingleGet );
 router.patch('/order/cancel/:orderId/:productId', userController.orderCancellationPath );
 router.patch('/order/return/:orderId/:productId', userController.orderReturnPatch );
-router.post('/order-details/checkout', userController.orderFromOrderDetails );
+// router.post('/order-details/checkout', userController.orderFromOrderDetails );
 router.post('/payment-pending', userController.paymentPendingPost )
 
 
-// Error page
-// router.get('/*', userController.errorPageGet );
 
 const Razorpay = require('razorpay');
 var instance = new Razorpay({ key_id: process.env.RAZORPAY_KEYID, key_secret: process.env.RAZORPAY_KEYSECRET })
@@ -133,20 +120,6 @@ router.post('/create/orderId', (req, res) => {
     return res.status(200).json({ orderId: order.id });
   });
 });
-
-
-
-// // 404 Not Found handler
-// router.get('*', (req, res, next) => {
-//   console.log('response : ' + res );
-//   res.status(404).render('404.ejs')
-// });
-
-// // 500 Internal Server Error handler
-// router.use((err, req, res, next) => {
-//   console.error(err.stack);
-//   res.status(500).render('500.ejs', { userIn: req.session.userIn });
-// });
 
 
 

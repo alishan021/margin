@@ -3,22 +3,17 @@ const cartButtons = document.querySelectorAll('.cart-button');
 cartButtons.forEach( btnCart => {
     btnCart.addEventListener('click', async (event) => {
         const productId = event.currentTarget.dataset.productId;
-        console.log(productId);
         const response = await fetch(`/cart/${productId}`, {
             method: 'PATCH',
         })
-        console.log(response)
         const body = await response.json();
-        console.log(body);
         if(body.rdt){
-            console.log('redirect me');
             window.location.href = `/${body.rdt}`;
         }
         if(body.redirect) {
             failureMessage(body.error);
             setTimeout(() => window.location.href = body.redirect, 1000)
         } else if(body.error){
-            console.log(body.error);
             failureMessage(body.error);
         }
         if(body.message){
@@ -30,7 +25,6 @@ cartButtons.forEach( btnCart => {
 let userSelectOption;
 document.querySelector('#sortby').addEventListener('change', async (event) => {
     userSelectOption = event.target.value;
-    console.log(userSelectOption);
 })
 
 
@@ -45,7 +39,6 @@ categories.addEventListener('change', (event) => {
         } else {
 			categoryItems.splice(categoryItems.indexOf(event.target.dataset.categoryId), 1);
         }
-        console.log(categoryItems);
     }
 })
 
@@ -61,7 +54,6 @@ var slider = document.getElementById('slider');
 });
 let minPrice, maxPrice;
 slider.noUiSlider.on('change', function(values, handle) {
-  console.log('Selected values:', values);
 	const priceRange = document.querySelector('#filter-price-range');
 	minPrice = parseInt(values[0]), maxPrice = parseInt(values[1])
 	priceRange.innerHTML = `$${minPrice} - $${maxPrice}`;
@@ -82,7 +74,6 @@ document.querySelector('#btn-filter').addEventListener('click', async () => {
   
   const response = await fetch(`/filter?sort=${userSelectOption}&search=${productSerach}&category=${categoryItems}&min=${minPrice}&max=${maxPrice}`);
   const body = await response.json();
-  console.log(body);
   productItem.textContent = '';
   renderFiltered(body.data)
 });
@@ -117,7 +108,7 @@ function renderFiltered(data) {
               </figure>
               <div class="product-body">
                   <h3 class="product-title"><a href="/product">${product.name}</a></h3>
-                  <div class="product-price">$${product.price}</div>
+                  <div class="product-price">$${product.discountPrice}</div>
               </div>
           </div>
       `;
@@ -131,11 +122,9 @@ function renderFiltered(data) {
 const wishlistButtons = document.querySelectorAll('.btn-wishlist');
 wishlistButtons.forEach(( button ) => {
     button.addEventListener('click', async () => {
-        console.log('button wishlist');
         const productId = button.getAttribute('data-product-id');
         const response = await fetch(`/wishlist/${productId}`, { method: 'POST' });
         const result = await response.json();
-        console.log(result);
         if(result.success) successMessage(result.message);
         else if(result.redirect) {
             failureMessage(result.error);
@@ -143,38 +132,7 @@ wishlistButtons.forEach(( button ) => {
         }
         else failureMessage(result.error);
     })
-})
-
-
-
-
-
-
-
-
-
-
-
-const alertMessageError = document.getElementById('alertMessageError');
-const alertMessageSuccess = document.getElementById('alertMessageSuccess');
-
-function showAlertError(message) {
-    alertMessageError.innerText = message;
-    alertMessageError.style.display = 'block';
-  setTimeout(() => {
-    alertMessageError.style.display = 'none';
-  }, 3000); 
-}
-
-
-function showAlertSuccess(message) {
-    alertMessageSuccess.innerText = message;
-    alertMessageSuccess.style.display = 'block';
-    setTimeout(() => {
-        alertMessageSuccess.style.display = 'none';
-    }, 3000); 
-}
-  
+});
 
 
 function successMessage(message) {

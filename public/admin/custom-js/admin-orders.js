@@ -7,9 +7,6 @@ orderStatusAll.forEach((orderStatus) => {
     const selectedOption = orderStatus.options[orderStatus.selectedIndex];
     const newStatus = selectedOption.value;
 
-    console.log(orderId, productId);
-    console.log(newStatus);
-
     let orderStatusValue = false, returnedValue = false, orderValidValue = true, pending = false;
 
     switch (newStatus) {
@@ -43,8 +40,6 @@ orderStatusAll.forEach((orderStatus) => {
 
     const data = { orderStatus: orderStatusValue, returned: returnedValue, orderValid: orderValidValue, pending, orderId, productId };
 
-    console.log(data);
-
     const response = await fetch('/admin/order-status', {
       method: 'PATCH',
       headers: {
@@ -57,28 +52,10 @@ orderStatusAll.forEach((orderStatus) => {
     if(body.error) {
       successMessage(body.error);
     }
-    console.log(body);
     window.location.reload();
   });
 });
 
-
-
-const msgPara = document.querySelector('.msg-para');
-
-const displayError = (result) => {
-    const msgPara = document.querySelector('.msg-para');
-    msgPara.parentElement.className = 'msg-box-error';
-    msgPara.innerHTML = result;
-}
-
-
-
-const displaySuccess = (result) => {
-    const msgPara = document.querySelector('.msg-para');
-    msgPara.parentElement.className = 'msg-box-success';
-    msgPara.innerHTML = result;
-}
 
 
 

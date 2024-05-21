@@ -10,21 +10,26 @@
         
         <nav class="mobile-nav">
             <ul class="mobile-menu">
+                <% if(!userIn){ %>
+                    <li class="active">
+                        <a href="/login">Login</a>
+                    </li>
+                <% } %>
                 <li class="active">
                     <a href="/">Home</a>
                 </li>
                 <li>
                     <a href="/product-list">Shop</a>
                 </li>
-                <!-- <li>
-                    <a href="#" >Product</a>
-                </li> -->
-                <!-- <li>
-                    <a href="#">Pages</a>
+                <li>
+                    <a href="/dashboard">Dashboard</a>
                 </li>
                 <li>
-                    <a href="#">Blog</a>
-                </li> -->
+                    <a href="/wishlist">wishlist</a>
+                </li>
+                <li>
+                    <a href="/cart">Cart</a>
+                </li>
             </ul>
         </nav><!-- End .mobile-nav -->
         <div class="social-icons">

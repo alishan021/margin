@@ -21,7 +21,6 @@ exports.addCouponGet = async ( req, res ) => {
 
 exports.addCouponPost = async ( req, res ) => {
     const { couponCode , startDate, endDate, purchaseAmount ,discountAmount } = req.body;
-    console.log(req.body);
     try{
         if( !endDate || !startDate || !purchaseAmount || !discountAmount || !couponCode ) return res.status(400).json({ error: 'All fields are required' });
         if( +discountAmount < 0 || +purchaseAmount < 0 ) return res.status(400).json({ error: 'Purchase Amount and Discount amount must be greater than 0' });
@@ -41,7 +40,6 @@ exports.addCouponPost = async ( req, res ) => {
         const savedCoupon = await newCoupon.save();
 
         if(!savedCoupon) return res.status(400).json({ error: 'something went wrong' });
-        console.log('savedcoupn : ' + savedCoupon );
         res.status(200).json({ success: true, message: 'Coupn create successfully'});
     }catch(error){
         console.log(error);
@@ -55,7 +53,6 @@ exports.addCouponPost = async ( req, res ) => {
 exports.couponDelete = async ( req, res ) => {
     const couponId = req.params.couponId;
     try{
-        console.log(couponId);
         const result = await couponModel.findByIdAndDelete(couponId);
         if(result) return res.status(200).json({ success: true, message: 'coupon successfully deleted'});
         else return res.status(400).json({ error: 'coupon not found' });

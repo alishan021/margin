@@ -33,6 +33,8 @@
     <link rel="stylesheet" href="user/assets/css/skins/skin-demo-22.css">
     <link rel="stylesheet" href="user/assets/css/demos/demo-22.css">
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+
 </head>
 <body>
 
@@ -162,31 +164,31 @@
                             }
                         }
                     }'>
-                    <a href="#" class="brand">
+                    <a class="brand">
                         <img src="/user/assets/images/brands/1.png" alt="Brand Name">
                     </a>
 
-                    <a href="#" class="brand">
+                    <a class="brand">
                         <img src="/user/assets/images/brands/2.png" alt="Brand Name">
                     </a>
 
-                    <a href="#" class="brand">
+                    <a class="brand">
                         <img src="/user/assets/images/brands/3.png" alt="Brand Name">
                     </a>
 
-                    <a href="#" class="brand">
+                    <a class="brand">
                         <img src="/user/assets/images/brands/4.png" alt="Brand Name">
                     </a>
 
-                    <a href="#" class="brand">
+                    <a class="brand">
                         <img src="/user/assets/images/brands/5.png" alt="Brand Name">
                     </a>
 
-                    <a href="#" class="brand">
+                    <a class="brand">
                         <img src="/user/assets/images/brands/6.png" alt="Brand Name">
                     </a>
 
-                    <a href="#" class="brand">
+                    <a class="brand">
                         <img src="/user/assets/images/brands/7.png" alt="Brand Name">
                     </a>
                 </div><!-- End .owl-carousel -->
@@ -199,16 +201,16 @@
                             <li class="nav-item">
                                 <a class="nav-link active" id="tab-featured-link" data-toggle="tab" href="#tab-featured" role="tab" aria-controls="tab-featured" aria-selected="true"><span>Featured</span></a>
                             </li>
-                            <li class="nav-item">
+                            <!-- <li class="nav-item">
                                 <a class="nav-link" id="tab-best-link" data-toggle="tab" href="#tab-best" role="tab" aria-controls="tab-best" aria-selected="false"><span>Bestsellers</span></a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="tab-sale-link" data-toggle="tab" href="#tab-sale" role="tab" aria-controls="tab-sale" aria-selected="false"><span>Sale</span></a>
-                            </li>
+                            </li> -->
                         </ul>
 
                     
-                        <a class="link" href="#">All Featured Products</a>
+                        <a class="link" href="/product-list">All Featured Products</a>
                     </div>
 
                     <div class="row">
@@ -216,21 +218,28 @@
                             <div class="product-lg">
                                 <figure class="product-media">
                                     <span class="product-label label-limited">limited time sale</span>
-                                    <a href="product.html">
-                                        <img src="/user/assets/images/demos/demo-22/featured/product-1.jpg" alt="Product image" class="product-image">
+                                    <a href="/product/<%= featuredProduct._id %>" class="p-5">
+                                        <img src="/products/<%= featuredProduct.images[0] %>" alt="Product image" class="product-image">
                                     </a>
 
                                 </figure><!-- End .product-media -->
 
                                 <div class="product-body">
-                                    <h3 class="save-price"><span>Save $64.00</span></h3>
-                                    <h3 class="product-title"><a href="product.html">DEWALT DWE575SB</a></h3><!-- End .product-title -->
+                                    <h3 class="save-price"><span>
+                                        <% if(featuredProduct.price !== featuredProduct.discountPrice ){ %>
+                                            Save $<%= featuredProduct.price - featuredProduct.discountPrice  %></span></h3>
+                                        <% } %>
+                                    <h3 class="product-title"><a href="/product/<%= featuredProduct._id %>"><%= featuredProduct.name %></a></h3><!-- End .product-title -->
                                     <div class="product-price">
-                                        <span class="new-price">$79.00</span>
-                                        <span class="old-price">Was $143.00</span>
+                                        <% if( featuredProduct.actualPrice === featuredProduct.discountPrice){ %>
+                                            <span class="old-price">Was $<%= featuredProduct.price %></span>
+                                            <% }else { %>
+                                            <span class="new-price">$<%= featuredProduct.discountPrice %></span>
+                                            <span class="old-price">Was $<%= featuredProduct.price %></span>                                           
+                                        <% } %>
                                     </div><!-- End .product-price -->
                                     <div class="action">
-                                        <a href="category.html">shop now</a>
+                                        <a href="/product/<%= featuredProduct._id %>">shop now</a>
                                     </div>
                                 </div><!-- End .product-body -->
                             </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
@@ -239,520 +248,52 @@
                             <div class="tab-content">
                                 <div class="tab-pane fade show active" id="tab-featured" role="tabpanel" aria-labelledby="tab-featured-link">
                                     <div class="row products all">
+
+                                        <% featuredProducts.forEach( product => { %> 
+
                                         <div class="col-lg-4 col-6">
                                             <div class="product product-3 text-center">
                                                 <figure class="product-media">
                                                     <span class="product-label label-sale">Sale</span>
-                                                    <a href="product.html">
-                                                        <img src="/user/assets/images/demos/demo-22/featured/product-2.jpg" alt="Product image" class="product-image">
+                                                    <a href="/product/<%= product._id %>" class="p-3">
+                                                        <img src="/products/<%= product.images[0] %>" alt="Product image" class="product-image">
                                                     </a>
 
                                                     <div class="product-action-vertical">
-                                                        <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                                                        <a class="btn-product-icon btn-wishlist btn-expandable" style="cursor: pointer;" data-product-id="<%= product._id %>"><span>add to wishlist</span></a>
                                                     </div><!-- End .product-action-vertical -->
                                                 </figure><!-- End .product-media -->
 
                                                 <div class="product-body">
                                                     <div class="product-cat">
-                                                        <a href="#">Woodworking</a>
+                                                        <a href="/product/<%= product._id %>"><%= product.category.categoryName %></a>
                                                     </div><!-- End .product-cat -->
-                                                    <h3 class="product-title"><a href="product.html">DEWALT DWARA 100</a></h3><!-- End .product-title -->
+                                                    <h3 class="product-title"><a href="/product/<%= product._id %>"><%= product.name %></a></h3><!-- End .product-title -->
                                                     <div class="product-price">
-                                                        <span class="new-price">$23.35</span>
-                                                        <span class="old-price">Was $40.99</span>
+                                                        <% if( product.actualPrice === product.discountPrice){ %>
+                                                            <div class="product-price">$<%= product.actualPrice %></div>
+                                                        <% }else { %>
+                                                            <span class="new-price">$<%= product.discountPrice %></span>
+                                                            <span class="old-price">Was $<%= product.actualPrice %></span>
+                                                           
+                                                        <% } %>
                                                     </div><!-- End .product-price -->
                                                 </div><!-- End .product-body -->
 
                                                 <div class="product-footer">
-                                                    <div class="ratings-container">
-                                                        <div class="ratings">
-                                                            <div class="ratings-val" style="width: 60%;"></div><!-- End .ratings-val -->
-                                                        </div><!-- End .ratings -->
-                                                        <span class="ratings-text">( 4 Reviews )</span>
-                                                    </div><!-- End .rating-container -->
-
                                                     <div class="product-action">
-                                                        <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
-                                                        <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
+                                                        <a class="btn-product btn-cart text-warning" style="font-size: 15px; cursor: pointer;" title="Add to cart" data-product-id="<%= product._id %>">Add to Cart</a>
                                                     </div><!-- End .product-action -->
                                                 </div><!-- End .product-footer -->
                                             </div><!-- End .product -->
                                         </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
-                                        <div class="col-lg-4 col-6">
-                                            <div class="product product-3 text-center">
-                                                <figure class="product-media">
-                                                    <a href="product.html">
-                                                        <img src="/user/assets/images/demos/demo-22/featured/product-3.jpg" alt="Product image" class="product-image">
-                                                    </a>
 
-                                                    <div class="product-action-vertical">
-                                                        <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                                    </div><!-- End .product-action-vertical -->
-                                                </figure><!-- End .product-media -->
-
-                                                <div class="product-body">
-                                                    <div class="product-cat">
-                                                        <a href="#">Power Tool Accessories</a>
-                                                    </div><!-- End .product-cat -->
-                                                    <h3 class="product-title"><a href="product.html">Milwaukee Battery 18V LITHIUM</a></h3><!-- End .product-title -->
-                                                    <div class="product-price">
-                                                        $34.99
-                                                    </div><!-- End .product-price -->
-                                                </div><!-- End .product-body -->
-
-                                                <div class="product-footer">
-                                                    <div class="ratings-container">
-                                                        <div class="ratings">
-                                                            <div class="ratings-val" style="width: 40%;"></div><!-- End .ratings-val -->
-                                                        </div><!-- End .ratings -->
-                                                        <span class="ratings-text">( 4 Reviews )</span>
-                                                    </div><!-- End .rating-container -->
-
-
-                                                    <div class="product-action">
-                                                        <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
-                                                        <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
-                                                    </div><!-- End .product-action -->
-                                                </div><!-- End .product-footer -->
-                                            </div><!-- End .product -->
-                                        </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
-                                        <div class="col-lg-4 col-6">
-                                            <div class="product product-3 text-center">
-                                                <figure class="product-media">
-                                                    <a href="product.html">
-                                                        <img src="/user/assets/images/demos/demo-22/featured/product-4.jpg" alt="Product image" class="product-image">
-                                                    </a>
-
-                                                    <div class="product-action-vertical">
-                                                        <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                                    </div><!-- End .product-action-vertical -->
-                                                </figure><!-- End .product-media -->
-
-                                                <div class="product-body">
-                                                    <div class="product-cat">
-                                                        <a href="#">Power Tools</a>
-                                                    </div><!-- End .product-cat -->
-                                                    <h3 class="product-title"><a href="product.html">DEWALT Hammer Drill</a></h3><!-- End .product-title -->
-                                                    <div class="product-price">
-                                                        $79.00
-                                                    </div><!-- End .product-price -->
-                                                </div><!-- End .product-body -->
-
-                                                <div class="product-footer">
-                                                    <div class="ratings-container">
-                                                        <div class="ratings">
-                                                            <div class="ratings-val" style="width: 60%;"></div><!-- End .ratings-val -->
-                                                        </div><!-- End .ratings -->
-                                                        <span class="ratings-text">( 4 Reviews )</span>
-                                                    </div><!-- End .rating-container -->
-
-                                                    <div class="product-action">
-                                                        <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
-                                                        <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
-                                                    </div><!-- End .product-action -->
-                                                </div><!-- End .product-footer -->
-                                            </div><!-- End .product -->
-                                        </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
-                                        <div class="col-lg-4 col-6">
-                                            <div class="product product-3 text-center">
-                                                <figure class="product-media">
-                                                    <a href="product.html">
-                                                        <img src="/user/assets/images/demos/demo-22/featured/product-5.jpg" alt="Product image" class="product-image">
-                                                    </a>
-
-                                                    <div class="product-action-vertical">
-                                                        <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                                    </div><!-- End .product-action-vertical -->
-                                                </figure><!-- End .product-media -->
-
-                                                <div class="product-body">
-                                                    <div class="product-cat">
-                                                        <a href="#">Air Tools</a>
-                                                    </div><!-- End .product-cat -->
-                                                    <h3 class="product-title"><a href="product.html">Makita XBU02PT1</a></h3><!-- End .product-title -->
-                                                    <div class="product-price">
-                                                        $302.20
-                                                    </div><!-- End .product-price -->
-                                                </div><!-- End .product-body -->
-
-                                                <div class="product-footer">
-                                                    <div class="ratings-container">
-                                                        <div class="ratings">
-                                                            <div class="ratings-val" style="width: 60%;"></div><!-- End .ratings-val -->
-                                                        </div><!-- End .ratings -->
-                                                        <span class="ratings-text">( 4 Reviews )</span>
-                                                    </div><!-- End .rating-container -->
-
-                                                    <div class="product-action">
-                                                        <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
-                                                        <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
-                                                    </div><!-- End .product-action -->
-                                                </div><!-- End .product-footer -->
-                                            </div><!-- End .product -->
-                                        </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
-                                        <div class="col-lg-4 col-6">
-                                            <div class="product product-3 text-center">
-                                                <figure class="product-media">
-                                                    <span class="product-label label-sale">Sale</span>
-                                                    <a href="product.html">
-                                                        <img src="/user/assets/images/demos/demo-22/featured/product-6.jpg" alt="Product image" class="product-image">
-                                                    </a>
-
-                                                    <div class="product-action-vertical">
-                                                        <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                                    </div><!-- End .product-action-vertical -->
-                                                </figure><!-- End .product-media -->
-
-                                                <div class="product-body">
-                                                    <div class="product-cat">
-                                                        <a href="#">Hand Tools</a>
-                                                    </div><!-- End .product-cat -->
-                                                    <h3 class="product-title"><a href="product.html">DEWALT DWASHRIR</a></h3><!-- End .product-title -->
-                                                    <div class="product-price">
-                                                        <span class="new-price">$70.95</span>
-                                                        <span class="old-price">Was $90.00</span>
-                                                    </div><!-- End .product-price -->
-                                                </div><!-- End .product-body -->
-
-                                                <div class="product-footer">
-                                                    <div class="ratings-container">
-                                                        <div class="ratings">
-                                                            <div class="ratings-val" style="width: 60%;"></div><!-- End .ratings-val -->
-                                                        </div><!-- End .ratings -->
-                                                        <span class="ratings-text">( 4 Reviews )</span>
-                                                    </div><!-- End .rating-container -->
-
-                                                    <div class="product-action">
-                                                        <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
-                                                        <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
-                                                    </div><!-- End .product-action -->
-                                                </div><!-- End .product-footer -->
-                                            </div><!-- End .product -->
-                                        </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
-                                        <div class="col-lg-4 col-6">
-                                            <div class="product product-3 text-center">
-                                                <figure class="product-media">
-                                                    <a href="product.html">
-                                                        <img src="/user/assets/images/demos/demo-22/featured/product-7.jpg" alt="Product image" class="product-image">
-                                                    </a>
-
-                                                    <div class="product-action-vertical">
-                                                        <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                                    </div><!-- End .product-action-vertical -->
-                                                </figure><!-- End .product-media -->
-
-                                                <div class="product-body">
-                                                    <div class="product-cat">
-                                                        <a href="#">Power Tools</a>
-                                                    </div><!-- End .product-cat -->
-                                                    <h3 class="product-title"><a href="product.html">Milwaukee 2648-20</a></h3><!-- End .product-title -->
-                                                    <div class="product-price">
-                                                        $151.75
-                                                    </div><!-- End .product-price -->
-                                                </div><!-- End .product-body -->
-
-                                                <div class="product-footer">
-                                                    <div class="ratings-container">
-                                                        <div class="ratings">
-                                                            <div class="ratings-val" style="width: 60%;"></div><!-- End .ratings-val -->
-                                                        </div><!-- End .ratings -->
-                                                        <span class="ratings-text">( 4 Reviews )</span>
-                                                    </div><!-- End .rating-container -->
-
-                                                    <div class="product-nav product-nav-dots">
-                                                        <a href="#" class="active" style="background: #af5f23;"><span class="sr-only">Color name</span></a>
-                                                        <a href="#" style="background: #806f55;"><span class="sr-only">Color name</span></a>
-                                                        <a href="#" style="background: #333333;"><span class="sr-only">Color name</span></a>
-                                                    </div><!-- End .product-nav -->
-
-                                                    <div class="product-action">
-                                                        <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
-                                                        <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
-                                                    </div><!-- End .product-action -->
-                                                </div><!-- End .product-footer -->
-                                            </div><!-- End .product -->
-                                        </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
+                                        <% }) %>
+                                        
                                     </div><!-- End .row -->
                                 </div><!-- .End .tab-pane -->
-                                <div class="tab-pane fade" id="tab-best" role="tabpanel" aria-labelledby="tab-best-link">
-                                    <div class="row products">
-                                        <div class="col-lg-4 col-6">
-                                            <div class="product product-3 text-center">
-                                                <figure class="product-media">
-                                                    <span class="product-label label-sale">Sale</span>
-                                                    <a href="product.html">
-                                                        <img src="/user/assets/images/demos/demo-22/featured/product-2.jpg" alt="Product image" class="product-image">
-                                                    </a>
-
-                                                    <div class="product-action-vertical">
-                                                        <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                                    </div><!-- End .product-action-vertical -->
-                                                </figure><!-- End .product-media -->
-
-                                                <div class="product-body">
-                                                    <div class="product-cat">
-                                                        <a href="#">Woodworking</a>
-                                                    </div><!-- End .product-cat -->
-                                                    <h3 class="product-title"><a href="product.html">DEWALT DWARA 100</a></h3><!-- End .product-title -->
-                                                    <div class="product-price">
-                                                        <span class="new-price">$23.35</span>
-                                                        <span class="old-price">Was $40.99</span>
-                                                    </div><!-- End .product-price -->
-                                                </div><!-- End .product-body -->
-
-                                                <div class="product-footer">
-                                                    <div class="ratings-container">
-                                                        <div class="ratings">
-                                                            <div class="ratings-val" style="width: 60%;"></div><!-- End .ratings-val -->
-                                                        </div><!-- End .ratings -->
-                                                        <span class="ratings-text">( 4 Reviews )</span>
-                                                    </div><!-- End .rating-container -->
-
-                                                    <div class="product-action">
-                                                        <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
-                                                        <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
-                                                    </div><!-- End .product-action -->
-                                                </div><!-- End .product-footer -->
-                                            </div><!-- End .product -->
-                                        </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
-                                        <div class="col-lg-4 col-6">
-                                            <div class="product product-3 text-center">
-                                                <figure class="product-media">
-                                                    <a href="product.html">
-                                                        <img src="/user/assets/images/demos/demo-22/featured/product-4.jpg" alt="Product image" class="product-image">
-                                                    </a>
-
-                                                    <div class="product-action-vertical">
-                                                        <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                                    </div><!-- End .product-action-vertical -->
-                                                </figure><!-- End .product-media -->
-
-                                                <div class="product-body">
-                                                    <div class="product-cat">
-                                                        <a href="#">Power Tools</a>
-                                                    </div><!-- End .product-cat -->
-                                                    <h3 class="product-title"><a href="product.html">DEWALT Hammer Drill</a></h3><!-- End .product-title -->
-                                                    <div class="product-price">
-                                                        $79.00
-                                                    </div><!-- End .product-price -->
-                                                </div><!-- End .product-body -->
-
-                                                <div class="product-footer">
-                                                    <div class="ratings-container">
-                                                        <div class="ratings">
-                                                            <div class="ratings-val" style="width: 60%;"></div><!-- End .ratings-val -->
-                                                        </div><!-- End .ratings -->
-                                                        <span class="ratings-text">( 4 Reviews )</span>
-                                                    </div><!-- End .rating-container -->
-
-                                                    <div class="product-action">
-                                                        <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
-                                                        <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
-                                                    </div><!-- End .product-action -->
-                                                </div><!-- End .product-footer -->
-                                            </div><!-- End .product -->
-                                        </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
-                                        <div class="col-lg-4 col-6">
-                                            <div class="product product-3 text-center">
-                                                <figure class="product-media">
-                                                    <a href="product.html">
-                                                        <img src="/user/assets/images/demos/demo-22/featured/product-5.jpg" alt="Product image" class="product-image">
-                                                    </a>
-
-                                                    <div class="product-action-vertical">
-                                                        <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                                    </div><!-- End .product-action-vertical -->
-                                                </figure><!-- End .product-media -->
-
-                                                <div class="product-body">
-                                                    <div class="product-cat">
-                                                        <a href="#">Air Tools</a>
-                                                    </div><!-- End .product-cat -->
-                                                    <h3 class="product-title"><a href="product.html">Makita XBU02PT1</a></h3><!-- End .product-title -->
-                                                    <div class="product-price">
-                                                        $302.20
-                                                    </div><!-- End .product-price -->
-                                                </div><!-- End .product-body -->
-
-                                                <div class="product-footer">
-                                                    <div class="ratings-container">
-                                                        <div class="ratings">
-                                                            <div class="ratings-val" style="width: 60%;"></div><!-- End .ratings-val -->
-                                                        </div><!-- End .ratings -->
-                                                        <span class="ratings-text">( 4 Reviews )</span>
-                                                    </div><!-- End .rating-container -->
-
-                                                    <div class="product-action">
-                                                        <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
-                                                        <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
-                                                    </div><!-- End .product-action -->
-                                                </div><!-- End .product-footer -->
-                                            </div><!-- End .product -->
-                                        </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
-                                   </div>
-                                </div>
-                                <div class="tab-pane fade" id="tab-sale" role="tabpanel" aria-labelledby="tab-sale-link">
-                                    <div class="row products">
-                                        <div class="col-lg-4 col-6">
-                                            <div class="product product-3 text-center">
-                                                <figure class="product-media">
-                                                    <a href="product.html">
-                                                        <img src="/user/assets/images/demos/demo-22/featured/product-4.jpg" alt="Product image" class="product-image">
-                                                    </a>
-
-                                                    <div class="product-action-vertical">
-                                                        <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                                    </div><!-- End .product-action-vertical -->
-                                                </figure><!-- End .product-media -->
-
-                                                <div class="product-body">
-                                                    <div class="product-cat">
-                                                        <a href="#">Power Tools</a>
-                                                    </div><!-- End .product-cat -->
-                                                    <h3 class="product-title"><a href="product.html">DEWALT Hammer Drill</a></h3><!-- End .product-title -->
-                                                    <div class="product-price">
-                                                        $79.00
-                                                    </div><!-- End .product-price -->
-                                                </div><!-- End .product-body -->
-
-                                                <div class="product-footer">
-                                                    <div class="ratings-container">
-                                                        <div class="ratings">
-                                                            <div class="ratings-val" style="width: 60%;"></div><!-- End .ratings-val -->
-                                                        </div><!-- End .ratings -->
-                                                        <span class="ratings-text">( 4 Reviews )</span>
-                                                    </div><!-- End .rating-container -->
-
-                                                    <div class="product-action">
-                                                        <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
-                                                        <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
-                                                    </div><!-- End .product-action -->
-                                                </div><!-- End .product-footer -->
-                                            </div><!-- End .product -->
-                                        </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
-                                        <div class="col-lg-4 col-6">
-                                            <div class="product product-3 text-center">
-                                                <figure class="product-media">
-                                                    <a href="product.html">
-                                                        <img src="/user/assets/images/demos/demo-22/featured/product-5.jpg" alt="Product image" class="product-image">
-                                                    </a>
-
-                                                    <div class="product-action-vertical">
-                                                        <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                                    </div><!-- End .product-action-vertical -->
-                                                </figure><!-- End .product-media -->
-
-                                                <div class="product-body">
-                                                    <div class="product-cat">
-                                                        <a href="#">Air Tools</a>
-                                                    </div><!-- End .product-cat -->
-                                                    <h3 class="product-title"><a href="product.html">Makita XBU02PT1</a></h3><!-- End .product-title -->
-                                                    <div class="product-price">
-                                                        $302.20
-                                                    </div><!-- End .product-price -->
-                                                </div><!-- End .product-body -->
-
-                                                <div class="product-footer">
-                                                    <div class="ratings-container">
-                                                        <div class="ratings">
-                                                            <div class="ratings-val" style="width: 60%;"></div><!-- End .ratings-val -->
-                                                        </div><!-- End .ratings -->
-                                                        <span class="ratings-text">( 4 Reviews )</span>
-                                                    </div><!-- End .rating-container -->
-
-                                                    <div class="product-action">
-                                                        <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
-                                                        <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
-                                                    </div><!-- End .product-action -->
-                                                </div><!-- End .product-footer -->
-                                            </div><!-- End .product -->
-                                        </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
-                                        <div class="col-lg-4 col-6">
-                                            <div class="product product-3 text-center">
-                                                <figure class="product-media">
-                                                    <span class="product-label label-sale">Sale</span>
-                                                    <a href="product.html">
-                                                        <img src="/user/assets/images/demos/demo-22/featured/product-6.jpg" alt="Product image" class="product-image">
-                                                    </a>
-
-                                                    <div class="product-action-vertical">
-                                                        <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                                    </div><!-- End .product-action-vertical -->
-                                                </figure><!-- End .product-media -->
-
-                                                <div class="product-body">
-                                                    <div class="product-cat">
-                                                        <a href="#">Hand Tools</a>
-                                                    </div><!-- End .product-cat -->
-                                                    <h3 class="product-title"><a href="product.html">DEWALT DWASHRIR</a></h3><!-- End .product-title -->
-                                                    <div class="product-price">
-                                                        <span class="new-price">$70.95</span>
-                                                        <span class="old-price">Was $90.00</span>
-                                                    </div><!-- End .product-price -->
-                                                </div><!-- End .product-body -->
-
-                                                <div class="product-footer">
-                                                    <div class="ratings-container">
-                                                        <div class="ratings">
-                                                            <div class="ratings-val" style="width: 60%;"></div><!-- End .ratings-val -->
-                                                        </div><!-- End .ratings -->
-                                                        <span class="ratings-text">( 4 Reviews )</span>
-                                                    </div><!-- End .rating-container -->
-
-                                                    <div class="product-action">
-                                                        <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
-                                                        <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
-                                                    </div><!-- End .product-action -->
-                                                </div><!-- End .product-footer -->
-                                            </div><!-- End .product -->
-                                        </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
-                                        <div class="col-lg-4 col-6">
-                                            <div class="product product-3 text-center">
-                                                <figure class="product-media">
-                                                    <a href="product.html">
-                                                        <img src="/user/assets/images/demos/demo-22/featured/product-7.jpg" alt="Product image" class="product-image">
-                                                    </a>
-
-                                                    <div class="product-action-vertical">
-                                                        <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                                    </div><!-- End .product-action-vertical -->
-                                                </figure><!-- End .product-media -->
-
-                                                <div class="product-body">
-                                                    <div class="product-cat">
-                                                        <a href="#">Power Tools</a>
-                                                    </div><!-- End .product-cat -->
-                                                    <h3 class="product-title"><a href="product.html">Milwaukee 2648-20</a></h3><!-- End .product-title -->
-                                                    <div class="product-price">
-                                                        $151.75
-                                                    </div><!-- End .product-price -->
-                                                </div><!-- End .product-body -->
-
-                                                <div class="product-footer">
-                                                    <div class="ratings-container">
-                                                        <div class="ratings">
-                                                            <div class="ratings-val" style="width: 60%;"></div><!-- End .ratings-val -->
-                                                        </div><!-- End .ratings -->
-                                                        <span class="ratings-text">( 4 Reviews )</span>
-                                                    </div><!-- End .rating-container -->
-
-                                                    <div class="product-nav product-nav-dots">
-                                                        <a href="#" class="active" style="background: #af5f23;"><span class="sr-only">Color name</span></a>
-                                                        <a href="#" style="background: #806f55;"><span class="sr-only">Color name</span></a>
-                                                        <a href="#" style="background: #333333;"><span class="sr-only">Color name</span></a>
-                                                    </div><!-- End .product-nav -->
-
-                                                    <div class="product-action">
-                                                        <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
-                                                        <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
-                                                    </div><!-- End .product-action -->
-                                                </div><!-- End .product-footer -->
-                                            </div><!-- End .product -->
-                                        </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
-                                    </div>
-                                </div>
+                                
                             </div>
-
                         </div>
                         
                     </div>
@@ -893,417 +434,48 @@
                 </div>
 
                 <div class="row products">
-                    <div class="col-6 col-md-4 col-lg-3 col-xl-5col">
-                        <div class="product product-3 text-center">
-                            <figure class="product-media">
-                                <span class="product-label label-sale">Sale</span>
-                                <a href="product.html">
-                                    <img src="/user/assets/images/demos/demo-22/products/product-1.jpg" alt="Product image" class="product-image">
-                                </a>
 
-                                <div class="product-action-vertical">
-                                    <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                </div><!-- End .product-action-vertical -->
-                            </figure><!-- End .product-media -->
-
-                            <div class="product-body">
-                                <div class="product-cat">
-                                    <a href="#">Air Tools & Compressors</a>
-                                </div><!-- End .product-cat -->
-                                <h3 class="product-title"><a href="product.html">Makita XCV11Z</a></h3><!-- End .product-title -->
-                                <div class="product-price">
-                                    <span class="new-price">$158.40</span>
-                                    <span class="old-price">Was $330.00</span>
-                                </div><!-- End .product-price -->
-                            </div><!-- End .product-body -->
-
-                            <div class="product-footer">
-                                <div class="ratings-container">
-                                    <div class="ratings">
-                                        <div class="ratings-val" style="width: 60%;"></div><!-- End .ratings-val -->
-                                    </div><!-- End .ratings -->
-                                    <span class="ratings-text">( 4 Reviews )</span>
-                                </div><!-- End .rating-container -->
-
-                                <div class="product-nav product-nav-dots">
-                                    <a href="#" class="active" style="background: #af5f23;"><span class="sr-only">Color name</span></a>
-                                    <a href="#" style="background: #806f55;"><span class="sr-only">Color name</span></a>
-                                    <a href="#" style="background: #333333;"><span class="sr-only">Color name</span></a>
-                                </div><!-- End .product-nav -->
-
-                                <div class="product-action">
-                                    <a href="#" class="btn-product btn-cart" title="Add to cart"></a>
-                                    <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"></a>
-                                </div><!-- End .product-action -->
-                            </div><!-- End .product-footer -->
-                        </div><!-- End .product -->
-                    </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
+                    <% products.forEach( product => { %>
 
                     <div class="col-6 col-md-4 col-lg-3 col-xl-5col">
                         <div class="product product-3 text-center">
                             <figure class="product-media">
                                 <span class="product-label label-sale">Sale</span>
-                                <a href="product.html">
-                                    <img src="/user/assets/images/demos/demo-22/products/product-2.jpg" alt="Product image" class="product-image">
+                                <a href="/product/<%= product._id %>" class="p3">
+                                    <img src="/products/<%= product.images[0] %>" alt="Product image" class="product-image">
                                 </a>
 
                                 <div class="product-action-vertical">
-                                    <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                                    <a class="btn-product-icon btn-wishlist btn-expandable" style="cursor: pointer;" data-product-id="<%= product._id %>"><span>add to wishlist</span></a>
                                 </div><!-- End .product-action-vertical -->
                             </figure><!-- End .product-media -->
 
                             <div class="product-body">
                                 <div class="product-cat">
-                                    <a href="#">Power Tools</a>
+                                    <a href="/product/<%= product._id %>"><%= product.category.categoryName %></a>
                                 </div><!-- End .product-cat -->
-                                <h3 class="product-title"><a href="product.html">Milwaukee 2803-20</a></h3><!-- End .product-title -->
+                                <h3 class="product-title"><a href="/product/<%= product._id %>"><%= product.name %></a></h3><!-- End .product-title -->
                                 <div class="product-price">
-                                    <span class="new-price">$77.99</span>
-                                    <span class="old-price">Was $115.00</span>
+                                    <% if( product.actualPrice === product.discountPrice){ %>
+                                        <div class="product-price">$<%= product.actualPrice %></div>
+                                    <% }else { %> 
+                                        <span class="new-price">$<%= product.discountPrice %></span>
+                                        <span class="old-price">Was $<%= product.actualPrice %></span>
+                                       
+                                    <% } %>
                                 </div><!-- End .product-price -->
                             </div><!-- End .product-body -->
-                                
-                            <div class="product-footer">
-                                <div class="ratings-container">
-                                    <div class="ratings">
-                                        <div class="ratings-val" style="width: 60%;"></div><!-- End .ratings-val -->
-                                    </div><!-- End .ratings -->
-                                    <span class="ratings-text">( 2 Reviews )</span>
-                                </div><!-- End .rating-container -->
 
+                            <div class="product-footer">
                                 <div class="product-action">
-                                    <a href="#" class="btn-product btn-cart" title="Add to cart"></a>
-                                    <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"></a>
+                                    <a class="btn-product btn-cart text-warning" style="font-size: 15px; cursor: pointer;" title="Add to cart" data-product-id="<%= product._id %>">Add to Cart</a>
                                 </div><!-- End .product-action -->
                             </div><!-- End .product-footer -->
                         </div><!-- End .product -->
                     </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
 
-                    <div class="col-6 col-md-4 col-lg-3 col-xl-5col">
-                        <div class="product product-3 text-center">
-                            <figure class="product-media">
-                                <a href="product.html">
-                                    <img src="/user/assets/images/demos/demo-22/products/product-3.jpg" alt="Product image" class="product-image">
-                                </a>
+                    <% }) %>
 
-                                <div class="product-action-vertical">
-                                    <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                </div><!-- End .product-action-vertical -->
-                            </figure><!-- End .product-media -->
-
-                            <div class="product-body">
-                                <div class="product-cat">
-                                    <a href="#">Power Tools</a>
-                                </div><!-- End .product-cat -->
-                                <h3 class="product-title"><a href="product.html">Makita XSH03Z</a></h3><!-- End .product-title -->
-                                <div class="product-price">
-                                    $119.99
-                                </div><!-- End .product-price -->
-                            </div><!-- End .product-body -->
-
-                            <div class="product-footer">
-                                <div class="ratings-container">
-                                    <div class="ratings">
-                                        <div class="ratings-val" style="width: 40%;"></div><!-- End .ratings-val -->
-                                    </div><!-- End .ratings -->
-                                    <span class="ratings-text">( 2 Reviews )</span>
-                                </div><!-- End .rating-container -->
-
-                                <div class="product-nav product-nav-dots">
-                                    <a href="#" class="active" style="background: #cc6666;"><span class="sr-only">Color name</span></a>
-                                    <a href="#" style="background: #ccccff;"><span class="sr-only">Color name</span></a>
-                                </div><!-- End .product-nav -->
-
-                                <div class="product-action">
-                                    <a href="#" class="btn-product btn-cart" title="Add to cart"></a>
-                                    <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"></a>
-                                </div><!-- End .product-action -->
-                            </div><!-- End .product-footer -->
-                        </div><!-- End .product -->
-                    </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
-
-                    <div class="col-6 col-md-4 col-lg-3 col-xl-5col">
-                        <div class="product product-3 text-center">
-                            <figure class="product-media">
-                                <span class="product-label label-sale">Sale</span>
-                                <span class="product-label label-new">New</span>
-                                <a href="product.html">
-                                    <img src="/user/assets/images/demos/demo-22/products/product-4.jpg" alt="Product image" class="product-image">
-                                </a>
-
-                                <div class="product-action-vertical">
-                                    <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                </div><!-- End .product-action-vertical -->
-                            </figure><!-- End .product-media -->
-
-                            <div class="product-body">
-                                <div class="product-cat">
-                                    <a href="#">Air Tools & Compressors</a>
-                                </div><!-- End .product-cat -->
-                                <h3 class="product-title"><a href="product.html">DEWALT DCE511B</a></h3><!-- End .product-title -->
-                                <div class="product-price">
-                                    <span class="new-price">$100.99</span>
-                                    <span class="old-price">Was $130.00</span>
-                                </div><!-- End .product-price -->
-                            </div><!-- End .product-body -->
-
-                            <div class="product-footer">
-                                <div class="ratings-container">
-                                    <div class="ratings">
-                                        <div class="ratings-val" style="width: 0%;"></div><!-- End .ratings-val -->
-                                    </div><!-- End .ratings -->
-                                    <span class="ratings-text">( 0 Reviews )</span>
-                                </div><!-- End .rating-container -->
-
-                                <div class="product-nav product-nav-dots">
-                                    <a href="#" class="active" style="background: #ffca51;"><span class="sr-only">Color name</span></a>
-                                    <a href="#" style="background: #bb8379;"><span class="sr-only">Color name</span></a>
-                                    <a href="#" style="background: #666666;"><span class="sr-only">Color name</span></a>
-                                </div><!-- End .product-nav -->
-
-                                <div class="product-action">
-                                    <a href="#" class="btn-product btn-cart" title="Add to cart"></a>
-                                    <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"></a>
-                                </div><!-- End .product-action -->
-                            </div><!-- End .product-footer -->
-                        </div><!-- End .product -->
-                    </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
-
-                    <div class="col-6 col-md-4 col-lg-3 col-xl-5col">
-                        <div class="product product-3 text-center">
-                            <figure class="product-media">
-                                <a href="product.html">
-                                    <img src="/user/assets/images/demos/demo-22/products/product-5.jpg" alt="Product image" class="product-image">
-                                </a>
-
-                                <div class="product-action-vertical">
-                                    <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                </div><!-- End .product-action-vertical -->
-                            </figure><!-- End .product-media -->
-
-                            <div class="product-body">
-                                <div class="product-cat">
-                                    <a href="#">Hand Tools</a>
-                                </div><!-- End .product-cat -->
-                                <h3 class="product-title"><a href="product.html">TEKTON 30603 Fiberglass</a></h3><!-- End .product-title -->
-                                <div class="product-price">
-                                    $8.99
-                                </div><!-- End .product-price -->
-                            </div><!-- End .product-body -->
-
-                            <div class="product-footer">
-                                <div class="ratings-container">
-                                    <div class="ratings">
-                                        <div class="ratings-val" style="width: 100%;"></div><!-- End .ratings-val -->
-                                    </div><!-- End .ratings -->
-                                    <span class="ratings-text">( 4 Reviews )</span>
-                                </div><!-- End .rating-container -->
-
-                                <div class="product-action">
-                                    <a href="#" class="btn-product btn-cart" title="Add to cart"></a>
-                                    <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"></a>
-                                </div><!-- End .product-action -->
-                            </div><!-- End .product-footer -->
-                        </div><!-- End .product -->
-                    </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
-
-                    <div class="col-6 col-md-4 col-lg-3 col-xl-5col">
-                        <div class="product product-3 text-center">
-                            <figure class="product-media">
-                                <a href="product.html">
-                                    <img src="/user/assets/images/demos/demo-22/products/product-6.jpg" alt="Product image" class="product-image">
-                                </a>
-
-                                <div class="product-action-vertical">
-                                    <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                </div><!-- End .product-action-vertical -->
-                            </figure><!-- End .product-media -->
-
-                            <div class="product-body">
-                                <div class="product-cat">
-                                    <a href="#">Power Tool Accessories</a>
-                                </div><!-- End .product-cat -->
-                                <h3 class="product-title"><a href="product.html">DEWALT DCB205 20V</a></h3><!-- End .product-title -->
-                                <div class="product-price">
-                                    $69.94
-                                </div><!-- End .product-price -->
-                            </div><!-- End .product-body -->
-
-                            <div class="product-footer">
-                                <div class="ratings-container">
-                                    <div class="ratings">
-                                        <div class="ratings-val" style="width: 100%;"></div><!-- End .ratings-val -->
-                                    </div><!-- End .ratings -->
-                                    <span class="ratings-text">( 4 Reviews )</span>
-                                </div><!-- End .rating-container -->
-
-                                <div class="product-action">
-                                    <a href="#" class="btn-product btn-cart" title="Add to cart"></a>
-                                    <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"></a>
-                                </div><!-- End .product-action -->
-                            </div><!-- End .product-footer -->
-                        </div><!-- End .product -->
-                    </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
-
-                    <div class="col-6 col-md-4 col-lg-3 col-xl-5col">
-                        <div class="product product-3 text-center">
-                            <figure class="product-media">
-                                <span class="product-label label-sale">Sale</span>
-                                <a href="product.html">
-                                    <img src="/user/assets/images/demos/demo-22/products/product-7.jpg" alt="Product image" class="product-image">
-                                </a>
-
-                                <div class="product-action-vertical">
-                                    <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                </div><!-- End .product-action-vertical -->
-                            </figure><!-- End .product-media -->
-
-                            <div class="product-body">
-                                <div class="product-cat">
-                                    <a href="#">Power Tools</a>
-                                </div><!-- End .product-cat -->
-                                <h3 class="product-title"><a href="product.html">BLACK+DECKER BDEJS600C</a></h3><!-- End .product-title -->
-                                <div class="product-price">
-                                    <span class="new-price">$42.99</span>
-                                    <span class="old-price">Was $67.50</span>
-                                </div><!-- End .product-price -->
-                            </div><!-- End .product-body -->
-
-                            <div class="product-footer">
-                                <div class="ratings-container">
-                                    <div class="ratings">
-                                        <div class="ratings-val" style="width: 80%;"></div><!-- End .ratings-val -->
-                                    </div><!-- End .ratings -->
-                                    <span class="ratings-text">( 3 Reviews )</span>
-                                </div><!-- End .rating-container -->
-
-                                <div class="product-nav product-nav-dots">
-                                    <a href="#" class="active" style="background: #78645f;"><span class="sr-only">Color name</span></a>
-                                    <a href="#" style="background: #b89474;"><span class="sr-only">Color name</span></a>
-                                    <a href="#" style="background: #666666;"><span class="sr-only">Color name</span></a>
-                                </div><!-- End .product-nav -->
-
-                                <div class="product-action">
-                                    <a href="#" class="btn-product btn-cart" title="Add to cart"></a>
-                                    <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"></a>
-                                </div><!-- End .product-action -->
-                            </div><!-- End .product-footer -->
-                        </div><!-- End .product -->
-                    </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
-
-                    <div class="col-6 col-md-4 col-lg-3 col-xl-5col">
-                        <div class="product product-3 text-center">
-                            <figure class="product-media">
-                                <a href="product.html">
-                                    <img src="/user/assets/images/demos/demo-22/products/product-8.jpg" alt="Product image" class="product-image">
-                                </a>
-
-                                <div class="product-action-vertical">
-                                    <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                </div><!-- End .product-action-vertical -->
-                            </figure><!-- End .product-media -->
-
-                            <div class="product-body">
-                                <div class="product-cat">
-                                    <a href="#">Power Tool Accessories</a>
-                                </div><!-- End .product-cat -->
-                                <h3 class="product-title"><a href="product.html">DEWALT DW1354 14-Piece Titanium Drill Bit Set</a></h3><!-- End .product-title -->
-                                <div class="product-price">
-                                    $29.99
-                                </div><!-- End .product-price -->
-                            </div><!-- End .product-body -->
-
-                            <div class="product-footer">
-                                <div class="ratings-container">
-                                    <div class="ratings">
-                                        <div class="ratings-val" style="width: 0%;"></div><!-- End .ratings-val -->
-                                    </div><!-- End .ratings -->
-                                    <span class="ratings-text">( 0 Reviews )</span>
-                                </div><!-- End .rating-container -->
-
-                                <div class="product-action">
-                                    <a href="#" class="btn-product btn-cart" title="Add to cart"></a>
-                                    <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"></a>
-                                </div><!-- End .product-action -->
-                            </div><!-- End .product-footer -->
-                        </div><!-- End .product -->
-                    </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
-
-                    <div class="col-6 col-md-4 col-lg-3 col-xl-5col">
-                        <div class="product product-3 text-center">
-                            <figure class="product-media">
-                                <a href="product.html">
-                                    <img src="/user/assets/images/demos/demo-22/products/product-9.jpg" alt="Product image" class="product-image">
-                                </a>
-
-                                <div class="product-action-vertical">
-                                    <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                </div><!-- End .product-action-vertical -->
-                            </figure><!-- End .product-media -->
-
-                            <div class="product-body">
-                                <div class="product-cat">
-                                    <a href="#">Power Tools</a>
-                                </div><!-- End .product-cat -->
-                                <h3 class="product-title"><a href="product.html">WEN 6530</a></h3><!-- End .product-title -->
-                                <div class="product-price">
-                                    $41.61
-                                </div><!-- End .product-price -->
-                            </div><!-- End .product-body -->
-
-                            <div class="product-footer">
-                                <div class="ratings-container">
-                                    <div class="ratings">
-                                        <div class="ratings-val" style="width: 40%;"></div><!-- End .ratings-val -->
-                                    </div><!-- End .ratings -->
-                                    <span class="ratings-text">( 7 Reviews )</span>
-                                </div><!-- End .rating-container -->
-
-                                <div class="product-action">
-                                    <a href="#" class="btn-product btn-cart" title="Add to cart"></a>
-                                    <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"></a>
-                                </div><!-- End .product-action -->
-                            </div><!-- End .product-footer -->
-                        </div><!-- End .product -->
-                    </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
-
-                    <div class="col-6 col-md-4 col-lg-3 col-xl-5col">
-                        <div class="product product-3 text-center">
-                            <figure class="product-media">
-                                <a href="product.html">
-                                    <img src="/user/assets/images/demos/demo-22/products/product-10.jpg" alt="Product image" class="product-image">
-                                </a>
-
-                                <div class="product-action-vertical">
-                                    <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                </div><!-- End .product-action-vertical -->
-                            </figure><!-- End .product-media -->
-
-                            <div class="product-body">
-                                <div class="product-cat">
-                                    <a href="#">Power Tools</a>
-                                </div><!-- End .product-cat -->
-                                <h3 class="product-title"><a href="product.html">Ryobi P506 One+</a></h3><!-- End .product-title -->
-                                <div class="product-price">
-                                    $35.85
-                                </div><!-- End .product-price -->
-                            </div><!-- End .product-body -->
-
-                            <div class="product-footer">
-                                <div class="ratings-container">
-                                    <div class="ratings">
-                                        <div class="ratings-val" style="width: 0%;"></div><!-- End .ratings-val -->
-                                    </div><!-- End .ratings -->
-                                    <span class="ratings-text">( 0 Reviews )</span>
-                                </div><!-- End .rating-container -->
-
-                                <div class="product-action">
-                                    <a href="#" class="btn-product btn-cart" title="Add to cart"></a>
-                                    <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"></a>
-                                </div><!-- End .product-action -->
-                            </div><!-- End .product-footer -->
-                        </div><!-- End .product -->
-                    </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
                 </div><!-- End .row -->
             </div>
 
@@ -1316,7 +488,7 @@
                         <h4>woodworking tools</h4>
                         <h3>from top rated brands</h3>
                         <div class="action">
-                            <a href="category.html">discover now</a>
+                            <a href="/product-list">discover now</a>
                         </div>
                     </div>
                 </div>
@@ -1327,7 +499,7 @@
                 <div class="section-title">
                     <div><p class="title"><span>Our Blog Posts</span></p></div>
                     
-                    <a class="link" href="#">See All Posts</a>
+                    <a class="link" href="/product-list">See All Posts</a>
                 </div>
 
                 <div class="owl-carousel owl-simple mb-4" data-toggle="owl" 
@@ -1347,7 +519,7 @@
                                 "dots":true
                             },
                             "768": {
-                                "items":3
+                                "items":3,
                             }
                         }
                     }'>
@@ -1463,6 +635,8 @@
     <script src="user/assets/js/jquery.magnific-popup.min.js"></script>
     <!-- Main JS File -->
     <script src="/user/assets/js/main.js"></script>
+
+    <script src="/user/custom-js/home.js"></script>
 </body>
 
 <!-- molla/index-22.html  22 Nov 2019 10:02:10 GMT -->

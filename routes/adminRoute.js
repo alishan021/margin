@@ -14,15 +14,12 @@ const userModel = require('../models/user');
 const categoryModel = require('../models/category');
 const orderModel = require('../models/order');
 const productModel = require('../models/products');
-// const {upload} = require('../middlewares/functions');
 
 const router = express.Router();
 
 
 
-const multer = require('multer')
-// const path = require('path');
-
+const multer = require('multer');
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
       cb(null, './public/products');
@@ -42,16 +39,14 @@ router.get('/login', adminAuth.adminSessionYes, adminController.adminLoginGet );
 router.post('/login',  adminController.adminLoginPost );
 
 // Home page
-router.get('/',  adminController.adminHomeGet );
-router.get('/dashboard/data', adminController.dashBoardDetails );
-router.get('/dashboard/data/custom', adminController.customDetails );
+router.get('/', adminAuth.adminSessionNo, adminController.adminHomeGet );
+router.get('/dashboard/data', adminAuth.adminSessionNo, adminController.dashBoardDetails );
+router.get('/dashboard/data/custom', adminAuth.adminSessionNo, adminController.customDetails );
 
 
 // To get user list for admin;
 router.get('/users', adminAuth.adminSessionNo, admUserController.adminUsersGet );
-// To  block and unblock the user;
 router.post('/user-status', admUserController.userStatusPost );
-
 
 
 // admin category
@@ -59,9 +54,8 @@ router.get('/category', adminAuth.adminSessionNo, admCategoryController.category
 router.post('/category',  admCategoryController.createCategoryPost );
 router.patch('/category',  admCategoryController.categoryListEditPatch );
 router.delete('/category/:id',  admCategoryController.categoryDelete );
-router.get('/category/:categoryId', admCategoryController.categoryUpdateGet );
+router.get('/category/:categoryId', adminAuth.adminSessionNo, admCategoryController.categoryUpdateGet );
 router.patch('/category/update/:categoryId', admCategoryController.categoryUpdatePut );
-
 
 
 // admin product 
@@ -72,43 +66,29 @@ router.delete('/product/:id', admProductController.productDelete );
 
 
 router.post('/products/add', upload.array('images', 6 ), admProductController.productsAdd );
-router.get('/products/edit/:productId', admProductController.productEditGet );
+router.get('/products/edit/:productId', adminAuth.adminSessionNo, admProductController.productEditGet );
 router.post('/products/edit/:productId',  upload.array('images', 6 ), admProductController.productEditPost );
 router.delete('/products/delete-image', admProductController.productImageDelete );
 
-router.get('/order', admOrdersController.orderGet );
+router.get('/order', adminAuth.adminSessionNo, admOrdersController.orderGet );
 router.patch('/order-status', admOrdersController.orderStatusPatch );
 
-router.get('/coupon', admCouponController.couponGet );
-router.get('/coupon/add', admCouponController.addCouponGet );
+router.get('/coupon', adminAuth.adminSessionNo, admCouponController.couponGet );
+router.get('/coupon/add', adminAuth.adminSessionNo, admCouponController.addCouponGet );
 router.post('/coupon/add', admCouponController.addCouponPost );
 router.delete('/coupon/delete/:couponId', admCouponController.couponDelete );
 
-router.get('/sales-report/', admSalesReportController.salesReportGet );
-// router.get('/sales-report/custom/:fromDate/:toDate', admSalesReportController.customSalesReportGet );
-router.get('/sales-report/:reportType', admSalesReportController.customSalesReportGet);
-router.get('/sales/pdf/:reportType', admSalesReportController.genPdfGet );
-router.get('/sales-report-total', admSalesReportController.salesReportTotalGet );
-router.get('/sales/excel/:reportType', admSalesReportController.salesReportExcelGet );
+router.get('/sales-report/', adminAuth.adminSessionNo, admSalesReportController.salesReportGet );
+router.get('/sales-report/:reportType', adminAuth.adminSessionNo, admSalesReportController.customSalesReportGet);
+router.get('/sales/pdf/:reportType', adminAuth.adminSessionNo, admSalesReportController.genPdfGet );
+router.get('/sales-report-total', adminAuth.adminSessionNo, admSalesReportController.salesReportTotalGet );
+router.get('/sales/excel/:reportType', adminAuth.adminSessionNo, admSalesReportController.salesReportExcelGet );
 
-router.get('/offer-module', admOfferModule.offerModuleGet );
+router.get('/offer-module', adminAuth.adminSessionNo, admOfferModule.offerModuleGet );
 router.post('/offer-module', admOfferModule.offerModulePost );
-// router.post('/category-offer', admOfferModule.categoryOfferPost );
+router.delete('/offer/delete/:offerId', admOfferModule.deleteOffer );
 
 router.get('/logout', adminController.logout );
-
-
-// // 404 Not Found handler
-// router.get('*', (req, res, next) => {
-//   console.log('response : ' + res );
-//   res.status(404).send('404 Error')
-// });
-
-// // 500 Internal Server Error handler
-// router.use((err, req, res, next) => {
-//   console.error(err.stack);
-//   res.status(500).send('500 Error');
-// });
 
 
 module.exports = router;

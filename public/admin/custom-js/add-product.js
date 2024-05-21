@@ -19,14 +19,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const responseData = await response.json();
             if (response.ok) {
-                console.log(responseData); // Log server response
                 return successMessage(responseData.message);
             }
-            console.error('Error adding product');
             failureMessage(responseData.error);
         
         } catch (error) {
-            console.error('Error adding product:', error);
             failureMessage(error)
         }
     });
@@ -49,7 +46,6 @@ document.addEventListener('DOMContentLoaded', function() {
         for (let i = 0; i < files.length; i++) {
 
             const file = files[i];
-            console.log(file);
             const filePreview = document.createElement('div');
             filePreview.classList.add('file-preview');
 
@@ -67,24 +63,6 @@ document.addEventListener('DOMContentLoaded', function() {
             selectedFilesPreview.appendChild(filePreview);
         }
     });
-
-
-
-
-
-
-const msgPara = document.querySelector('.msg-para'); 
-
-const displayError = (message) => {
-    msgPara.parentElement.className = 'msg-box-error';
-    msgPara.innerHTML = message;
-}
-
-const displaySuccess = (message) => {
-    msgPara.parentElement.className = 'msg-box-success';
-    msgPara.innerHTML = message;
-}
-
 });
 
 

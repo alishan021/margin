@@ -1,14 +1,10 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    console.log('inside new-password');
-
     const form = document.querySelector('form');
     
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
-
-        console.log('inside new-password form');
 
         const password = document.querySelector('[password]').value;
         const passwordre = document.querySelector('[passwordre]').value;
@@ -60,7 +56,6 @@ const sendbody = async (reqBody) => {
             },
             body: JSON.stringify(reqBody)
         });
-        console.log(response);
         if(response.ok){
             const body = await response.json();
             if(body.error){

@@ -74,7 +74,7 @@
 										</h3><!-- End .product-title -->
 									</div><!-- End .product -->
 								</td>
-								<td class="price-col"><%= product.product_id.price %></td>
+								<td class="price-col"><%= product.product_id.discountPrice %></td>
 								<td class="stock-col">
 									<% if(product.product_id.status){ %>
 										<span class="in-stock"> In Stock </span>
@@ -112,12 +112,8 @@
 
     <!-- Mobile Menu -->
            
-            
-
     <%- include('./layouts/mobile-nav.ejs') %>
 
-
-            
     <!-- End .mobile-menu-container -->
 
    

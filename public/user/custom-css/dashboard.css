@@ -43,6 +43,11 @@
 }
 
 
+.wallet-div {
+    display: flex;
+}
+
+
 #wallet-amount {
     width: 80%;
     margin-right: 5px;

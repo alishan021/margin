@@ -8,6 +8,7 @@ const cors = require('cors');
 const nocache = require("nocache");
 const cookieParser = require('cookie-parser');
 const Razorpay = require('razorpay');
+const productModel = require('./models/products.js');
 
 
 const app = express();
@@ -38,14 +39,16 @@ var instance = new Razorpay({
 });
 
 
+
 app.use('/', require('./routes/userRoute.js') );
 app.use('/admin', require('./routes/adminRoute.js'));
+
 
 
 // 404 Not Found handler
 app.get('*', (req, res, next) => {
     console.log('response : ' + res );
-    res.status(404).render('404.ejs')
+    res.status(404).render('404.ejs', { userIn: req.session.userIn })
 });
 
   // 500 Internal Server Error handler

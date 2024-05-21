@@ -55,6 +55,10 @@ const productSchema = new mongoose.Schema({
     },
     deleted_at: {
         type: Date, 
+    },
+    discountPrice: {
+        type: Number,
+        default: getDiscountPrice,
     }
 }, {
     toJSON: { virtuals: true },
@@ -63,46 +67,41 @@ const productSchema = new mongoose.Schema({
 
 
 
+function getDiscountPrice() {
+    return this.price;
+}
 
 
-const Offers = require('./offerModel');
 
-productSchema.virtual('discountedPrice').get(function() {
-    console.log('Inside the product schema virtual offer module');
-    return this.price - 100;
+const Offer = require('./offerModel');
+productSchema.methods.calculateDiscountedPrice = async function() {
+    const currentDate = new Date();
+    const offers = await Offer.find({ $or: [ { product: this._id },{ category: this.category } ],startDate: { $lte: currentDate },endDate: { $gte: currentDate }});
+
+    let discount = 0;
+    offers.forEach(offer => {
+        if (offer.offerType === 'percentage') discount = Math.max(discount, this.price * (offer.offerValue / 100));
+        else if (offer.offerType === 'price') discount = Math.max(discount, offer.offerValue);
+    });
+    this.discountPrice = Math.round(this.price - discount);
+};
+
+productSchema.post('find', async function(docs, next) {
+    for (const doc of docs) await doc.calculateDiscountedPrice();
+    next()
 });
 
+const calculateDiscountPostHook = async function(doc, next) {
+    if (doc) await doc.calculateDiscountedPrice();
+    next();
+};
 
-// productSchema.pre('find', async function () {
-//     try {
-//         console.log('Inside the product schema virtual offer module 2');
-//         // Find active offers for all categories
-//         console.log(this);
-//         const productItems = this;
-//         const currentDate = new Date();
-//         const activeOffers = await Offers.find({
-//             startDate: { $lte: currentDate },
-//             endDate: { $gte: currentDate }
-//         });
+productSchema.post('findOne', calculateDiscountPostHook);
+productSchema.post('findById', calculateDiscountPostHook);
 
-//         // Apply offer logic to each product
-//         productItems.forEach(product => {
-//             // Find any active offer for the product's category
-//             const activeOffer = activeOffers.find(offer => product.category.equals(offer.category));
-
-//             // Apply offer if found
-//             if (activeOffer) {
-//                 if (activeOffer.offerType === 'percentage') {
-//                     product.price -= (product.price * activeOffer.offerValue) / 100;
-//                 } else if (activeOffer.offerType === 'price') {
-//                     product.price -= activeOffer.offerValue;
-//                 }
-//             }
-//         });
-//     } catch (err) {
-//         console.error('Error applying offer to products:', err);
-//     }
-// });
+productSchema.virtual('actualPrice').get(function() {
+    return this.price;
+});
 
 
 

@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ category })
             })
-            console.log(response)
             if(response.ok){
                 location.reload();
                 successMessage('create category sucessfully');
@@ -28,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(errorResponse.error || 'Failed to create category');
             }
        }catch(error){
-            console.error('Error:', error);
             failureMessage(error.message);
        }
         
@@ -42,8 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         button.addEventListener('click', async (event) => {
             try {
                 const conform = await confirmIt('do you want to delete the category', "YES");
-                console.log('confi : ' + conform.isConfirmed );
-                if(!conform){
+                if(!conform.isConfirmed) {
                     return ;
                 }
                 const categoryId = button.getAttribute('data-category-id');
@@ -57,7 +54,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 const body = await response.json();
             } catch (err) {
-                console.log('error : ' + err);
                 failureMessage( err )
             }
         });
@@ -87,7 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
                 return failureMessage( error );
             });
         });
@@ -101,7 +96,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const updateButton = document.querySelector('.btn-update');
             const categoryId = this.dataset.categoryId;
 
-            console.log(categoryId);
 
             fetch(`/admin/category/${categoryId}`)
             .then(response => response.json())
@@ -109,20 +103,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 if(data.error){
                     return failureMessage(data.error);
                 }
-                console.log(data);
                 const categoryInput = document.querySelector('#category');
                 categoryInput.setAttribute('value', data.categoryName );
                 updateButton.style.display = 'flex'
                 updateButton.innerHTML = 'Update';
             })
             .catch(error => {
-                console.error('Error:', error);
                 return failureMessage(error);
             });
 
             updateButton.addEventListener('click', () => {
                 const updatedCategory = document.querySelector('#category').value;
-                console.log(updatedCategory);
                 fetch(`/admin/category/update/${categoryId}`, {
                     method: 'PATCH',
                     headers: {
@@ -132,7 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data)
                     if(data.error){
                         return failureMessage(data)
                     }else if(data.success){
@@ -148,22 +138,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 
-
-
-
-const displayError = (message) => {
-    const msgPara = document.querySelector('.msg-para');
-    msgPara.parentElement.className = 'display-error';
-    msgPara.innerHTML = message;
-}
-
-
-
-const displaySucess = (message) => {
-    const msgPara = document.querySelector('.msg-para');
-    msgPara.parentElement.className = 'display-success';
-    msgPara.innerHTML = message;
-}
 
 
 function successMessage(message) {

@@ -30,8 +30,6 @@ productOfferForm.addEventListener('submit', async (event) => {
     description: productOfferForm.elements.description.value,
   };
 
-  console.log(formData);
-
   const response = await fetch('/admin/offer-module', {
     method: 'POST',
     headers: {
@@ -40,7 +38,6 @@ productOfferForm.addEventListener('submit', async (event) => {
     body: JSON.stringify(formData),
   });
   const body = await response.json();
-  console.log(body);
   if(body.error) {
     failureMessage(body.error);
   }else if( body.success) {
@@ -67,7 +64,6 @@ categoryOfferForm.addEventListener('submit', async (event) => {
     description: categoryOfferForm.elements.description.value,
   };
 
-  console.log(formData);
 
   const response = await fetch('/admin/offer-module', {
     method: 'POST',
@@ -77,7 +73,6 @@ categoryOfferForm.addEventListener('submit', async (event) => {
     body: JSON.stringify(formData),
   });
   const body = await response.json();
-  console.log(body);
   if(body.error) {
     failureMessage(body.error);
   }else if( body.success) {
@@ -88,6 +83,24 @@ categoryOfferForm.addEventListener('submit', async (event) => {
   }
 
 });
+
+
+
+const deleteBtns = document.querySelectorAll('.btn-delete');
+deleteBtns.forEach( deleteBtn => {
+  deleteBtn.addEventListener('click', async (event) => {
+    const offerId = deleteBtn.getAttribute('data-offer-id');
+    const response = await fetch(`/admin/offer/delete/${offerId}`, { method: 'DELETE' });
+    const body = await response.json();
+    if(body.error) failureMessage(body.error);
+    else {
+      successMessage(body.message);
+      const tr = deleteBtn.closest('tr');
+      tr.remove();
+    }
+
+  });
+})
 
 
 

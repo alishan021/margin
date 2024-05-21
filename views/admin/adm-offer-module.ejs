@@ -6,8 +6,8 @@
     <title>Edit product</title>
     <link rel="stylesheet" href="/admin/custom-css/navbar.css">
     <link rel="stylesheet" href="/admin/custom-css/sidebar.css">
-    <link rel="stylesheet" href="/admin/custom-css/msg-box.css">
     <link rel="stylesheet" href="/admin/custom-css/admin-offer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="/admin/custom-js/admin-offer.js" defer ></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
 
@@ -24,8 +24,8 @@
                   <div class="offer-items-head">
                     <div class="offer-items offer-item-heading active">Product</div>
                     <div class="offer-items offer-item-heading">Category</div>
-                    <div class="offer-items offer-item-heading">Referal</div>
-                    <div class="offer-items offer-item-heading">Other Offers</div>
+                    <!-- <div class="offer-items offer-item-heading">Referal</div> -->
+                    <!-- <div class="offer-items offer-item-heading">Other Offers</div> -->
                   </div>
                 </div>
                 <div class="offer-item-content">
@@ -37,9 +37,8 @@
                           <div class="input-item">
                             <label for="product-name">Product Name : &nbsp;</label>
                             <select name="product" id="product-select" class="offer-input">
-                              <!-- <option value="Product Id">Select product</option> -->
                               <% products.forEach(( product ) => { %>
-                                <option value="<%= product._id %>"><%= product.name %> - <%= product.price %>Rs</option>
+                                <option value="<%= product._id %>"><%= product.name %> - <%= product.discountPrice %>Rs</option>
                                 <% }) %>
                               </select>
                             </div>
@@ -53,7 +52,6 @@
                           </div>
                           <div class="input-rows">
                             <div class="input-item">
-                              <!-- <label for="value">Amount or Percentage : &nbsp;</label> -->
                               <input type="number" id="value" placeholder="Amount or Percentage" name="value" class="offer-input" required>
                             </div>
                           </div>
@@ -69,7 +67,6 @@
                           </div>
                           <div class="input-rows">
                             <div class="input-item">
-                              <!-- <label for="description">Offer Description : &nbsp;</label> -->
                               <textarea id="description" placeholder="Offer Description" name="description" rows="4" class="offer-input" required></textarea>
                             </div>
                           </div>
@@ -89,6 +86,7 @@
                               <th>OfferValue</th>
                               <th>StartDate</th>
                               <th>EndDate</th>
+                              <th>Button</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -102,6 +100,7 @@
                                 <td><%= offer.offerValue %></td>
                                 <td><%= offer.startDate.toLocaleDateString() %></td>
                                 <td><%= offer.endDate.toLocaleDateString() %></td>
+                                <td><button class="btn-delete"  data-offer-id="<%= offer._id %>"><i class="fa-solid fa-trash"></i></button></td>
                               </tr>
                               <% }) %>
 
@@ -117,7 +116,6 @@
                         <div class="input-item">
                           <label for="category-name">Category Name : &nbsp;</label>
                           <select name="category" id="product-select" class="offer-input">
-                            <!-- <option value="Product Id">Select product</option> -->
                             <% categories.forEach(( category ) => { %>
                               <option value="<%= category._id %>"><%= category.categoryName %></option>
                               <% }) %>
@@ -133,7 +131,6 @@
                         </div>
                         <div class="input-rows">
                           <div class="input-item">
-                            <!-- <label for="value">Amount or Percentage : &nbsp;</label> -->
                             <input type="number" id="value" placeholder="Amount or Percentage" name="value" class="offer-input" required>
                           </div>
                         </div>
@@ -149,7 +146,6 @@
                         </div>
                         <div class="input-rows">
                           <div class="input-item">
-                            <!-- <label for="description">Offer Description : &nbsp;</label> -->
                             <textarea id="description" placeholder="Offer Description" name="description" rows="4" class="offer-input" required></textarea>
                           </div>
                         </div>
@@ -169,6 +165,7 @@
                             <th>OfferValue</th>
                             <th>StartDate</th>
                             <th>EndDate</th>
+                            <th>Button</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -182,6 +179,7 @@
                               <td><%= offer.offerValue %></td>
                               <td><%= offer.startDate.toLocaleDateString() %></td>
                               <td><%= offer.endDate.toLocaleDateString() %></td>
+                              <td><button class="btn-delete"  data-offer-id="<%= offer._id %>"><i class="fa-solid fa-trash"></i></button></td>
                             </tr>
                             <% }) %>
 
@@ -189,14 +187,12 @@
                       </table>
                     </div>
                 </div>
-                  <div class="offer-item-section hidden">
+                  <!-- <div class="offer-item-section hidden">
                     <h2>Referal</h2>
-                    <!-- Add your referal content here -->
                   </div>
                   <div class="offer-item-section hidden">
                     <h2>Other Offers : </h2>
-                    <!-- Add your referal content here -->
-                  </div>
+                  </div> -->
                 </div>
               </main>
 

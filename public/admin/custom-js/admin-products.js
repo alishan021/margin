@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
         button.addEventListener('click', async (event) => {
             try {
                 const conform = await confirmIt('do you want to delete the product', "YES");
-                console.log('confi : ' + conform.isConfirmed );
                 if(!conform.isConfirmed) {
                     return conform;
                 }
@@ -21,7 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 const body = await response.json();
             } catch (err) {
-                console.log('error : ' + err);
                 failureMessage( err )
             }
         });
@@ -44,8 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .then(response => {
                 if (response.ok) {
-                    // location.reload();
-                    console.log('list unlist success');
                     setTimeout(() => location.reload() , 1000 );
                     successMessage((action)? 'list product': 'unlist product')
                 } else {
@@ -53,7 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
                 return failureMessage( error );
             });
         });
@@ -63,10 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Add an event listener to handle the "Edit" button click
         document.querySelectorAll('.btn-edit').forEach(button => {
         button.addEventListener('click', function() {
-            console.log('you clicked edit button');
             
             const productId = this.getAttribute('data-product-id');
-            console.log(productId);
             if(productId){
                 window.location.href = `/admin/products/edit/${productId}`
             }
@@ -76,26 +69,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     
 
-})
+});
 
-
-
-
-
-
-const displayError = (message) => {
-    const msgPara = document.querySelector('.msg-para');
-    msgPara.parentElement.className = 'display-error';
-    msgPara.innerHTML = message;
-}
-
-
-
-const displaySucess = (message) => {
-    const msgPara = document.querySelector('.msg-para');
-    msgPara.parentElement.className = 'display-success';
-    msgPara.innerHTML = message;
-}
 
 
 

@@ -35,32 +35,3 @@ const offerSchema = new mongoose.Schema({
 
 const offerModel = new mongoose.model("Offers", offerSchema );
 module.exports = offerModel;
-
-
-// const categoryofferSchema = new mongoose.Schema({
-//     category: {
-//         type:mongoose.Schema.Types.ObjectId,
-//         ref: "category",
-//     },
-//     offerType: {
-//         type: String,
-//         enum: [ "percentage", "price"],
-//     },
-//     offerValue: {
-//         type: Number,
-//     },
-//     startDate: {
-//         type: Date,
-//     },
-//     endDate: {
-//         type: Date,
-//     },
-//     description: {
-//         type: String,
-//     },
-//     createdAt: {
-    //         type: Date,
-//         default: Date.now
-//     }
-// });
-    // const categoryOfferModel = new mongoose.Model("CategoryOffer", productofferSchema );

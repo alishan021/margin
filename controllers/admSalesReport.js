@@ -44,7 +44,6 @@ exports.customSalesReportGet = async ( req, res ) => {
             fromDate = req.query.fromDate;
             toDate = req.query.toDate;
         }
-        console.log( 'custom sales report : ' + '\nreportType : ' + reportType, '\nfromDate : ' + fromDate, '\ntoDate : '  + toDate);
         if( new Date(fromDate) >= new Date(toDate)) return res.json({ error: 'start date must be less than end date'});
         let orders = await orderModel.find({
             deliveredAt: {
@@ -55,19 +54,12 @@ exports.customSalesReportGet = async ( req, res ) => {
         orders = orders.filter(order => order.products.some(product => product.orderStatus));
         const { dailyStats, monthlyStats, yearlyStats } = await getOrderStats( );
         const noOfUsers = await usersCount(fromDate, toDate);
-        // console.log(noOfUsers);
         const noOfOrders = await orderCount(fromDate, toDate);
-        // console.log(noOfOrders);
         const revenueAmount = await getRevenueAmount(fromDate, toDate);
-        // console.log(revenueAmount);
         const productsSale = await getTopProductsSale(fromDate, toDate);
-        // console.log(productsSale);
         const topCategoryies = await getTopCategoryies(fromDate, toDate);
-        // console.log(topCategoryies);
         const paymentOptions = await getNoOfPayments(fromDate, toDate);
-        // console.log(paymentOptions);
         const orderStatus = await getProductStatus(fromDate, toDate);
-        // console.log(orderStatus);
         const data = { noOfOrders, noOfUsers, revenueAmount, productsSale, topCategoryies, paymentOptions, orderStatus };
         return res.status(200).json({ message: 'success', orders, dailyStats, monthlyStats, yearlyStats, data });
     }catch(err){
@@ -102,10 +94,6 @@ async function getOrderStats() {
   const yearlyOrderCount = yearlyOrders.length;
   const yearlyRevenueAmount = yearlyOrders.reduce((total, order) => total + order.totalPrice, 0);
 
-  console.log(`Daily stats: ${dailyOrderCount} orders, $${dailyRevenueAmount} revenue`);
-  console.log(`Monthly stats: ${monthlyOrderCount} orders, $${monthlyRevenueAmount} revenue`);
-  console.log(`Yearly stats: ${yearlyOrderCount} orders, $${yearlyRevenueAmount} revenue`);
-
   return {
     dailyStats: { dailyOrderCount, dailyRevenueAmount },
     monthlyStats: { monthlyOrderCount, monthlyRevenueAmount },
@@ -119,19 +107,12 @@ async function getOrderStats() {
 
 exports.salesReportTotalGet = async ( req, res ) => {
     const noOfUsers = await usersCount();
-    // console.log(noOfUsers);
     const noOfOrders = await orderCount();
-    // console.log(noOfOrders);
     const revenueAmount = await getRevenueAmount();
-    // console.log(revenueAmount);
     const productsSale = await getTopProductsSale();
-    // console.log(productsSale);
     const topCategoryies = await getTopCategoryies();
-    // console.log(topCategoryies);
     const paymentOptions = await getNoOfPayments();
-    // console.log(paymentOptions);
     const orderStatus = await getProductStatus();
-    // console.log(orderStatus);
     const data = { noOfOrders, noOfUsers, revenueAmount, productsSale, topCategoryies, paymentOptions, orderStatus };
     return res.json({ data });
 }
@@ -420,7 +401,6 @@ exports.genPdfGet = async (req, res) => {
     let fromDate = req.query.fromDate;
     let toDate = req.query.toDate;
 
-    console.log('\nreportType : ' + reportType, '\nfromDate : ' + fromDate, '\ntoDate : ' + toDate );
 
     res.writeHead(200, {
         'Content-Type': 'application/pdf',
@@ -444,8 +424,6 @@ exports.genPdfGet = async (req, res) => {
         toDate = req.query.toDate;
     }
 
-    console.log('\nfromDate : ' + fromDate, '\ntoDate : ' + toDate );
-
     const no_of_orders = await orderCount(fromDate, toDate);
     const total_revenue = await getRevenueAmount(fromDate, toDate);
     const no_of_users = await usersCount(fromDate, toDate);
@@ -456,7 +434,6 @@ exports.genPdfGet = async (req, res) => {
     const order_status = await getProductStatus(fromDate, toDate);
 
     const parameters = [ no_of_orders, total_revenue, no_of_users, top_products, top_categories, top_payments, order_status ];
-    console.log(...parameters);
     genSalesReportPDF(doc, ...parameters);
 
     doc.end();
@@ -543,8 +520,6 @@ function generateHr(doc, y) {
         let fromDate = req.query.fromDate;
         let toDate = req.query.toDate;
 
-    console.log('\nreportType : ' + reportType, '\nfromDate : ' + fromDate, '\ntoDate : ' + toDate );
-
     const currentDate = new Date();
     if(reportType === 'daily'){
         fromDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - 1);
@@ -560,8 +535,6 @@ function generateHr(doc, y) {
         toDate = req.query.toDate;
     }
 
-    console.log('\nfromDate : ' + fromDate, '\ntoDate : ' + toDate );
-
     const no_of_orders = await orderCount(fromDate, toDate);
     const total_revenue = await getRevenueAmount(fromDate, toDate);
     const no_of_users = await usersCount(fromDate, toDate);
@@ -572,7 +545,6 @@ function generateHr(doc, y) {
     const order_status = await getProductStatus(fromDate, toDate);
 
     const parameters = [ no_of_orders, total_revenue, no_of_users, top_products, top_categories, top_payments, order_status ];
-    console.log(...parameters);
 
     const workbook = new excel4node.Workbook();
     const headerStyle = workbook.createStyle({
@@ -603,7 +575,7 @@ function generateHr(doc, y) {
     // Add data to the worksheet
     let row = 2, col;
     worksheet.cell(row, 1).string('Sales Report').style(headerStyle);
-    worksheet.removeColumn(3, 1000); // Remove columns from 3 to the end
+    // worksheet.removeColumns(3, 1000); // Remove columns from 3 to the end
 
 
     worksheet.cell(row += 2, 1).string('No. of Orders');
@@ -650,9 +622,4 @@ function generateHr(doc, y) {
      });
   
     return worksheet;
-  }
-
-
-  
-// module.exports = router;
-// module.exports = { usersCount }
+}

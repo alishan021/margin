@@ -151,3 +151,10 @@ tr:hover {
 .table-div {
   margin: 40px 0;
 }
+
+
+.btn-delete {
+  color: red;
+  border: none;
+  cursor: pointer;
+}

@@ -33,18 +33,14 @@ exports.orderGet = async (req, res) => {
 exports.orderStatusPatch = async (req, res) => {
   try {
     const { orderStatus, returned, orderValid, pending, orderId, productId } = req.body;
-    console.log(orderStatus, returned, orderValid, pending, orderId, productId);
     if (!orderId || !productId) {
       return res.status(400).json({ error: 'orderId or productId, is not available, login again' });
     }
 
     const order = await orderModel.findById(orderId).populate('products.productId');
-    console.log(order);
     const product = order.products.find((p) => { 
-      console.log(p.productId._id.toString(), productId);
       return p.productId._id.toString() === productId;
     });
-    console.log(product);
     order.deliveredAt = Date.now()
     if(product.orderStatus) product.deliveredAt = Date.now();
 

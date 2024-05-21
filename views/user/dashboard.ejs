@@ -73,7 +73,7 @@
 												<label>Email *</label>
 												<input type="email" class="form-control" value="<%= user.email %>" name="email" >
 
-												<label>Referal Code </label>
+												<label>Referal Code : <span style="font-size: 12px;"><%= referalCodeMessage %></span></label>
 												<input type="text" class="form-control" value="<%= user.referalCode %>" name="referal_code" >
 
 												<hr>
@@ -184,19 +184,13 @@
 											
 										<% }else { %>
 
-
-
-
 											<div class="card-body">
 												<h3 class="card-title">Billing Address</h3><!-- End .card-title -->
 												
 												<p>You don't add any address<br>
 													
-													<!-- <a href="#tab-add-address" class="add-address-link"> Add address <i class="icon-edit"></i></a></p> -->
 											</div><!-- End .card-body -->
-
-
-											
+	
 											<% } %>
 										</div>
 								    </div>
@@ -252,7 +246,6 @@
 
 		            						<label>landmark</label>
 		            						<textarea name="landmark" rows="6" class="form-control landmark" ></textarea>
-		            						<!-- <input type="text" name="landmark" class="form-control mb-2"> -->
 
 
 		                					<button type="submit" class="btn btn-outline-primary-2">
@@ -314,7 +307,6 @@
 
 		            						<label>landmark</label>
 		            						<textarea name="landmark" rows="6" id="landmark" class="form-control landmark" ></textarea>
-		            						<!-- <input type="text" name="landmark" class="form-control mb-2"> -->
 
 
 		                					<button type="submit" class="btn btn-outline-primary-2">
@@ -331,7 +323,7 @@
 											<h6 class="color-c96" >Wallet</h6>
 											<hr>
 											<p>Balance : <b><%= user.wallet.amount %></b></p>
-											<div>
+											<div class="wallet-div">
 												<input type="number" name="wallet-amount" id="wallet-amount" placeholder="Enter an amount" class="px-3" >
 												<button class="btn btn-primary btn-wallet" data-user-id="<%= user._id %>">Add money</button>
 											</div>
@@ -374,12 +366,8 @@
     <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
 
     <!-- Mobile Menu -->
-   
-            
-            
-    <% include('./layouts/mobile-nav.ejs') %>
-
-
+               
+    <%- include('./layouts/mobile-nav.ejs') %>
 
     <!-- End .mobile-menu -->
 

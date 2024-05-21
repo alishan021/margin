@@ -1,6 +1,7 @@
 const productModel = require('../models/products');
 const categoryModel = require('../models/category');
 const offerModel = require('../models/offerModel');
+const { castObject } = require('../models/user');
 
 
 exports.offerModuleGet = async ( req, res ) => {
@@ -13,15 +14,12 @@ exports.offerModuleGet = async ( req, res ) => {
 
 
 exports.offerModulePost = async ( req, res ) => {
-    console.log('Inside productOfferPost');
     try{
         const { offerValue, startDate, endDate, description, offerType, product, category } = req.body;
         if(!category && !product) return res.json({ error: 'Select the offer Item'});
         if( !startDate || !endDate || !offerValue || !offerType || !description ) return res.json({ error: "All fields are required"});
-        console.log(req.body)
         const offer = new offerModel(req.body);
         const offerSave = await offer.save();
-        console.log(offerSave);
         res.json({ success: true, message: 'Offer created successfully'});
     }catch(err){
         console.error(`Error inside productOfferPost : ${err}`);
@@ -30,12 +28,15 @@ exports.offerModulePost = async ( req, res ) => {
 
 
 
-// exports.categoryOfferPost = async ( req, res ) => {
-//     console.log('Inside categoryOfferPost');
-//     try{
-//         console.log(req.body)
-//         res.json({ success: true, message: 'successful'});
-//     }catch(err){
-//         console.error(`Error inside categoryOfferPost : ${err}`);
-//     }
-// }
+exports.deleteOffer = async ( req, res ) => {
+    const offerId = req.params.offerId;
+    try{
+        if(!offerId) return res.json({ error: "Order Id is not available, Error in server" });
+        const result = await offerModel.findByIdAndDelete(offerId);
+        if(result) {
+            return res.json({ success: true, message:'Offer deleted successfully' });
+        }else return res.json({ error: "Error in server, can't delete the offer "});
+    }catch(err) {
+        console.error(err);
+    }
+}

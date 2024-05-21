@@ -5,22 +5,14 @@ const msgPara = document.querySelector('.msg-para');
 form.addEventListener('submit', async (event) => {
    try{
     event.preventDefault();
-    console.log('form submit');
-
     const body = getUserDetails();
-    console.log(body);
     const validateResult = verifyUserDetails(body)
-    console.log('validateReult : ' + validateResult);
-    console.log('body : ' + body );
 
     if(validateResult.success){
         const result = await shareBody(body);
-        console.log('result : ' + result );
         if(result.success){
             window.location.href = '/signup/otp';
         }
-    }else {
-        console.log('validateResult.message : ' + validateResult.message );
     }
    }
    catch(err){
@@ -37,8 +29,6 @@ const getUserDetails = () => {
     const password = document.querySelector('[password]').value;
     const passwordRe = document.querySelector('[passwordRe]').value;
     const referalCode = (document.querySelector('[referalCode]').value || null);
-
-    console.log(username, email, password, passwordRe, referalCode);
 
     return body = { username, email, password, passwordRe, referalCode };
 }
@@ -66,7 +56,6 @@ const verifyUserDetails = (body) => {
         const result = { success: false, message: 'Password is not matching' }
         return displayError( result );
     }
-    // if( !referalCode || referalCode === "" ) 
     return { success: true };
 }
 
@@ -75,12 +64,10 @@ const verifyUserDetails = (body) => {
 const referalButton = document.querySelector('.referal-button');
 referalButton.addEventListener('click', async (event) => {
     event.preventDefault();
-    console.log('inside referal code check')
     const referalCode = document.querySelector('[referalCode]').value;
     if( !referalCode || referalCode === '') displayReferalStatus('type referal code')
     const response = await fetch(`/check-referal/${referalCode}`);
     const body = await response.json();
-    console.log(body);
     if(!body.success){
         displayReferalStatus(body.message)
     }else if(body.success){
@@ -104,10 +91,7 @@ const displayError = (result) => {
 
 
 const displaySuccess = (result) => {
-    console.log('before share body');
     shareBody(body);
-    console.log('after sharebody');
-
     msgPara.innerHTML = result.message;
 }
 

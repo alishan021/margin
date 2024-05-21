@@ -19,7 +19,6 @@
          discountAmount: discountAmount
      };
 
-     console.log(formData);
      const response = await fetch('/admin/coupon/add', {
          method: 'POST',
          headers: {
@@ -33,7 +32,6 @@
         successMessage(body.message);
          setTimeout(() => { window.location.href = '/admin/coupon' } , 1000 );
      } 
-     console.log(body);
  });
 
 

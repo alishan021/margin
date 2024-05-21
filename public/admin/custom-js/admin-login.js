@@ -68,9 +68,7 @@ const sendBody = async (body) => {
         body: JSON.stringify(body)
     })
     const data = await response.json();
-    console.log('data : ' + data );
     if(data.error){
-        console.log('data.error : ' + data.error );
         failureMessage(data.error)
     }
     if(data.success){
@@ -80,7 +78,6 @@ const sendBody = async (body) => {
 
    }
    catch(err){
-    console.log('error : ' + err );
     failureMessage(err);
    }
 }

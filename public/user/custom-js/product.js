@@ -16,22 +16,18 @@ btnCart.forEach(aElement => {
         }
 
         const quantity = document.querySelector('#qty').value;
-        console.log('product Id : ' + productId)
-        console.log('you clicked cart button', quantity, productId );
 
         const response = await fetch(`/product/cart/${productId}/${quantity}`, {
             method: 'PATCH'
         });
         const body = await response.json();
 
-        console.log(body);
         if(body.redirect){
             failureMessage(body.error);
             setTimeout(() => window.location.href = body.redirect, 1000)
         }else if(body.success){
             successMessage(body.message)
         }else if(body.error){
-            console.log(body);
             failureMessage(body.error);
         }
     });
@@ -45,11 +41,9 @@ document.querySelectorAll('.btn-wishlist').forEach( item => {
         event.stopPropagation();
         
         const productId = event.currentTarget.getAttribute('data-product-id');
-        console.log(productId);
     
         const response = await fetch(`/wishlist/${productId}`, { method: 'POST' });
             const result = await response.json();
-            console.log(result);
             if(result.success) successMessage(result.message)
             else if(result.redirect) {
                 failureMessage(result.error);
@@ -61,31 +55,6 @@ document.querySelectorAll('.btn-wishlist').forEach( item => {
 
 
 
-
-
-
-
-
-const alertMessageError = document.getElementById('alertMessageError');
-const alertMessageSuccess = document.getElementById('alertMessageSuccess');
-
-function showAlertError(message) {
-    alertMessageError.innerText = message;
-    alertMessageError.style.display = 'block';
-  setTimeout(() => {
-    alertMessageError.style.display = 'none';
-  }, 3000); 
-}
-
-
-function showAlertSuccess(message) {
-    alertMessageSuccess.innerText = message;
-    alertMessageSuccess.style.display = 'block';
-    setTimeout(() => {
-        alertMessageSuccess.style.display = 'none';
-    }, 3000); 
-}
-  
 
 
 

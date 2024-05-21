@@ -63,15 +63,6 @@ body{
 }
 
 
-/* label
-{
-    color: #afadad;
-    font-size: 12px;
-    position: absolute;
-    top: -10px;
-} */
-
-
 input
 {
     width: 100%;
@@ -116,38 +107,6 @@ button:hover
     display: none;
     position: relative;
 }
-
-
-/* .msg-error-box
-{
-    height: 50px;
-    width: 100%;
-    margin-top: 10px;
-    position: relative;
-    color: red;
-    font-weight: bold;
-    background-color: rgb(255, 177, 177);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 10px;
-}
-
-
-.msg-success-box
-{
-    height: 50px;
-    width: 100%;
-    margin-top: 10px;
-    position: relative;
-    color: green;
-    font-weight: bold;
-    background-color: rgb(162, 216, 162);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 10px;
-} */
 
 
 .otp-top-div

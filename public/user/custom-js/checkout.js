@@ -6,7 +6,6 @@ var userId;
 let deliveryCharge = ( productTotal < 500 ) ? 50 : 0;
 productTotal = parseInt(productTotal) + parseInt(deliveryCharge);
 var originalPrice = productTotal;
-console.log(deliveryCharge, originalPrice);
 let couponApplied = false, confi = false;
 var discountPrice = 0;
 
@@ -30,26 +29,19 @@ checkoutForm.addEventListener('submit', async (event) => {
 
     try{
         if(selectPaymentMethod === 'payment-1'){
-          console.log('payment number 1 - COD');
           formData.paymentMethod = 'COD';
-          console.log(formData);
           checkoutSend(userId, formData)
         }else if(selectPaymentMethod === 'payment-2'){
-            console.log('Inside payment method 2');
             formData.paymentMethod = 'razorpay';
             const searchParams = new URLSearchParams(formData);
             const response = await fetch(`/checkout-validation?${searchParams.toString()}`);
             const body = await response.json();
-            console.log(body);
             if(body.error) return failureMessage(body.error);
             await razorpay();
-            console.log('after razorpay in checkoujs')
         }else if(selectPaymentMethod === 'payment-3'){
-            console.log('paymentMethod is wallet');
             formData.paymentMethod = 'wallet';
             checkoutSend(userId, formData);
         }else {
-            console.log('some problems here');
             failureMessage('select a payment method to continue');
         }
     }catch(err){
@@ -107,16 +99,12 @@ async function rzrErrorOrderPending(userId, orderId ) {
 const paymentOptions = document.querySelectorAll('[select-payment-method]');
 paymentOptions.forEach( option => {
     option.addEventListener('click', (event) => {
-        console.log(event);
         selectPaymentMethod = option.id;
         if(selectPaymentMethod == 'payment-1'){
-            console.log('cod');
         }else if(selectPaymentMethod == 'payment-2'){
-            console.log('bank');
         }else if(selectPaymentMethod == 'payment-3'){
-            console.log('wallet');
         }else {
-            console.log('please select a payment method');
+            failureMessage('select a payment method to continue');
         }
     });
 });
@@ -130,10 +118,8 @@ btnApplyCoupon.addEventListener('click', async function(event) {
   const couponCode = document.querySelector('#checkout-discount-input').value;
 
     if((couponCode || couponCode !== '') && !couponApplied ){
-      console.log(couponCode);
       const responseCoupon = await fetch(`/coupon/check/${couponCode}/${productTotal}`);
       const bodyCoupon = await responseCoupon.json();
-      console.log(bodyCoupon)
       if(!bodyCoupon.status) failureMessage(bodyCoupon.error);
       if(bodyCoupon.status){
         couponApplied = true;
@@ -158,11 +144,8 @@ btnApplyCoupon.addEventListener('click', async function(event) {
 
 
 async function removeCoupon() {
-  console.log('Indie the dksks');
-  console.log(formData.couponCode);
   const response = await fetch(`/remove-coupon/${formData.couponCode}`);
   const body = await response.json();
-  console.log(body);
   if(body.error) failureMessage(body.error);
   else {
     successMessage(body.message);
@@ -226,7 +209,6 @@ function failureMessage(message) {
 
 
 async function razorpay(){
-console.log(productTotal)
 $(document).ready(function() {
     $.ajax({
       url: "/create/orderId",
@@ -235,8 +217,6 @@ $(document).ready(function() {
       contentType: "application/json",
       success: function(response) {
         orderId = response.orderId;
-        console.log(orderId);
-        console.log(productTotal);
         $("button").show();
   
         var options = {
@@ -248,9 +228,6 @@ $(document).ready(function() {
           "image": "https://example.com/your_logo",
           "order_id": orderId,
           "handler": function(response) {
-            console.log(response.razorpay_payment_id);
-            console.log(response.razorpay_order_id);
-            console.log(response.razorpay_signature);
             checkoutSend( userId, formData, orderId );
           },
           "prefill": {
@@ -269,17 +246,8 @@ $(document).ready(function() {
         var rzp1 = new Razorpay(options);
 
         rzp1.on('payment.failed', async function(response) {
-          console.log('payment failed');
           failureMessage('Payment Failed');
-          console.log(response.error.code);
-          console.log(response.error.description);
-          console.log(response.error.source);
-          console.log(response.error.step);
-          console.log(response.error.reason);
-          console.log(response.error.metadata.order_id);
-          console.log(response.error.metadata.payment_id);
           const confi = await confirmIt("Payment Failed, Save it as Pending in Order's page, or continue with other payment methods", "save as pending")
-          console.log(confi);
           if(confi.isConfirmed) {
             await rzrErrorOrderPending(userId, response.error.metadata.order_id );
           }else return;

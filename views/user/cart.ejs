@@ -23,8 +23,7 @@
                 <div class="container">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/">Home</a></li>
-                        <li class="breadcrumb-item"><a href="/product-list">Shop</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Shopping Cart</li>
+                        <li class="breadcrumb-item active" aria-current="page">Cart</li>
                     </ol>
                 </div><!-- End .container -->
             </nav><!-- End .breadcrumb-nav -->
@@ -51,12 +50,8 @@
 
 									<tbody>
 
-
-
 										<% cartProducts.cart.forEach( item => { %> 
-										
-											
-											
+													
 										<tr>
 											<td class="product-col">
 												<div class="product">
@@ -72,30 +67,21 @@
 												</div><!-- End .product -->
 											</td>
 											<% if(item.product.quantity > 0) { %>
-												<td class="price-col"><%= item.product.price %></td>
+												<td class="price-col"><%= item.product.discountPrice %></td>
 												<td class="quantity-col">
 													<div class="cart-product-quantity">
 														<input type="number" class="form-control quantityInput" value="<%= item.count %>" min="1" max="10" step="1" data-decimals="0" data-product-id="<%= item.product._id %>" data-user-id="<%= cartProducts._id %>" required>
 													</div><!-- End .cart-product-quantity -->
 												</td>
-												<td class="total-col"><%= item.product.price * item.count %></td>
+												<td class="total-col"><%= item.product.discountPrice * item.count %></td>
 											<%} else{ %>
-												<!-- <td></td> -->
-												<!-- <td></td> -->
 												<td colspan="3"><span class="text-danger font-weight-bold">Out of Stock</span></td>
 											<%} %>
 											
 											<td class="remove-col"><button class="btn-remove" data-product-id="<%= item.product._id %>" ><i class="icon-close"></i></button></td>
 										</tr>
 
-
-
-
 										<% } ) %>
-
-
-
-
 
 										
 									</tbody>
@@ -105,16 +91,11 @@
 			            			<div class="cart-discount">
 			            				<form action="#">
 			            					<div class="input-group">
-				        						<!-- <input type="text" class="form-control" required placeholder="coupon code"> -->
-				        						<!-- <div class="input-group-append"> -->
-													<!-- <button class="btn btn-outline-primary-2" type="submit"><i class="icon-long-arrow-right"></i></button> -->
-												<!-- </div> -->
-												<!-- .End .input-group-append -->
+				        						
 			        						</div><!-- End .input-group -->
 			            				</form>
 			            			</div><!-- End .cart-discount -->
 
-			            			<!-- <a href="/cart" class="btn btn-outline-dark-2"><span>UPDATE CART</span><i class="icon-refresh"></i></a> -->
 		            			</div><!-- End .cart-bottom -->
 	                		</div><!-- End .col-lg-9 -->
 	                		<aside class="col-lg-3">
@@ -125,14 +106,6 @@
 	                					<tbody>
 	                						<tr class="summary-subtotal">
 	                							<td>Subtotal:</td>
-
-												<!-- < let totalPrice = 0 %> -->
-												<!-- < cartProducts.cart.forEach( item => { %> -->
-												<!-- < if( item.product.quantity > 0 ){ %> -->
-												<!-- < totalPrice += item.product.price * item.count %> -->
-												<!-- < } %> -->
-												<!-- < }); %> -->
-
 	                							<td><%= totalPrice %></td>
 	                						</tr><!-- End .summary-subtotal -->
 	                						<tr class="summary-shipping">
@@ -198,17 +171,11 @@
 															</td>
 															<td></td>
 														</tr><!-- End .summary-shipping-row -->
-														
-	
 	
 													<% }) %>
 	
 												</form>
-
-
-
-
-												
+						
 											<!-- End .summary-shipping-estimate -->
 
 	                						<tr class="summary-total">
@@ -217,9 +184,6 @@
 	                						</tr><!-- End .summary-total -->
 	                					</tbody>
 	                				</table><!-- End .table table-summary -->
-									<!-- <div class="md-5 my-3">
-											<input type="radio"> kkd
-									</div> -->
 
 	                				<a href="/checkout" class="btn btn-outline-primary-2 btn-order btn-block btn-to-checkout">PROCEED TO CHECKOUT</a>
 	                			</div><!-- End .summary -->
@@ -259,15 +223,9 @@
     <div class="mobile-menu-overlay"></div><!-- End .mobil-menu-overlay -->
 
 
-
-            
             <%- include('./layouts/mobile-nav.ejs') %>
 
-
-
-           
-
-    
+			
     <!-- Plugins JS File -->
     <script src="/user/assets/js/jquery.min.js"></script>
     <script src="/user/assets/js/bootstrap.bundle.min.js"></script>

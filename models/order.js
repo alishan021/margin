@@ -103,4 +103,3 @@ const orderSchema = new mongoose.Schema({
 const orderModel = new mongoose.model( 'Order', orderSchema );
 module.exports = orderModel;
 
-        // default: '',

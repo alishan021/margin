@@ -25,8 +25,8 @@
             <nav aria-label="breadcrumb" class="breadcrumb-nav">
                 <div class="container">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                        <li class="breadcrumb-item"><a href="#">Shop</a></li>
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/product-list">Shop</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Checkout</li>
                     </ol>
                 </div><!-- End .container -->
@@ -98,21 +98,8 @@
 									<label>landmark</label>
 									<textarea name="landmark" rows="6" class="form-control landmark" required ><%= (address)? address.landmark : '' %></textarea>
 
-
-	        							<!-- <div class="custom-control custom-checkbox">
-											<input type="checkbox" class="custom-control-input" id="checkout-create-acc">
-											<label class="custom-control-label" for="checkout-create-acc">Create an account?</label>
-										</div> -->
-										<!-- End .custom-checkbox -->
-
-										<!-- <div class="custom-control custom-checkbox">
-											<input type="checkbox" class="custom-control-input" id="checkout-diff-address">
-											<label class="custom-control-label" for="checkout-diff-address">Ship to a different address?</label>
-										</div> -->
-										<!-- End .custom-checkbox -->
-
-	                					<label>Order notes (optional)</label>
-	        							<textarea name="ordernotes" class="form-control order-notes" cols="30" rows="4" placeholder="Notes about your order, e.g. special notes for delivery"></textarea>
+	                				<label>Order notes (optional)</label>
+	        						<textarea name="ordernotes" class="form-control order-notes" cols="30" rows="4" placeholder="Notes about your order, e.g. special notes for delivery"></textarea>
 		                		</div><!-- End .col-lg-9 -->
 		                		<aside class="col-lg-3">
 		                			<div class="summary">
@@ -133,10 +120,10 @@
 		                						<% products.forEach( item => { %>
 													<% if(item.product.quantity <= 0) return; %>
 													
-													<% productTotal += item.product.price * item.count %>
+													<% productTotal += item.product.discountPrice * item.count %>
 													<tr>
 														<td><a ><%= item.product.name %></a></td>
-														<td>$<%= item.product.price * item.count %></td>
+														<td>$<%= item.product.discountPrice * item.count %></td>
 													</tr>
 
 
@@ -233,13 +220,8 @@
 
     <!-- Mobile Menu -->
 
-
-
     <%- include('./layouts/mobile-nav.ejs') %>
 
-	
-	
-	
     <!-- End .mobile-menu-container -->
 	
     

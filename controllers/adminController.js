@@ -4,7 +4,6 @@ const categoryModel = require('../models/category');
 const userModel = require('../models/user');
 const productModel = require('../models/products');
 const orderModel = require('../models/order');
-// const { usersCount, orderCount, getRevenueAmount, getTopProductsSale, getTopCategoryies, getNoOfPayments, getProductStatus } = require('./admSalesReport');
 
 
 
@@ -21,7 +20,6 @@ exports.dashBoardDetails = async ( req, res ) => {
     const totalOrders = await orderCount();
     const totalRevenue = await getRevenueAmount();
     const topBrands = await topSaledBrands();
-    console.log(topBrands);
     const totalProducts = await productModel.find({}).countDocuments();
     return res.status(200).json({ topProducts, topCategoryies, totalUsers, totalOrders, totalRevenue, totalProducts, topBrands });
 }
@@ -29,12 +27,8 @@ exports.dashBoardDetails = async ( req, res ) => {
 
 exports.adminLoginPost = async ( req, res ) => {
     const { email, password } = req.body;
-    console.log( 'email : ' + email, 'password : ' + password );
 
     const admin = await adminModel.findOne({ email });
-    console.log('admin : ' + admin );
-
-    // console.log('admin.password: ' + admin.password, 'admin.email : ' + admin.email );
 
     if(!email || !password){
         return res.status(400).json({ error: 'email and password is required '});
@@ -50,7 +44,6 @@ exports.adminLoginPost = async ( req, res ) => {
 
     if(admin.password === password){
         req.session.admin = true;
-        console.log('req.session.isAdmin : ' + req.session.admin );
         return res.status(200).json({ success: 'perfect admin'});
     }
 
@@ -68,7 +61,6 @@ exports.adminHomeGet = ( req, res ) => {
 
 exports.customDetails = async ( req, res ) => {
     let { fromDate, toDate, filterType } = req.query;
-    console.log(`FromDate : ${fromDate}, toDate : ${toDate}, filterType: ${filterType}`);
     try{
         if(filterType === 'custom') {
             if(new Date(fromDate) >= new Date(toDate)) return res.status(200).json({ error: 'from Date should be before the to Date'});
@@ -88,7 +80,6 @@ exports.customDetails = async ( req, res ) => {
         }else {
             return res.status(400).json({ message: 'wrong filter type'});
         }
-        console.log(fromDate, '\n', toDate)
         const topProducts = await getTopProductsSale(fromDate, toDate);
         const topCategoryies = await getTopCategoryies(fromDate, toDate);
         const totalUsers = await usersCount(fromDate, toDate);
@@ -96,8 +87,6 @@ exports.customDetails = async ( req, res ) => {
         const totalRevenue = await getRevenueAmount(fromDate, toDate);
         const topBrands = await topSaledBrands(fromDate, toDate);
         const totalProducts = await productModel.find({}).countDocuments();
-        console.log(topBrands);
-        console.log(topProducts, topCategoryies, totalUsers, totalOrders, totalRevenue, totalProducts, topBrands);
         return res.status(200).json({ topProducts, topCategoryies, totalUsers, totalOrders, totalRevenue, totalProducts, topBrands });
     }catch(err){
         console.log(`Error inside customDetails : \n${err}`);
@@ -424,15 +413,7 @@ async function topSaledBrands(fromDate, toDate) {
   
       const brands = await productModel.aggregate(pipeline);
       return brands
-    //   console.log(brands);
     } catch (err) {
       console.log(`Error at topSaledBrands: ${err}`);
     }
   }
-  
-  // Example usage
-//   const toDate = new Date();
-//   topSaledBrands(
-//     new Date(toDate.getFullYear(), toDate.getMonth() - 1, toDate.getDate()),
-//     new Date()
-//   );

@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const selectedFilesPreview = document.getElementById('selected-files-preview');
 
     fileInput.addEventListener('change', function() {
-        // console.log(event)
         selectedFilesPreview.innerHTML = '';
 
         const files = fileInput.files;
@@ -19,7 +18,6 @@ document.addEventListener('DOMContentLoaded', function() {
         for (let i = 0; i < files.length; i++) {
 
             const file = files[i];
-            console.log(file);
             const filePreview = document.createElement('div');
             filePreview.classList.add('file-preview');
 
@@ -42,12 +40,9 @@ const form = document.querySelector('form');
 
 
 const productId = form.getAttribute('data-product-id');
-console.log(productId);
 form.addEventListener('submit', async function(event) {
     event.preventDefault();
     const formData = new FormData(form);
-    console.log(productId);
-    // Send form data to server
     try {
         const response = await fetch(`/admin/products/edit/${ productId }`, {
             method: 'POST',
@@ -55,12 +50,10 @@ form.addEventListener('submit', async function(event) {
         });
         const responseData = await response.json();
         if (response.ok) {
-            console.log(responseData); // Log server response
             successMessage({ message: responseData.message });
             window.location.href = '/admin/products';
             return
         }
-        console.error('Error adding product');
         failureMessage(responseData.error);
     
     } catch (error) {
@@ -78,12 +71,9 @@ imgDeleteButtons.forEach( button => {
         if(!confi.isConfirmed) return ;
         const imageUrl = button.getAttribute('data-image-url');
         const productId = button.getAttribute('data-product-id');
-        console.log(imageUrl)
-        console.log(productId);
 
         const response = await fetch(`/admin/products/delete-image?imageUrl=${imageUrl}&productId=${productId}`, { method: 'DELETE' });
         const result = await response.json();
-        console.log(result);
         if (result.success) {
             const imagePreviewDiv = button.closest('.image-preview-div');
             if (imagePreviewDiv) {
@@ -93,30 +83,8 @@ imgDeleteButtons.forEach( button => {
         } else {
             failureMessage(result.error);
         }
-        // console.log(response);
     })
 });
-
-
-document.querySelector('#image').addEventListener('click', () => console.log('image input clicked'));
-
-
-
-const msgPara = document.querySelector('.msg-para');
-
-const displayError = (message) => {
-    const msgPara = document.querySelector('.msg-para');
-    msgPara.parentElement.className = 'msg-box-error';
-    msgPara.innerHTML = message;
-}
-
-
-
-const displaySuccess = (message) => {
-    const msgPara = document.querySelector('.msg-para');
-    msgPara.parentElement.className = 'msg-box-success';
-    msgPara.innerHTML = message;
-}
 
 
 

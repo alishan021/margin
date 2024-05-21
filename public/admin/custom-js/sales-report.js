@@ -15,16 +15,15 @@ function findReportType() {
 const filterButton = document.querySelector('.btn-apply');
 filterButton.addEventListener('click', async (event) => {
 
-    console.log(fromDate.value, toDate.value);
     if((fromDate.value && !toDate.value) || (!fromDate.value && toDate.value)) return failureMessage('error no date.');
     const reportType = findReportType();
+    if((!fromDate.value || !toDate.value) && reportType === 'custom' ) return failureMessage('No Date selected, or change filter Type');
     
     // Construct the URL with query parameters
     const url = `/admin/sales-report/${reportType}?fromDate=${fromDate.value}&toDate=${toDate.value}`;
 
     const response = await fetch(url);
     const body = await response.json();
-    console.log(body);
     if(body.error){
         failureMessage(body.error);
     }else {
@@ -40,7 +39,6 @@ filterButton.addEventListener('click', async (event) => {
         topPaymentOptions(body.data.paymentOptions, paymentMethodsDiv);
         const orderStatusDiv = document.querySelector('.order-status');
         displayOrderStatusSummary(body.data.orderStatus, orderStatusDiv);
-        console.log(body.orders);
     }
 });
 
@@ -48,9 +46,7 @@ filterButton.addEventListener('click', async (event) => {
 
 const generateReportButton = document.querySelector('#generate-pdf');
 generateReportButton.addEventListener('click', async (event) => {
-    console.log('inside the button pdf');
     const reportType = findReportType();
-    console.log(reportType);
     if(reportType === 'custom' && (!fromDate.value || !toDate.value )) return failureMessage('select date if or change custom');
 
     const response = await fetch(`/admin/sales/pdf/${reportType}?fromDate=${fromDate.value}&toDate=${toDate.value}`);
@@ -77,9 +73,7 @@ generateReportButton.addEventListener('click', async (event) => {
 
 const generateExcelButton = document.querySelector('#generate-excel');
 generateExcelButton.addEventListener('click', async (event) => {
-    console.log('inside print excel');
     const reportType = findReportType();
-    console.log('reportType: ' + reportType);
     if(reportType === 'custom' && (!fromDate.value || !toDate.value )) return failureMessage('select date if or change custom');
 
     const response = await fetch(`/admin/sales/excel/${reportType}?fromDate=${fromDate.value}&toDate=${toDate.value}`);
@@ -101,26 +95,9 @@ generateExcelButton.addEventListener('click', async (event) => {
 
 
 
-
-const msgPara = document.querySelector('.msg-para'); 
-
-const displayError = (result) => {
-    console.log(msgPara);
-    msgPara.innerHTML = result;
-}
-
-const displaySuccess = (result) => {
-    msgPara.parentElement.className = 'msg-box-success';
-    msgPara.innerHTML = result;
-}
-
-
-
-
 document.addEventListener('DOMContentLoaded', async (event) => {
     const response = await fetch('/admin/sales-report-total');
     const body = await response.json();
-    console.log(body);
     document.querySelector('.noOfOrders').innerHTML = body.data.noOfOrders;
     document.querySelector('.revenueAmount').innerHTML = body.data.revenueAmount;
     document.querySelector('.noOfUsers').innerHTML = body.data.noOfUsers;
@@ -132,9 +109,7 @@ document.addEventListener('DOMContentLoaded', async (event) => {
     topPaymentOptions(body.data.paymentOptions, paymentMethodsDiv);
     const orderStatusDiv = document.querySelector('.order-status');
     displayOrderStatusSummary(body.data.orderStatus, orderStatusDiv);
-
-    // document.querySelector('.noOfOrders').innerHTML = body.data.noOfOrders;
-})
+});
 
 
 function topProductsSale(products, productsDiv) {
@@ -190,8 +165,6 @@ function topCategoriesSale(categories, categoryDiv) {
     // Check if categoryDiv exists before appending the container div
     if (categoryDiv) {
         categoryDiv.appendChild(categoryContainerDiv); // Append the container div to the specified categoryDiv
-    } else {
-        console.error('Element with class "top-categories-sale" not found.');
     }
 }
 

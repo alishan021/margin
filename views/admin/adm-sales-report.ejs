@@ -11,10 +11,7 @@
     <link rel="stylesheet" href="/admin/custom-css/msg-box.css">
 
     <script src="/admin/custom-js/sales-report.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
-
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script> -->
-    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>    
 </head>
 <body>
 
@@ -109,59 +106,6 @@
 
         </div>
     </div>
-
-<!-- 
-<script>
-
-    document.getElementById('generate-pdf').addEventListener('click', function() {
-      var element = document.getElementById('sales-report');
-      html2pdf(element, {
-        margin: 1,
-        filename: 'table.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 4 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
-
-});
-    }); -->
-    
-    </script>
     
 </body>
 </html>
-
-
- <!-- <div class="table-div container">
-                    <table id="sales-report" class="content-table">
-                        <thead>
-                            <tr>
-                                <th>No.</th>
-                                <th>Date</th>
-                                <th>OrderId</th>
-                                <th>Payment method</th>
-                                <th>Total Amount</th>
-                                <th>Username</th>
-                                <th>couponUsed</th>
-                               
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                            < orders.forEach(( order, index ) => { %>
-                                
-                                <tr>
-                                    <td><= index + 1 %></td>
-                                    <td><= order.deliveredAt.toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) %></td> 
-                                    <td><= order._id %></td>
-                                    <td><= order.paymentMethod %></td>
-                                    <td><= order.totalPrice %></td>
-                                    <td><= order.userId.username %></td>
-                                    <td><= order.couponUsed %></td>
-                                </tr>
-
-                            < }); %>
-
-                           
-                        </tbody>
-                    </table>
-                    </div> -->

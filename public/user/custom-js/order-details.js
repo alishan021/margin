@@ -13,16 +13,12 @@ cancelOrderAll.forEach( cancelOrder => {
         const productId = cancelOrder.parentElement.getAttribute('data-product-id');
         const orderId = cancelOrder.parentElement.getAttribute('data-order-id');
         const confi = await confirmIt('Are you sure that you want to cancel the order?', 'Yes');
-        console.log(confi);
-        console.log(confi.isConfirmed);
 
-        console.log(productId);
         if(confi.isConfirmed){
             const response = await fetch(`/order/cancel/${orderId}/${productId}`, {
                 method: 'PATCH',
                 })
             const body = await response.json();
-            console.log(body);
             if(body.error) failureMessage(body.error);
             else if(body.success) {
               successMessage(body.success);
@@ -45,13 +41,11 @@ returnOrderAll.forEach((returnOrder) => {
       const productId = parentDiv.getAttribute('data-product-id');
       const orderId = parentDiv.getAttribute('data-order-id');
       const confi = await confirmIt('Are you sure that you want to return the product? \nThen your money will added to your wallet');
-      console.log(confi.isConfirmed);
       if (confi.isConfirmed) {
         const response = await fetch(`/order/return/${orderId}/${productId}`, {
           method: 'PATCH',
         });
         const body = await response.json();
-        console.log(body);
 
         if (body.error) {
           failureMessage(body.error);
@@ -71,7 +65,6 @@ returnOrderAll.forEach((returnOrder) => {
 const btnInvoice = document.querySelector('#btn-invoice'); 
 btnInvoice.addEventListener('click', async (event) => {
   const orderId = event.target.getAttribute('data-order-id');
-  console.log(orderId);
   const response = await fetch(`/order/invoice/${orderId}`);
 
   if(response.ok) {
@@ -86,20 +79,15 @@ btnInvoice.addEventListener('click', async (event) => {
 
   }else {
     const body = await response.json();
-    console.log(body);
   }
 });
 
 
 async function payAgain(event) {
-  console.log('hai');
   const orderId = event.target.dataset.orderId;
-  console.log(orderId);
   const response = await fetch(`/failed-payment?orderId=${orderId}`);
   const body = await response.json();
-  console.log(body);
   const { rzr_orderId, totalPrice } = body.order;
-  console.log(rzr_orderId, totalPrice );
   await razorpay(rzr_orderId, totalPrice, body.order.userId );
 }
 
@@ -108,7 +96,6 @@ async function payAgain(event) {
 
 
 async function razorpay(orderId, productTotal, userId){
-  console.log(productTotal)
   $(document).ready(function() {
     
           var options = {
@@ -120,11 +107,7 @@ async function razorpay(orderId, productTotal, userId){
             "image": "https://example.com/your_logo",
             "order_id": orderId,
             "handler": function(response) {
-              console.log(response.razorpay_payment_id);
-              console.log(response.razorpay_order_id);
-              console.log(response.razorpay_signature);
               const result = rzrPaymentAgain( userId, orderId );
-              console.log('result : ' + result);
               if(result) setTimeout(() => window.location.reload(), 1000);
               else return false;
             },
@@ -144,14 +127,6 @@ async function razorpay(orderId, productTotal, userId){
           var rzp1 = new Razorpay(options);
   
           rzp1.on('payment.failed', async function(response) {
-            console.log('payment failed');
-            console.log(response.error.code);
-            console.log(response.error.description);
-            console.log(response.error.source);
-            console.log(response.error.step);
-            console.log(response.error.reason);
-            console.log(response.error.metadata.order_id);
-            console.log(response.error.metadata.payment_id);
             failureMessage('Payment failed, try Again');
           });
   
@@ -167,7 +142,6 @@ async function razorpay(orderId, productTotal, userId){
   
   
 async function rzrPaymentAgain( userId, rzr_orderId ) {
-  console.log( userId, rzr_orderId );
   const response = await fetch('/payment-pending', {
     method: 'POST',
     headers: {
@@ -176,7 +150,6 @@ async function rzrPaymentAgain( userId, rzr_orderId ) {
     body: JSON.stringify({ userId, rzr_orderId })
   });
   const body = await response.json();
-  console.log(body);
   if(body.error) {
     failureMessage(body.error);
     return false;

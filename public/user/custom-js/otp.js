@@ -7,7 +7,6 @@ const msgPara = document.querySelector('.msg-para');
 const timer = document.querySelector('.otp-timer');
 
 form.addEventListener('submit', (event) => {
-    console.log('inside otp form');
     event.preventDefault();
     
     const otp = document.querySelector('[otp]').value;
@@ -18,7 +17,6 @@ form.addEventListener('submit', (event) => {
     }
 
     if(!timerOn) {
-        console.log('timerOn is false');
         displayError({ error: 'otp time is over. resend the otp'})
         return timer.innerHTML = '';
     }
@@ -31,18 +29,15 @@ form.addEventListener('submit', (event) => {
              body: JSON.stringify(body)
     })
     .then((response) =>{
-        console.log(response);
         return response.json()
     })
     .then((data) => {
-        console.log(data);
         if(data.error){
             return displayError(data)
         }
             window.location.href = '/post-user';
     })
     .catch((err) =>{
-        console.log('some error in /singup/otp/validate')
         displayError({ error: err.error });
     })
 })

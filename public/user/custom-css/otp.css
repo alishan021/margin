@@ -27,13 +27,13 @@
     background-color: rgb(17, 120, 168);
     border-radius: 20px;
     width: 600px;
-    min-width: 400px;
+    min-width: 300px;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     margin: 0 10px;
-    padding: 40px;
+    padding: 40px 0;
 }
 
 
@@ -69,14 +69,6 @@ input{
 }
 
 
-/* 
-label
-{
-    font-size: 400;
-    color: rgb(140, 140, 140);
-} */
-
-
 
 .btn-submit
 {
@@ -97,20 +89,6 @@ label
 {
     background-color: rgb(0, 151, 201);
 }
-
-
-/* 
-.msg-box
-{
-    width: 90%;
-    padding: 10px;
-    margin: 10px;
-    background-color: lightblue;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px;
-} */
 
 
 
