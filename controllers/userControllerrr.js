@@ -74,36 +74,32 @@ exports.sendOtp = async ( req, res , next ) => {
 
 
     const newDoc = { user: req.session.userEmail, otp };
-    const docRes = await new otpModel(newDoc)
-            .save();
-
-    console.log(docRes);
+    const docRes = await new otpModel(newDoc).save();
 
     const nodemailer = require('nodemailer');
-    
-    const transport = nodemailer.createTransport({
+
+    var transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: 'test102201102@gmail.com',
-            pass: 'gunk xzwl blxq esjr',
+          user: process.env.OTP_EMAIL,
+          pass: process.env.EMAIL_PASS_KEY
         }
-    });
-
-    const mailOptions = {
-        from: 'test102201102@gmail.com',
-        to: email,
-        subject: 'sending email to you',
-        text: `Your otp to verify your account is ${otp}, Thank you`
-    }
-
-
-    transport.sendMail( mailOptions, async ( err, info ) => {
-        if(err) console.log('error : ' + err);
-        else{
-            
-            console.log('success : ' + info.response );
+      });
+      
+      var mailOptions = {
+        from: process.env.OTP_EMAIL,
+        to: req.session.userEmail,
+        subject: 'OTP for Margin ecommerce',
+        text: 'Your otp ' + otp + ' to ensure your account in marginwigns.shop.'
+      };
+      
+      transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
         }
-    })
+      });
 
     next();
 }
@@ -1190,6 +1186,7 @@ exports.addWalletAmount = async ( req, res ) => {
         if(!userId) return res.status(403).json({ error: 'user not found, login again' });
         if(!amount) return res.status(403).json({ error: 'Please enter an amount' });
         const user = await userModel.findById(userId);
+        if(!user.wallet.amount) user.wallet.amount = 0;
         user.wallet.amount += parseInt(amount);
         await user.save();
         return res.status(200).json({ success: true, message: `${amount}Rs added to wallet` });

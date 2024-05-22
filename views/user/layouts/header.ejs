@@ -45,30 +45,11 @@
     <div class="wrap-container sticky-header">
         <div class="header-bottom">
             <div class="container">
-                <div class="header-left">
-                    <div class="dropdown category-dropdown" data-visible="true">
-                        <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" data-display="static" title="Browse Categories">
-                            Browse Categories
-                        </a>
+                <!-- <div class="header-left"> -->
+                    <!-- <div data-visible="true">
 
-                        <div class="dropdown-menu">
-                            <nav class="side-nav">
-                                <ul class="menu-vertical sf-arrows sf-js-enabled" style="touch-action: pan-y;">
-                                   
-                                    <li><a href="#"><i class="icon-blender"></i>Home Appliances</a></li>
-                                    <li><a href="#"><i class="icon-heartbeat"></i>Healthy &amp; Beauty</a></li>
-                                    <li><a href="#"><i class="icon-shoe-prints"></i>Shoes &amp; Boots</a></li>
-                                    <li><a href="#"><i class="icon-map-signs"></i>Travel &amp; Outdoor</a></li>
-                                    <li><a href="#"><i class="icon-mobile-alt"></i>Smart Phones</a></li>
-                                    <li><a href="#"><i class="icon-tv"></i>TV &amp; Audio</a></li>
-                                    <li><a href="#"><i class="icon-shopping-bag"></i>Backpack &amp; Bag</a></li>
-                                    <li><a href="#"><i class="icon-music"></i>Musical Instruments</a></li>
-                                    <li><a href="#"><i class="icon-gift"></i>Gift Ideas</a></li>
-                                </ul><!-- End .menu-vertical -->
-                            </nav><!-- End .side-nav -->
-                        </div><!-- End .dropdown-menu -->
-                    </div>
-                </div>
+                    </div> -->
+                <!-- </div> -->
                 <div class="header-center">
                     <nav class="main-nav">
                         <ul class="menu sf-arrows">
@@ -83,7 +64,7 @@
                 </div><!-- End .header-left -->
 
                 <% if(!userIn){ %>
-
+                <div>
                     <div class="header-right ">
                         <span><a href="/login" class="font-weight-bold">Login</a></span> <!-- style.font-weigth = 500 -->
                     </div>
@@ -97,10 +78,11 @@
                     </div>
                     <div class="header-right">
                         <span><a href="/dashboard" class="font-weight-bold">Account
+                    </div>
                 <% } %>
                  <!-- End .header-right -->
                  
-            </div><!-- End .container -->
+                </div>
         </div><!-- End .header-bottom -->
     </div><!-- End .wrap-container -->
 </header><!-- End .header -->

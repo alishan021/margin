@@ -250,6 +250,7 @@ btnWallet.addEventListener('click', (event) => {
     const amount = document.querySelector('#wallet-amount').value;
     if(amount <= 0 ) failureMessage('Amount must be greater than zero');
     const userId = event.target.getAttribute('data-user-id');
+    console.log(userId)
     razorpay( userId, +amount);
 })
 
@@ -267,7 +268,7 @@ function razorpay( userId, amount){
             $("button").show();
       
             var options = {
-              "key": "rzp_test_ODVEghJRjenb9A",
+              "key": "rzp_test_sHq1xf34I99z5x",
               "amount": amount*100,
               "currency": "INR",
               "name": "Margin",
@@ -297,7 +298,7 @@ function razorpay( userId, amount){
             });
     
             rzp1.on('payment.error', function (response) {
-                alert('payment error');
+                failureMessage('payment error')
                 console.log('Payment error:', response.error);
             });
     

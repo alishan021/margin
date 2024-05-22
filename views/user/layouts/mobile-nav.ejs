@@ -21,15 +21,21 @@
                 <li>
                     <a href="/product-list">Shop</a>
                 </li>
-                <li>
-                    <a href="/dashboard">Dashboard</a>
-                </li>
-                <li>
-                    <a href="/wishlist">wishlist</a>
-                </li>
-                <li>
-                    <a href="/cart">Cart</a>
-                </li>
+                <%if(userIn){ %>
+                    <li>
+                        <a href="/dashboard">Dashboard</a>
+                    </li>
+                    <li>
+                        <a href="/wishlist">wishlist</a>
+                    </li>
+                    <li>
+                        <a href="/cart">Cart</a>
+                    </li>
+                    <li class="active">
+                        <a href="/logout">Logout</a>
+                    </li>
+                <% } %>
+
             </ul>
         </nav><!-- End .mobile-nav -->
         <div class="social-icons">
