@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const email = document.querySelector('[email]').value;
         if(!email){
-            return displayError({ error: 'email is required'});
+            return failureMessage('email is required');
         }
         const body = { email };
         const result = await shareBody(body);
@@ -15,13 +15,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if(!timerRunning){
                 timerFunc(60);
             }
-            displayMessage({ message: 'A otp is sent to your email'})
+            successMessage('A otp is sent to your email')
             getOtp.className = 'send-otp';
             otpInputBox.className = 'otp-input-box';
             getOtp.innerHTML = 'submit';
             const btnSubmit = document.querySelector('.send-otp');
             if(!timerOn) {
-                displayError({ error: 'otp time is over. resend the otp'})
+                failureMessage('otp time is over. resend the otp')
                 return timer.innerHTML = '';
             }
             btnSubmit.addEventListener('click', async () => {
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const body2 = { email, otp };
                 const result2 = await shareBody2(body2);
                 if(!result2){
-                    displayError({ error: 'invalid otp'});
+                    failureMessage('invalid otp');
                     timerRunning = true;
                 }
                 if(result2){
@@ -47,19 +47,6 @@ let timerRunning = false;
 
 
 const timer = document.querySelector('.otp-timer');
-const msgPara = document.querySelector('.msg-para');
-const msgBox = document.querySelector('msg-box');
-
-const displayError = (result) => {
-    msgPara.parentElement.className = 'msg-box-error';
-    msgPara.innerHTML = result.error;
-}
-
-
-const displayMessage = (result) => {
-    msgPara.parentElement.className = 'msg-box-message';
-    msgPara.innerHTML = result.message;
-}
 
 
 
@@ -76,14 +63,14 @@ const shareBody = async (body) => {
  
          if (data.error) {
             const result = { error: data.error }
-            displayError( result );
+            failureMessage( result.error );
             return false;
          }
         return { success: true };
      }
      catch (err) {
          console.log(err);
-         displayError(err);password
+         failureMessage(err);password
      }
  }
 
@@ -102,14 +89,14 @@ const shareBody2 = async (body) => {
          });
          const data = await response.json();
          if (data.error) {
-            displayError( data );
+            failureMessage( data.error );
             return false;
          }
         return { success: true };
      }
      catch (err) {
          console.log(err);
-         displayError(err);
+         failureMessage(err.message);
      }
  }
 
@@ -120,16 +107,27 @@ const shareBody2 = async (body) => {
     e.preventDefault();
     const email = document.querySelector('[email]').value;
     if(!email){
-        return displayError({ error: 'email is required' });
+        return failureMessage('email is required');
+    }
+    if(timerOn){
+        return failureMessage('Try after the time finished')
     }
     const result = fetch('/resend-otp');
     clearTimeout(timerId);
-    displayMessage({ message: 'A otp is sent to your email'})
+    successMessage('A otp is sent to your email')
     timerOn = true;
     timerFunc(60);
  })
 
 
+//  const resendOTP = document.querySelector('#resend-otp').addEventListener('click', async (event) => {
+//     event.preventDefault();
+//     if(remaining > 1){
+//         failureMessage('Time is not finished');
+//     }else {
+//         window.location.href = '/resend-otp';
+//     }
+//  })
 
 
 
@@ -162,6 +160,34 @@ function timerFunc(remaining) {
   }
   
   if(!timerOn){
-    displayError({ error: 'otp time is finished, resent otp'});
+    failureMessage('otp time is finished, resent otp');
   }
 }
+
+
+
+function successMessage(message) {
+    Swal.fire({
+      text: message,
+      position: 'top',
+      timer: 2000,
+      background: 'green',
+      color: 'white',
+      showConfirmButton: false
+    });
+    return;
+  }
+  
+  
+  function failureMessage(message) {
+    Swal.fire({
+      text: message,
+      position: 'top',
+      timer: 2000,
+      background: 'red',
+      color: 'white',
+      showConfirmButton: false
+    });
+    return;
+  }
+  

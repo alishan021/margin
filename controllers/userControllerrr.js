@@ -189,6 +189,7 @@ exports.loginGet = ( req, res ) => {
 
 exports.loginPost = async (req, res) => {
     const { email, password } = req.body;
+    console.log(email, password)
 
     const isEmailValid = (email) => {
         const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/g;
@@ -205,6 +206,7 @@ exports.loginPost = async (req, res) => {
 
     try {
         const userDetails = await userModel.findOne({ email });
+        console.log(userDetails)
 
         if (!userDetails) {
             return res.status(400).json({ error: 'User not found' });
@@ -214,6 +216,7 @@ exports.loginPost = async (req, res) => {
         }
 
         const match = await bcrypt.compare(password, userDetails.password);
+        console.log(match);
         if (match) {
             req.session.userIn = true;
             req.session.user = userDetails;
@@ -339,8 +342,9 @@ exports.productGet = async ( req, res ) => {
 
 
 exports.productListGet = async ( req, res ) => {
+    const search = req.params.search || '';
     try{
-        const products = await productModel.find({ status: { $ne: false } });
+        const products = await productModel.find({ status: { $ne: false }, name: { $regex: search }});
         const totalDocs = products.length;
         const categorys = await categoryModel.find({});
         res.render('product-list.ejs', { products, totalDocs, userIn: req.session.userIn, categorys });

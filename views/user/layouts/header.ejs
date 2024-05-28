@@ -18,9 +18,9 @@
                     <form action="#" method="get">
                         <div class="header-search-wrapper search-wrapper-wide">
                             <label for="q" class="sr-only">Search</label>
-                            <input type="search" class="form-control" name="q" id="q" placeholder="Search product ..." required>
+                            <input type="search" class="form-control search-input" name="q" id="q" placeholder="Search product ..." required>
 
-                            <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
+                            <button class="btn btn-primary search-product" type="button"><i class="icon-search"></i></button>
                         </div><!-- End .header-search-wrapper -->
                     </form>
                 </div><!-- End .header-search -->
@@ -64,7 +64,7 @@
                 </div><!-- End .header-left -->
 
                 <% if(!userIn){ %>
-                <div>
+                <div class="d-flex" style="margin-left: 200px;">
                     <div class="header-right ">
                         <span><a href="/login" class="font-weight-bold">Login</a></span> <!-- style.font-weigth = 500 -->
                     </div>

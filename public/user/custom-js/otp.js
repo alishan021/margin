@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', (e) => {
     timerFunc(60);
+    successMessage('An OTP is sent to your email')
 })
 
 const form = document.querySelector('form');
@@ -13,11 +14,11 @@ form.addEventListener('submit', (event) => {
     const body = { otp };
 
     if(isNaN(otp)){
-        return displayError({ error: 'otp must be number'});
+        return failureMessage('otp must be number');
     }
 
     if(!timerOn) {
-        displayError({ error: 'otp time is over. resend the otp'})
+        failureMessage('otp time is over. resend the otp')
         return timer.innerHTML = '';
     }
 
@@ -33,12 +34,12 @@ form.addEventListener('submit', (event) => {
     })
     .then((data) => {
         if(data.error){
-            return displayError(data)
+            return failureMessage(data.error)
         }
             window.location.href = '/post-user';
     })
     .catch((err) =>{
-        displayError({ error: err.error });
+        failureMessage(err.error);
     })
 })
 
@@ -82,3 +83,38 @@ function timerFunc(remaining) {
     window.location.href = '/signup/otp'
   }
 }
+
+
+const resentOTp = document.querySelector('#resend-otp').addEventListener('click', (event) => {
+    event.preventDefault();
+    if(timerOn) return failureMessage('Try after the time is finished');
+    window.location.href = '/signup/otp';
+
+})
+
+
+function successMessage(message) {
+    Swal.fire({
+      text: message,
+      position: 'top',
+      timer: 2000,
+      background: 'green',
+      color: 'white',
+      showConfirmButton: false
+    });
+    return;
+  }
+  
+  
+  function failureMessage(message) {
+    Swal.fire({
+      text: message,
+      position: 'top',
+      timer: 2000,
+      background: 'red',
+      color: 'white',
+      showConfirmButton: false
+    });
+    return;
+  }
+  

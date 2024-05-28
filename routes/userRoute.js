@@ -36,7 +36,8 @@ router.post('/login/validate-otp', userController.validateOtpPost );
 router.get('/login/new-password', userController.newPasswordGet );
 router.post('/login/new-password', userController.newPasswordPost );
 
-router.get('/product-list/', userController.productListGet );
+router.get('/product-list/:search', userController.productListGet );
+router.get('/product-list', userController.productListGet );
 router.get('/product-list/:sortBy', userController.productListGetSortBy );
 router.get('/filter', userController.sortFilterGet );
 

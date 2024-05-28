@@ -79,6 +79,7 @@ document.querySelector('#btn-filter').addEventListener('click', async () => {
 });
 
 
+
 function renderFiltered(data) {
   const productContainer = document.querySelector('.product-item');
   productContainer.innerHTML = ''; // Clear previous content

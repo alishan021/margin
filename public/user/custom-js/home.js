@@ -36,6 +36,14 @@ btnWishlists.forEach(( btnWishlist ) => {
 });
 
 
+const searchProduct = document.querySelector('.search-product');
+searchProduct.addEventListener('click', async (event) => {
+  event.preventDefault();
+  const searchtext = document.querySelector('.search-input').value;
+  window.location.href = `/product-list/${searchtext}`;
+});
+
+
 
 
 function successMessage(message) {
