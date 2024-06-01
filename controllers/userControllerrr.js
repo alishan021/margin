@@ -70,7 +70,8 @@ exports.sendOtp = async ( req, res , next ) => {
         upperCaseAlphabets: false,
          lowerCaseAlphabets: false, 
          specialChars: false,
-    })
+    });
+    console.log(otp)
 
 
     const newDoc = { user: req.session.userEmail, otp };
@@ -1135,14 +1136,20 @@ exports.orderSingleGet  = async ( req, res )  => {
 exports.orderCancellationPath = async ( req, res ) => {
     const orderId = req.params.orderId;
     const productId = req.params.productId;
-    let user;
     try{
         const dbOrder = await orderModel.findById(orderId).populate('products.productId');
+        const orderProduct = dbOrder.products.find( item => item.productId._id.toString() === productId )
+        if(!orderProduct) return res.status(400).json({ error: 'Product not found'});
+        
+        let user = await userModel.findById(dbOrder.userId);
+        if(!user) return res.status(404).json({ error: 'user not found, login again'});
+
         if(dbOrder.paymentMethod !== 'COD'){
-            user = await userModel.findById(dbOrder.userId);
-            if(!user) return res.status(404).json({ error: 'user not found, login again'});
-            user.wallet.amount += parseInt(dbOrder.totalPrice);
+            user.wallet.amount += parseInt(orderProduct.productTotalPrice);
             await user.save();
+            const product = await productModel.findById(productId);
+            product.quantity += orderProduct.quantity;
+            product.save();
         }
         const index = dbOrder.products.findIndex( product => product.productId._id.toString() === productId );
         dbOrder.products[index].orderStatus = false;

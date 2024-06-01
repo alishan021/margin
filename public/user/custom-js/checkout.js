@@ -222,7 +222,7 @@ $(document).ready(function() {
         var options = {
           "key": "rzp_test_sHq1xf34I99z5x",
           "amount": productTotal*100,
-          "currency": "INR",
+          "currency": "USD",
           "name": "Margin",
           "description": "Test Transaction",
           "image": "https://example.com/your_logo",

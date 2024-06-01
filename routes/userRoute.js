@@ -19,7 +19,7 @@ const router = express.Router();
 router.get('/', userController.userHomeGet );
 
 // Signup page
-router.get('/signup', userController.userSignupGet );
+router.get('/signup', userAuth.userSessionYes, userController.userSignupGet );
 router.post('/signup', userController.validateSignupBody );
 router.get('/signup/otp', userController.sendOtp, userController.signupOtpGet );
 router.post('/signup/otp/validate', userController.signupOtpPost );

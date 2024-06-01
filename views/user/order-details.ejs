@@ -38,7 +38,7 @@
                                 <!-- <div>< product.productId.name %>hellow</div> -->
                                 <div><span><%= product.productId.name %></span></div>
                                 <div><span><%= product.quantity %></span></div>
-                                <div><span><b>$<%= product.productTotalPrice %></b></span></div>
+                                <div><span><b>₹<%= product.productTotalPrice %></b></span></div>
                                 <div class="item-order-status" data-order-id="<%= order._id %>" data-product-id="<%= product.productId._id %>">
 
                                     <% if(order.pending){ %>
@@ -82,7 +82,7 @@
                                 <% if(order.couponUsed){ %>
                                     <div>Coupon : <%= order.couponUsed %></div>    
                                 <% } %>
-                                <div><b>$total price : <%= order.totalPrice %></b></div>
+                                <div><b>₹total price : <%= order.totalPrice %></b></div>
                                 <% if(!order.pending){ %>
                                     <div><button id="btn-invoice" type="button" class="btn btn-primary" data-order-id="<%= order._id %>">Download Invoice</button></div>
                                 <% } %>

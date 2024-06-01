@@ -133,10 +133,10 @@
                                                 <h3 class="product-title"><a href="/product"><%= product.name %></a></h3><!-- End .product-title -->
                                                 <div class="product-price">
 													<% if( product.actualPrice === product.discountPrice){ %>
-														$<%= product.actualPrice %>
+														₹<%= product.actualPrice %>
 													<% }else { %> 
-														<span style="font-size: 13px; padding-right: 10px;"><s>$<%= product.actualPrice %></s></span>
-														$<%= product.discountPrice %>
+														<span style="font-size: 13px; padding-right: 10px;"><s>₹<%= product.actualPrice %></s></span>
+														₹<%= product.discountPrice %>
 													<% } %>
                                                 </div><!-- End .product-price -->
                                                
@@ -243,13 +243,13 @@
                                                 <!-- <div id="price-slider"></div> -->
 												<div id="slider"></div>
 												<div class="d-flex justify-content-between">
-													<div><span>min : $<span class="min-price"></span></span></div>
-													<div><span>max : $<span class="max-price"></span></span></div>
+													<div><span>min : ₹<span class="min-price"></span></span></div>
+													<div><span>max : ₹<span class="max-price"></span></span></div>
 												</div>
 												<!-- <div>
 													<div>
-														<span>min : $<span class="min-price"></span></span>
-														<span>max : $<span class="max-price"></span></span>
+														<span>min : ₹<span class="min-price"></span></span>
+														<span>max : ₹<span class="max-price"></span></span>
 													</div>
 												</div> -->
                                             </div><!-- End .filter-price -->

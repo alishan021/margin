@@ -21,7 +21,7 @@ cancelOrderAll.forEach( cancelOrder => {
             const body = await response.json();
             if(body.error) failureMessage(body.error);
             else if(body.success) {
-              successMessage(body.success);
+              successMessage(body.message);
                 window.location.reload();
             } 
             if(!body.error){

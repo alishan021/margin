@@ -122,7 +122,7 @@
 															<hr>
 														<% } ) %>
 													</div>
-													<div class="order-items flex-grow-1" style="width: 25%;"><%= order.totalPrice %></div>
+													<div class="order-items flex-grow-1" style="width: 25%;">₹<%= order.totalPrice %></div>
 													<div class="order-items flex-grow-1" style="width: 25%;"><%= order.orderMessage %></div>
 													<% if(order.paymentMethod === "Pending"){ %>
 														<div class="order-items flex-grow-1" style="width: 25%;">Razorpay</div>
@@ -322,7 +322,7 @@
 										<div class="border p-5">
 											<h6 class="color-c96" >Wallet</h6>
 											<hr>
-											<p>Balance : <b><%= (user.wallet)? user.wallet.amount : 0 %></b></p>
+											<p>Balance : <b>₹<%= (user.wallet)? user.wallet.amount : 0 %></b></p>
 											<div class="wallet-div">
 												<input type="number" name="wallet-amount" id="wallet-amount" placeholder="Enter an amount" class="px-3" >
 												<button class="btn btn-primary btn-wallet" data-user-id="<%= user._id %>">Add money</button>
@@ -337,14 +337,17 @@
 											  <div class="col"><b>TransactionalType</b></div>
 											</div>
 												<% if(user.wallet?.walletHistory) { %>
-												<% user.wallet.walletHistory.forEach((item, index) => { %>
+												<% len = user.wallet.walletHistory.length %>
+												<!-- < user.wallet.walletHistory.forEach((item, index) => { %> -->
+												<% for( let i = 0; i < len; i++ ) { %>
+													<% item = user.wallet.walletHistory[(len - 1) - i] %>
 											  <div class="row border py-3">
 												<div class="col"><%= item.createdAt.toLocaleDateString() %></div>
-												<div class="col"><%= item.amount %></div>
-												<div class="col"><%= item.balance %></div>
+												<div class="col">₹<%= item.amount %></div>
+												<div class="col">₹<%= item.balance %></div>
 												<div class="col"><%= item.transactionType %></div>
 											  </div>
-											<% }) %>
+											<% } %>
 											<% } %>
 										</div>
 									</div>

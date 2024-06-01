@@ -123,7 +123,7 @@
 													<% productTotal += item.product.discountPrice * item.count %>
 													<tr>
 														<td><a ><%= item.product.name %></a></td>
-														<td>$<%= item.product.discountPrice * item.count %></td>
+														<td>₹<%= item.product.discountPrice * item.count %></td>
 													</tr>
 
 
@@ -133,15 +133,15 @@
 
 		                						<tr class="summary-subtotal">
 		                							<td>Subtotal:</td>
-		                							<td>$<%= totalPrice %></td>
+		                							<td>₹<%= totalPrice %></td>
 		                						</tr><!-- End .summary-subtotal -->
 		                						<tr>
 		                							<td>Shipping:</td>
-		                							<td>$<%= deliveryCharge %></td>
+		                							<td>₹<%= deliveryCharge %></td>
 		                						</tr>
 		                						<tr class="summary-total">
 		                							<td>Total:</td>
-		                							<td id="totalPrice">$<%= totalPrice + deliveryCharge %></td>
+		                							<td id="totalPrice">₹<%= totalPrice + deliveryCharge %></td>
 		                						</tr><!-- End .summary-total -->
 		                					</tbody>
 		                				</table><!-- End .table table-summary -->

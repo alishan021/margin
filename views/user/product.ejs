@@ -69,13 +69,13 @@
                                 <div class="product-details">
                                     <h1 class="product-title"><%= product.name %></h1><!-- End .product-title -->
 
-                                    <!-- <div ><s>$<= product.price %></s></div> -->
+                                    <!-- <div ><s>₹<= product.price %></s></div> -->
                                     <div class="product-price">
                                         <% if( product.actualPrice === product.discountPrice){ %>
-                                            $<%= product.actualPrice %>
+                                            ₹<%= product.actualPrice %>
                                         <% }else { %> 
-                                            <span style="font-size: 13px; padding-right: 10px;"><s>$<%= product.actualPrice %></s></span>
-                                            $<%= product.discountPrice %>
+                                            <span style="font-size: 13px; padding-right: 10px;"><s>₹<%= product.actualPrice %></s></span>
+                                            ₹<%= product.discountPrice %>
                                         <% } %>
                                     </div><!-- End .product-price -->
 
@@ -215,10 +215,10 @@
                 <div class="col-6 justify-content-end">
                     <div class="product-price">
                         <% if( product.actualPrice === product.discountPrice){ %>
-                            $<%= product.actualPrice %>
+                            ₹<%= product.actualPrice %>
                         <% }else { %> 
-                            <span style="font-size: 13px; padding-right: 10px;"><s>$<%= product.actualPrice %></s></span>
-                            $<%= product.discountPrice %>
+                            <span style="font-size: 13px; padding-right: 10px;"><s>₹<%= product.actualPrice %></s></span>
+                            ₹<%= product.discountPrice %>
                         <% } %>
                     </s></div>
                     <div class="product-details-quantity">

@@ -228,15 +228,15 @@
                                 <div class="product-body">
                                     <h3 class="save-price"><span>
                                         <% if(featuredProduct.price !== featuredProduct.discountPrice ){ %>
-                                            Save $<%= featuredProduct.price - featuredProduct.discountPrice  %></span></h3>
+                                            Save ₹<%= featuredProduct.price - featuredProduct.discountPrice  %></span></h3>
                                         <% } %>
                                     <h3 class="product-title"><a href="/product/<%= featuredProduct._id %>"><%= featuredProduct.name %></a></h3><!-- End .product-title -->
                                     <div class="product-price">
                                         <% if( featuredProduct.actualPrice === featuredProduct.discountPrice){ %>
-                                            <span class="old-price">Was $<%= featuredProduct.price %></span>
+                                            <span class="old-price">Was ₹<%= featuredProduct.price %></span>
                                             <% }else { %>
-                                            <span class="new-price">$<%= featuredProduct.discountPrice %></span>
-                                            <span class="old-price">Was $<%= featuredProduct.price %></span>                                           
+                                            <span class="new-price">₹<%= featuredProduct.discountPrice %></span>
+                                            <span class="old-price">Was ₹<%= featuredProduct.price %></span>                                           
                                         <% } %>
                                     </div><!-- End .product-price -->
                                     <div class="action">
@@ -272,10 +272,10 @@
                                                     <h3 class="product-title"><a href="/product/<%= product._id %>"><%= product.name %></a></h3><!-- End .product-title -->
                                                     <div class="product-price">
                                                         <% if( product.actualPrice === product.discountPrice){ %>
-                                                            <div class="product-price">$<%= product.actualPrice %></div>
+                                                            <div class="product-price">₹<%= product.actualPrice %></div>
                                                         <% }else { %>
-                                                            <span class="new-price">$<%= product.discountPrice %></span>
-                                                            <span class="old-price">Was $<%= product.actualPrice %></span>
+                                                            <span class="new-price">₹<%= product.discountPrice %></span>
+                                                            <span class="old-price">Was ₹<%= product.actualPrice %></span>
                                                            
                                                         <% } %>
                                                     </div><!-- End .product-price -->
@@ -378,7 +378,7 @@
 
                             <div class="icon-box-content">
                                 <h3 class="icon-box-title">Free Shipping</h3><!-- End .icon-box-title -->
-                                <p>Orders $50 or more</p>
+                                <p>Orders ₹50 or more</p>
                             </div><!-- End .icon-box-content -->
                         </div><!-- End .icon-box -->
                     </div><!-- End .col-sm-6 col-lg-4 -->
@@ -458,10 +458,10 @@
                                 <h3 class="product-title"><a href="/product/<%= product._id %>"><%= product.name %></a></h3><!-- End .product-title -->
                                 <div class="product-price">
                                     <% if( product.actualPrice === product.discountPrice){ %>
-                                        <div class="product-price">$<%= product.actualPrice %></div>
+                                        <div class="product-price">₹<%= product.actualPrice %></div>
                                     <% }else { %> 
-                                        <span class="new-price">$<%= product.discountPrice %></span>
-                                        <span class="old-price">Was $<%= product.actualPrice %></span>
+                                        <span class="new-price">₹<%= product.discountPrice %></span>
+                                        <span class="old-price">Was ₹<%= product.actualPrice %></span>
                                        
                                     <% } %>
                                 </div><!-- End .product-price -->
@@ -483,7 +483,7 @@
             <div class="container bannerad">
                 <div class="banner-lg"  style="background-image: url(/user/assets/images/demos/demo-22/bannerad/background.jpg);">
                     <div class="price">
-                        <h4 class="highlight">from</h3><h3>$39</h3><sup class="highlight">,99</sup>
+                        <h4 class="highlight">from</h3><h3>₹39</h3><sup class="highlight">,99</sup>
                     </div>
                     <div class="content">
                         <h4>woodworking tools</h4>
